@@ -2,6 +2,7 @@ package com.example.offlinemusicplayer.di
 
 import android.app.Application
 import com.example.offlinemusicplayer.data.local.dao.PlaylistDao
+import com.example.offlinemusicplayer.data.local.dao.SongsDao
 import com.example.offlinemusicplayer.data.repository.MusicRepository
 import com.example.offlinemusicplayer.data.repository.MusicRepositoryImpl
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
@@ -27,5 +28,5 @@ object AppModule {
     fun provideGetPlaylists(repo: MusicRepository) = GetPlaylists(repo)
 
     @Provides
-    fun provideAudioFileFetcher(app: Application) = AudioFilesFetcher(app)
+    fun provideAudioFileFetcher(app: Application, songsDao: SongsDao) = AudioFilesFetcher(app, songsDao)
 }

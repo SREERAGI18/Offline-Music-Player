@@ -63,6 +63,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.room.runtime)
+    implementation(libs.room.paging)
     ksp(libs.room.compiler)
 
     implementation(libs.dagger.hilt.android)
@@ -76,4 +77,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.guava)
 
     implementation(libs.coil.compose)
+
+    implementation(libs.paging.runtime)
+    implementation(libs.paging.compose)
 }

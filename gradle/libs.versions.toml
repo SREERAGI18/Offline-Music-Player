@@ -16,6 +16,7 @@ navigationCompose = "2.9.5"
 hiltNavigationCompose = "1.3.0"
 media3 = "1.8.0"
 coil = "3.3.0"
+paging3 = "3.3.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -35,6 +36,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "kotlinxCoroutinesGuava" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomDb" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomDb" }
+room-paging = { group = "androidx.room", name = "room-paging", version.ref = "roomDb" }
 dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger-hilt" }
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "dagger-hilt" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
@@ -43,6 +45,8 @@ media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", versi
 media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3" }
 media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging3" }
+paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

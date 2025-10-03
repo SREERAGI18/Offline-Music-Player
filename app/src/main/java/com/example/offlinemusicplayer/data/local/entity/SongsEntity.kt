@@ -1,0 +1,48 @@
+package com.example.offlinemusicplayer.data.local.entity
+
+import android.content.ContentUris
+import android.content.Context
+import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import android.util.Size
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "songs")
+data class SongsEntity(
+    @PrimaryKey val id: Long,
+    val title: String,
+    val artist: String?,
+    val album: String?,
+    val duration: Long,
+    val size: Long,
+    val path: String,
+    val dateAdded: Long,
+    val lastScanned: Long = System.currentTimeMillis()
+) {
+    fun getContentUri(): Uri {
+        val contentUri = ContentUris.withAppendedId(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            id
+        )
+        return contentUri
+    }
+
+
+    fun getAlbumArt(context: Context): Bitmap? {
+        val uri = getContentUri()
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            try {
+                context.contentResolver.loadThumbnail(uri, Size(56, 56), null)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        } else {
+            null
+        }
+    }
+}

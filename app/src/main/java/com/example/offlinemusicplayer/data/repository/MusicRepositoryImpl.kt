@@ -1,12 +1,12 @@
 package com.example.offlinemusicplayer.data.repository
 
 import android.content.Context
-import android.provider.MediaStore
 import android.util.Log
+import androidx.paging.PagingData
 import com.example.offlinemusicplayer.data.local.dao.PlaylistDao
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
+import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.model.Playlist
-import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.player.AudioFilesFetcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,17 +17,10 @@ class MusicRepositoryImpl(
     private val audioFilesFetcher: AudioFilesFetcher,
 ) : MusicRepository {
 
-    override suspend fun getAllSongs(): List<Song> {
+    override fun getAllSongs(): Flow<PagingData<SongsEntity>> {
         Log.e("MusicRepositoryImpl", "getAllSongs")
-        val songList = mutableListOf<Song>()
 
-        try {
-            songList.addAll(audioFilesFetcher.getAllAudioFiles())
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return songList
+        return audioFilesFetcher.getAllSongsPaged()
     }
 
     override fun getPlaylists(): Flow<List<Playlist>> =
