@@ -74,4 +74,6 @@ dependencies {
     implementation(libs.media3.ui)
 
     implementation(libs.kotlinx.coroutines.guava)
+
+    implementation(libs.coil.compose)
 }

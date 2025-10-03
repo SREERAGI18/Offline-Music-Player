@@ -21,55 +21,11 @@ class MusicRepositoryImpl(
         Log.e("MusicRepositoryImpl", "getAllSongs")
         val songList = mutableListOf<Song>()
 
-        val collection =
-            MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-
-        val projection = arrayOf(
-            MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.TITLE,
-            MediaStore.Audio.Media.ARTIST,
-            MediaStore.Audio.Media.DATA,
-            MediaStore.Audio.Media.DURATION,
-            MediaStore.Audio.Media.IS_MUSIC // Filter for actual music files
-        )
-
-        // Show only music files
-        val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
-
-//        context.contentResolver.query(
-//            collection,
-//            projection,
-//            selection,
-//            null,
-//            "${MediaStore.Audio.Media.TITLE} ASC" // Sort the results
-//        )?.use { cursor ->
-//            val idCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
-//            val titleCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
-//            val artistCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
-//            val pathCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
-//            val durationCol = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
-//
-//            while (cursor.moveToNext()) {
-//                val id = cursor.getLong(idCol)
-//                val title = cursor.getString(titleCol)
-//                val artist = cursor.getString(artistCol)
-//                val path = cursor.getString(pathCol)
-//                val duration = cursor.getLong(durationCol)
-//
-//                Log.e("MusicRepositoryImpl", "path: $path")
-//                songList.add(
-//                    Song(
-//                        id = id,
-//                        title = title,
-//                        artist = artist,
-//                        path = path,
-//                        duration = duration
-//                    )
-//                )
-//            }
-//        }
-
-        songList.addAll(audioFilesFetcher.getAllAudioFiles())
+        try {
+            songList.addAll(audioFilesFetcher.getAllAudioFiles())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         return songList
     }

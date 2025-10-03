@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults.PrimaryIndicator
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -38,7 +41,17 @@ fun MainScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         // The TabRow to display the tabs
-        PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
+        TabRow(
+            selectedTabIndex = pagerState.currentPage,
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            indicator = { tabPositions ->
+                PrimaryIndicator(
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        ) {
             tabs.forEachIndexed { index, title ->
                 Tab(
                     selected = pagerState.currentPage == index,
@@ -47,7 +60,13 @@ fun MainScreen(
                             pagerState.animateScrollToPage(index)
                         }
                     },
-                    text = { Text(text = title) }
+                    text = {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    },
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
@@ -74,7 +93,6 @@ fun MainScreen(
                         controller?.prepare()
                         controller?.playWhenReady = true
                     },
-                    controller = controller
                 )
                 1 -> PlaylistScreen(
                     onCreatePlaylist = {

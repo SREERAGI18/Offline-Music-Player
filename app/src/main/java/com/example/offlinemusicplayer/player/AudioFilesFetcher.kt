@@ -93,11 +93,11 @@ class AudioFilesFetcher(private val context: Context) {
                         id = id,
                         title = name,
                         artist = artist,
-//                        album = album,
+                        album = album,
                         duration = duration,
 //                        size = size,
                         path = path,
-//                        uri = contentUri,
+                        uri = contentUri,
 //                        dateAdded = dateAdded
                     )
                 )
@@ -174,11 +174,11 @@ class AudioFilesFetcher(private val context: Context) {
                             id = id,
                             title = name,
                             artist = artist,
-//                            album = album,
+                            album = album,
                             duration = duration,
 //                            size = size,
                             path = path,
-//                            uri = contentUri,
+                            uri = contentUri,
 //                            dateAdded = dateAdded
                         )
                     )
