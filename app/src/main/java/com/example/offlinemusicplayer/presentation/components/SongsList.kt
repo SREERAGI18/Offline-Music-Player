@@ -17,7 +17,7 @@ import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 @Composable
 fun SongsList(
     songs: LazyPagingItems<SongsEntity>,
-    onSongClick: (SongsEntity) -> Unit,
+    onSongClick: (SongsEntity, Int) -> Unit,
 ) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -30,7 +30,12 @@ fun SongsList(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                SongItem(song, onSongClick)
+                SongItem(
+                    song = song,
+                    onSongClick = {
+                        onSongClick(song, index)
+                    }
+                )
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )

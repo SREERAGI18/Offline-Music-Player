@@ -80,4 +80,6 @@ dependencies {
 
     implementation(libs.paging.runtime)
     implementation(libs.paging.compose)
+
+    implementation(libs.java.diff.utils)
 }

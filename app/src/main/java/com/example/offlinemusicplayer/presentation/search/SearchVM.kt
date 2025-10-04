@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.paging.PagingData
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.usecase.SearchSongs
+import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.debounce
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SearchVM @Inject constructor(
-    private val searchSongs: SearchSongs
+    private val searchSongs: SearchSongs,
+    private val playerRepository: PlayerServiceRepository,
 ): ViewModel() {
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -31,5 +33,14 @@ class SearchVM @Inject constructor(
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
+    }
+
+    fun setPlayerList(songList: List<SongsEntity>) {
+        playerRepository.setMediaList(songList)
+    }
+
+    fun playSong(index: Int) {
+        playerRepository.skipToMediaByIndex(index)
+        playerRepository.play()
     }
 }

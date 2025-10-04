@@ -14,6 +14,9 @@ interface SongsDao {
     @Query("SELECT * FROM songs ORDER BY title ASC")
     fun getAllSongsPaged(): PagingSource<Int, SongsEntity>
 
+    @Query("SELECT * FROM songs ORDER BY title ASC")
+    suspend fun getAllSongs(): List<SongsEntity>
+
     @Query("SELECT * FROM songs WHERE title LIKE '%' || :query || '%' OR artist LIKE '%' || :query || '%' ORDER BY title ASC")
     fun searchSongsPaged(query: String): PagingSource<Int, SongsEntity>
 

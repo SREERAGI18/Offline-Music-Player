@@ -9,7 +9,6 @@ import com.example.offlinemusicplayer.presentation.components.SongsList
 
 @Composable
 fun SearchScreen(
-    onSongClick: (SongsEntity) -> Unit,
     query: String
 ) {
     val viewModel: SearchVM = hiltViewModel()
@@ -19,8 +18,16 @@ fun SearchScreen(
         viewModel.updateSearchQuery(query)
     }
 
+    LaunchedEffect(songs.itemSnapshotList.items) {
+        if (songs.itemSnapshotList.isNotEmpty()) {
+            viewModel.setPlayerList(songs.itemSnapshotList.items)
+        }
+    }
+
     SongsList(
-        onSongClick = onSongClick,
+        onSongClick = { song, index ->
+            viewModel.playSong(index)
+        },
         songs = songs
     )
 }

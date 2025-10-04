@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.paging.PagingData
 import com.example.offlinemusicplayer.data.local.dao.PlaylistDao
+import com.example.offlinemusicplayer.data.local.dao.SongsDao
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.model.Playlist
@@ -14,16 +15,21 @@ import kotlinx.coroutines.flow.map
 class MusicRepositoryImpl(
     private val context: Context,
     private val playlistDao: PlaylistDao,
+    private val songsDao: SongsDao,
     private val audioFilesFetcher: AudioFilesFetcher,
 ) : MusicRepository {
 
-    override fun getAllSongs(): Flow<PagingData<SongsEntity>> {
+    override fun getAllSongsPaginated(): Flow<PagingData<SongsEntity>> {
         Log.e("MusicRepositoryImpl", "getAllSongs")
 
         return audioFilesFetcher.getAllSongsPaged()
     }
 
-    override fun searchSongs(query: String): Flow<PagingData<SongsEntity>> {
+    override suspend fun getAllSongs(): List<SongsEntity> {
+        return songsDao.getAllSongs()
+    }
+
+    override fun searchSongsPaginated(query: String): Flow<PagingData<SongsEntity>> {
         return audioFilesFetcher.searchSongsPaged(query)
     }
 

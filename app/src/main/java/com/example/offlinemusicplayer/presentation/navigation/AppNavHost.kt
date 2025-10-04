@@ -22,7 +22,6 @@ fun AppNavHost(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val controller = rememberMusicController(context)
 
     NavHost(
         navController = navController,
@@ -30,28 +29,14 @@ fun AppNavHost(
         modifier = modifier
     ) {
         composable(Screens.Main.route) {
-            MainScreen(controller)
+            MainScreen()
         }
         composable(Screens.SongList.route) {
-            SongListScreen(
-                onSongClick = { /* play via service */ },
-            )
+            SongListScreen()
         }
 
         composable(Screens.Search.route) {
             SearchScreen(
-                onSongClick = { song ->
-                    // Prepare and play selected song
-                    controller?.setMediaItem(
-                        MediaItem.fromUri(
-                            Uri.fromFile(
-                                File(song.path)
-                            )
-                        )
-                    )
-                    controller?.prepare()
-                    controller?.playWhenReady = true
-                },
                 query = query
             )
         }

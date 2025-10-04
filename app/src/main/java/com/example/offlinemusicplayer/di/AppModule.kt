@@ -1,36 +1,116 @@
 package com.example.offlinemusicplayer.di
 
 import android.app.Application
+import android.content.ComponentName
+import android.content.Context
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
 import com.example.offlinemusicplayer.data.local.dao.PlaylistDao
 import com.example.offlinemusicplayer.data.local.dao.SongsDao
 import com.example.offlinemusicplayer.data.repository.MusicRepository
 import com.example.offlinemusicplayer.data.repository.MusicRepositoryImpl
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
+import com.example.offlinemusicplayer.domain.usecase.GetAllSongsPaginated
 import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
 import com.example.offlinemusicplayer.domain.usecase.SearchSongs
 import com.example.offlinemusicplayer.player.AudioFilesFetcher
+import com.example.offlinemusicplayer.player.MusicService
+import com.example.offlinemusicplayer.player.PlayerServiceRepository
+import com.example.offlinemusicplayer.player.PlayerServiceRepositoryImpl
+import com.example.offlinemusicplayer.player.mapper.MediaMapper
+import com.example.offlinemusicplayer.util.PreferencesManager
+import com.google.common.util.concurrent.ListenableFuture
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.guava.await
+import kotlinx.coroutines.launch
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
     @Provides
-    fun provideRepository(app: Application, dao: PlaylistDao, audioFilesFetcher: AudioFilesFetcher): MusicRepository =
-        MusicRepositoryImpl(app, dao, audioFilesFetcher)
+    fun provideRepository(
+        app: Application,
+        playlistDao: PlaylistDao,
+        songsDao: SongsDao,
+        audioFilesFetcher: AudioFilesFetcher
+    ): MusicRepository =
+        MusicRepositoryImpl(
+            context = app,
+            playlistDao = playlistDao,
+            songsDao = songsDao,
+            audioFilesFetcher = audioFilesFetcher
+        )
+
+    @Provides
+    fun provideGetAllSongsPaginated(repo: MusicRepository) = GetAllSongsPaginated(repo)
 
     @Provides
     fun provideGetAllSongs(repo: MusicRepository) = GetAllSongs(repo)
 
     @Provides
-    fun provideSearchSongs(repo: MusicRepository) = SearchSongs(repo)
+    fun provideSearchSongsPaginated(repo: MusicRepository) = SearchSongs(repo)
 
     @Provides
     fun provideGetPlaylists(repo: MusicRepository) = GetPlaylists(repo)
 
     @Provides
     fun provideAudioFileFetcher(app: Application, songsDao: SongsDao) = AudioFilesFetcher(app, songsDao)
+
+    @Provides
+    fun providePreferenceManager(app: Application) = PreferencesManager(app)
+
+    @Provides
+    fun mediaMapper(): MediaMapper = MediaMapper()
+
+    @Provides
+    fun playerRepositoryImpl(
+        mediaMapper: MediaMapper,
+        coroutineScope: CoroutineScope,
+        controller: Deferred<@JvmSuppressWildcards MediaController>,
+    ): PlayerServiceRepository = PlayerServiceRepositoryImpl(
+        mediaMapper = mediaMapper,
+        coroutineScope = coroutineScope,
+    ).also { playerRepository ->
+        coroutineScope.launch(Dispatchers.Main) {
+            val player = controller.await()
+            playerRepository.connect(
+                player = player, onClose = player::release
+            )
+        }
+    }
+
+    @Provides
+    fun providesCoroutineScope(): CoroutineScope {
+        return CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    }
+
+    @Provides
+    fun provideMediaController(
+        @ApplicationContext context: Context,
+        scope: CoroutineScope
+    ): Deferred<MediaController> {
+        return scope.async(Dispatchers.Main) {
+            val sessionToken = SessionToken(
+                context,
+                ComponentName(
+                    context,
+                    MusicService::class.java
+                )
+            )
+            val controllerFuture: ListenableFuture<MediaController> =
+                MediaController.Builder(context, sessionToken).buildAsync()
+
+            controllerFuture.await()
+        }
+    }
 }

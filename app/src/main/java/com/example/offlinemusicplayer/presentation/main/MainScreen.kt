@@ -1,6 +1,5 @@
 package com.example.offlinemusicplayer.presentation.main
 
-import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,18 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.media3.common.MediaItem
-import androidx.media3.session.MediaController
 import com.example.offlinemusicplayer.presentation.playlist.PlaylistScreen
 import com.example.offlinemusicplayer.presentation.songlist.SongListScreen
 import kotlinx.coroutines.launch
-import java.io.File
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(
-    controller: MediaController?
-) {
+fun MainScreen() {
     val tabs = remember { listOf("Songs", "Playlists") }
     val pagerState = rememberPagerState { tabs.size }
     val scope = rememberCoroutineScope()
@@ -71,19 +65,7 @@ fun MainScreen(
                 .weight(1f)
         ) { page ->
             when (page) {
-                0 -> SongListScreen(
-                    onSongClick = { song ->
-                        controller?.setMediaItem(
-                            MediaItem.fromUri(
-                                Uri.fromFile(
-                                    File(song.path)
-                                )
-                            )
-                        )
-                        controller?.prepare()
-                        controller?.playWhenReady = true
-                    },
-                )
+                0 -> SongListScreen()
                 1 -> PlaylistScreen(
                     onCreatePlaylist = {
 
