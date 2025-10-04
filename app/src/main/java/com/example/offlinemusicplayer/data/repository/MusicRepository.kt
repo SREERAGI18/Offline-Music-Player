@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface MusicRepository {
     fun getAllSongs(): Flow<PagingData<SongsEntity>>
+    fun searchSongs(query: String): Flow<PagingData<SongsEntity>>
     fun getPlaylists(): Flow<List<Playlist>>
     suspend fun insertPlaylist(playlist: Playlist)
 }

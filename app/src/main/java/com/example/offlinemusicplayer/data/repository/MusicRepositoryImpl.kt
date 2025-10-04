@@ -23,6 +23,10 @@ class MusicRepositoryImpl(
         return audioFilesFetcher.getAllSongsPaged()
     }
 
+    override fun searchSongs(query: String): Flow<PagingData<SongsEntity>> {
+        return audioFilesFetcher.searchSongsPaged(query)
+    }
+
     override fun getPlaylists(): Flow<List<Playlist>> =
         playlistDao.getPlaylists().map { list ->
             list.map {

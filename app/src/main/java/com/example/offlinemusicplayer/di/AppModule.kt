@@ -7,6 +7,7 @@ import com.example.offlinemusicplayer.data.repository.MusicRepository
 import com.example.offlinemusicplayer.data.repository.MusicRepositoryImpl
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
 import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
+import com.example.offlinemusicplayer.domain.usecase.SearchSongs
 import com.example.offlinemusicplayer.player.AudioFilesFetcher
 import dagger.Module
 import dagger.Provides
@@ -23,6 +24,9 @@ object AppModule {
 
     @Provides
     fun provideGetAllSongs(repo: MusicRepository) = GetAllSongs(repo)
+
+    @Provides
+    fun provideSearchSongs(repo: MusicRepository) = SearchSongs(repo)
 
     @Provides
     fun provideGetPlaylists(repo: MusicRepository) = GetPlaylists(repo)
