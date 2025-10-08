@@ -13,19 +13,19 @@ import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 
 @Composable
 fun CachedAlbumArt(
-    song: SongsEntity,
+    song: SongsEntity?,
     contentDescription:String,
     contentScale: ContentScale,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val imageUri = song.getContentUri()
+    val imageUri = song?.getContentUri()
 
     val imageRequest = ImageRequest.Builder(context)
-        .data(song.getAlbumArt(context))
+        .data(song?.getAlbumArt(context))
 //        .dispatcher(Dispatchers.IO)
-        .memoryCacheKey(imageUri.path)
-        .diskCacheKey(imageUri.path)
+        .memoryCacheKey(imageUri?.path)
+        .diskCacheKey(imageUri?.path)
         .diskCachePolicy(CachePolicy.ENABLED)
         .memoryCachePolicy(CachePolicy.ENABLED)
         .build()

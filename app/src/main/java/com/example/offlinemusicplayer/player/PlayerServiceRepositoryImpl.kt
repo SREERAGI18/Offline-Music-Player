@@ -1,6 +1,5 @@
 package com.example.offlinemusicplayer.player
 
-import android.net.Uri
 import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -23,7 +22,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.Closeable
-import java.io.File
 import javax.inject.Inject
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
@@ -151,7 +149,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
     private fun updateCurrentMediaItem(player: Player) {
         _currentMedia.value = player.currentMediaItem?.let {
-            mediaMapper.map(it)
+            mediaMapper.mapToSong(it)
         }
         updatePosition()
     }
@@ -348,17 +346,9 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         checkNotClosed()
 
         player.value?.let {
-            it.setMediaItem(getMediaItemFromSong(media))
+            it.setMediaItem(mediaMapper.mapToMediaItem(media))
             updatePosition()
         }
-    }
-
-    private fun getMediaItemFromSong(song: SongsEntity): MediaItem {
-        return  MediaItem.fromUri(
-            Uri.fromFile(
-                File(song.path)
-            )
-        )
     }
 
     /**
@@ -387,13 +377,13 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     override fun addMedia(media: SongsEntity) {
         checkNotClosed()
 
-        player.value?.addMediaItem(getMediaItemFromSong(media))
+        player.value?.addMediaItem(mediaMapper.mapToMediaItem(media))
     }
 
     override fun addMedia(index: Int, media: SongsEntity) {
         checkNotClosed()
 
-        player.value?.addMediaItem(index, getMediaItemFromSong(media))
+        player.value?.addMediaItem(index, mediaMapper.mapToMediaItem(media))
     }
 
     override fun removeMedia(index: Int) {
@@ -418,7 +408,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         checkNotClosed()
 
         return player.value?.getMediaItemAt(index)?.let {
-            mediaMapper.map(it)
+            mediaMapper.mapToSong(it)
         }
     }
 
@@ -464,7 +454,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
                             Log.e(TAG, "DeltaType.INSERT all")
                             player.setMediaItems(
                                 patches.deltas.first().target.lines.map { song ->
-                                    getMediaItemFromSong(song)
+                                    mediaMapper.mapToMediaItem(song)
                                 }
                             )
                         } else {
@@ -481,7 +471,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
                                         player.addMediaItems(
                                             delta.target.position,
                                             delta.target.lines.map { song ->
-                                                getMediaItemFromSong(song)
+                                                mediaMapper.mapToMediaItem(song)
                                             }
                                         )
                                         Log.e(TAG, "DeltaType.INSERT")
@@ -494,7 +484,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
                                         player.addMediaItems(
                                             delta.target.position,
                                             delta.target.lines.map { song ->
-                                                getMediaItemFromSong(song)
+                                                mediaMapper.mapToMediaItem(song)
                                             }
                                         )
                                         Log.e(TAG, "DeltaType.CHANGE")
