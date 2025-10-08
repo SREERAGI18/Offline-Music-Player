@@ -8,7 +8,9 @@ import android.database.Cursor
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.provider.BaseColumns
 import android.provider.MediaStore
+import android.provider.MediaStore.Audio.AudioColumns
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.paging.Pager
@@ -17,6 +19,10 @@ import androidx.paging.PagingData
 import com.example.offlinemusicplayer.data.local.dao.SongsDao
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.model.Song
+import com.example.offlinemusicplayer.util.getIntFromCol
+import com.example.offlinemusicplayer.util.getLongFromCol
+import com.example.offlinemusicplayer.util.getStringFromCol
+import com.example.offlinemusicplayer.util.getStringOrNullFromCol
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -86,14 +92,21 @@ class AudioFilesFetcher(
         }
 
         val projection = arrayOf(
-            MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.DISPLAY_NAME,
-            MediaStore.Audio.Media.ARTIST,
-            MediaStore.Audio.Media.ALBUM,
-            MediaStore.Audio.Media.DURATION,
-            MediaStore.Audio.Media.SIZE,
-            MediaStore.Audio.Media.DATA,
-            MediaStore.Audio.Media.DATE_ADDED
+            BaseColumns._ID,
+            AudioColumns.TITLE,
+            AudioColumns.TRACK,
+            AudioColumns.YEAR,
+            AudioColumns.DURATION,
+            AudioColumns.SIZE,
+            AudioColumns.DATA,
+            AudioColumns.DATE_MODIFIED,
+            AudioColumns.DATE_ADDED,
+            AudioColumns.ALBUM_ID,
+            AudioColumns.ALBUM,
+            AudioColumns.ARTIST_ID,
+            AudioColumns.ARTIST,
+            AudioColumns.COMPOSER,
+            AudioColumns.ALBUM_ARTIST
         )
 
         val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
@@ -120,27 +133,40 @@ class AudioFilesFetcher(
             val batch = mutableListOf<SongsEntity>()
 
             while (cursor.moveToNext()) {
-                val id = cursor.getLong(idColumn)
-                val name = cursor.getString(nameColumn)
-                val artist = cursor.getString(artistColumn)
-                val album = cursor.getString(albumColumn)
-                val duration = cursor.getLong(durationColumn)
-                val size = cursor.getLong(sizeColumn)
-                val path = cursor.getString(dataColumn)
-                val dateAdded = cursor.getLong(dateColumn)
+                val id = cursor.getLongFromCol(AudioColumns._ID)
+                val title = cursor.getStringFromCol(AudioColumns.TITLE)
+                val trackNumber = cursor.getIntFromCol(AudioColumns.TRACK)
+                val year = cursor.getIntFromCol(AudioColumns.YEAR)
+                val duration = cursor.getLongFromCol(AudioColumns.DURATION)
+                val size = cursor.getLongFromCol(AudioColumns.SIZE)
+                val path = cursor.getStringFromCol(MediaStore.Audio.Media.DATA)
+                val dateModified = cursor.getLongFromCol(AudioColumns.DATE_MODIFIED)
+                val dateAdded = cursor.getLongFromCol(AudioColumns.DATE_ADDED)
+                val albumId = cursor.getLongFromCol(AudioColumns.ALBUM_ID)
+                val albumName = cursor.getStringOrNullFromCol(AudioColumns.ALBUM)
+                val artistId = cursor.getLongFromCol(AudioColumns.ARTIST_ID)
+                val artistName = cursor.getStringOrNullFromCol(AudioColumns.ARTIST)
+                val composer = cursor.getStringOrNullFromCol(AudioColumns.COMPOSER)
+                val albumArtist = cursor.getStringOrNullFromCol(MediaStore.Audio.Media.ALBUM_ARTIST)
 
-                Log.e("AudioFilesFetcher", "Song ID: $id, Name: $name, Artist: $artist, Album: $album")
+                Log.e("AudioFilesFetcher", "Song ID: $id, Name: $title, Artist: $artistName, Album: $albumName")
 
                 val entity = SongsEntity(
                     id = id,
-                    title = name,
-                    artist = artist,
-                    album = album,
+                    title = title,
+                    artist = artistName,
+                    album = albumName,
                     duration = duration,
                     size = size,
                     path = path,
                     dateAdded = dateAdded,
-
+                    trackNumber = trackNumber,
+                    year = year,
+                    dateModified = dateModified,
+                    albumId = albumId,
+                    artistId = artistId,
+                    composer = composer,
+                    albumArtist = albumArtist
                 )
 
                 batch.add(entity)

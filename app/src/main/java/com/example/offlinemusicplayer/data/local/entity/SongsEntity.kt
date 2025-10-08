@@ -20,6 +20,13 @@ data class SongsEntity(
     val size: Long,
     val path: String,
     val dateAdded: Long,
+    val trackNumber: Int,
+    val year: Int,
+    val dateModified: Long,
+    val albumId: Long,
+    val artistId: Long,
+    val composer: String?,
+    val albumArtist: String?,
     val lastScanned: Long = System.currentTimeMillis()
 ) {
     fun getContentUri(): Uri {
