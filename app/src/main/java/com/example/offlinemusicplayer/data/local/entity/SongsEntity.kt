@@ -31,12 +31,12 @@ data class SongsEntity(
     }
 
 
-    fun getAlbumArt(context: Context): Bitmap? {
+    fun getAlbumArt(context: Context, size: Size = Size(56, 56)): Bitmap? {
         val uri = getContentUri()
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             try {
-                context.contentResolver.loadThumbnail(uri, Size(56, 56), null)
+                context.contentResolver.loadThumbnail(uri, size, null)
             } catch (e: Exception) {
                 e.printStackTrace()
                 null

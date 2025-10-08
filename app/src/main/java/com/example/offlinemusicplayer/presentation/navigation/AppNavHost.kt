@@ -8,7 +8,6 @@ import androidx.media3.common.MediaItem
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.offlinemusicplayer.player.rememberMusicController
 import com.example.offlinemusicplayer.presentation.main.MainScreen
 import com.example.offlinemusicplayer.presentation.playlist.PlaylistScreen
 import com.example.offlinemusicplayer.presentation.search.SearchScreen

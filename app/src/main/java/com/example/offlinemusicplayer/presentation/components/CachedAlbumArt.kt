@@ -1,5 +1,6 @@
 package com.example.offlinemusicplayer.presentation.components
 
+import android.util.Size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -13,16 +14,17 @@ import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 
 @Composable
 fun CachedAlbumArt(
+    modifier: Modifier = Modifier,
     song: SongsEntity?,
     contentDescription:String,
     contentScale: ContentScale,
-    modifier: Modifier = Modifier
+    thumbnailSize: Size = Size(56, 56),
 ) {
     val context = LocalContext.current
     val imageUri = song?.getContentUri()
 
     val imageRequest = ImageRequest.Builder(context)
-        .data(song?.getAlbumArt(context))
+        .data(song?.getAlbumArt(context = context, size = thumbnailSize))
 //        .dispatcher(Dispatchers.IO)
         .memoryCacheKey(imageUri?.path)
         .diskCacheKey(imageUri?.path)

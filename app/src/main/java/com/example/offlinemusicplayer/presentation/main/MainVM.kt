@@ -23,4 +23,12 @@ class MainVM @Inject constructor(
     fun pause() {
         playerRepository.pause()
     }
+
+    fun skipToPrev() {
+        playerRepository.skipToPreviousMedia()
+    }
+
+    fun skipToNext() {
+        playerRepository.skipToNextMedia()
+    }
 }
