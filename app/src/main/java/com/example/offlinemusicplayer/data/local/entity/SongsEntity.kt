@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Size
+import androidx.core.net.toUri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -35,6 +36,12 @@ data class SongsEntity(
             id
         )
         return contentUri
+    }
+
+    fun getAlbumUri(): Uri {
+        val localUri = "content://media/external/audio/albumart".toUri()
+        val albumUri = ContentUris.withAppendedId(localUri, albumId)
+        return albumUri
     }
 
 

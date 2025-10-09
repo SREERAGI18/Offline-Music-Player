@@ -31,4 +31,16 @@ class MainVM @Inject constructor(
     fun skipToNext() {
         playerRepository.skipToNextMedia()
     }
+
+    fun seekTo(position: Long) {
+        playerRepository.seekToPosition(position)
+    }
+
+    fun fastForwardBy10Secs() {
+        playerRepository.seekForward()
+    }
+
+    fun rewindBy10Secs() {
+        playerRepository.seekBack()
+    }
 }

@@ -18,13 +18,12 @@ fun CachedAlbumArt(
     song: SongsEntity?,
     contentDescription:String,
     contentScale: ContentScale,
-    thumbnailSize: Size = Size(56, 56),
 ) {
     val context = LocalContext.current
-    val imageUri = song?.getContentUri()
+    val imageUri = song?.getAlbumUri()
 
     val imageRequest = ImageRequest.Builder(context)
-        .data(song?.getAlbumArt(context = context, size = thumbnailSize))
+        .data(imageUri)
 //        .dispatcher(Dispatchers.IO)
         .memoryCacheKey(imageUri?.path)
         .diskCacheKey(imageUri?.path)
