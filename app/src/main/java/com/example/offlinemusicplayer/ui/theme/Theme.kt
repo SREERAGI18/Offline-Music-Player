@@ -18,6 +18,7 @@ private val DarkColorScheme = darkColorScheme(
     background = Color.White,
     onBackground = Color.Black,
     onPrimary = Color.White,
+    surfaceVariant = DarkGrey
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -27,6 +28,7 @@ private val LightColorScheme = lightColorScheme(
     background = Color.White,
     onBackground = Color.Black,
     onPrimary = Color.White,
+    surfaceVariant = LightGrey
 )
 
 @Composable

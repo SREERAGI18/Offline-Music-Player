@@ -60,6 +60,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -237,88 +238,65 @@ private fun PlayerControls(
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceAround
         ) {
-            IconButton(
-                onClick = {
-                    viewModel.rewindBy10Secs()
-                },
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-                modifier = Modifier.size(size = 50.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Replay10,
-                    contentDescription = "Rewind by 10 seconds",
-                )
-            }
+            PlayerIconButton(
+                onClick = { viewModel.rewindBy10Secs() },
+                icon = Icons.Filled.Replay10,
+                contentDescription = "Rewind by 10 seconds",
+                modifier = Modifier.size(30.dp)
+            )
 
-            IconButton(
-                onClick = {
-                    viewModel.skipToPrev()
-                },
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-                modifier = Modifier.size(size = 50.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.SkipPrevious,
-                    contentDescription = "Skip to previous",
-                )
-            }
+            PlayerIconButton(
+                onClick = { viewModel.skipToPrev() },
+                icon = Icons.Filled.SkipPrevious,
+                contentDescription = "Skip to previous",
+                modifier = Modifier.size(40.dp)
+            )
 
-            IconButton(
-                onClick = {
-                    if (isPlaying) {
-                        viewModel.pause()
-                    } else {
-                        viewModel.play()
-                    }
-                },
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-                modifier = Modifier.size(size = 50.dp),
-            ) {
-                Icon(
-                    imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                    contentDescription = if (isPlaying) "Pause" else "Play",
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+            PlayerIconButton(
+                onClick = { if (isPlaying) viewModel.pause() else viewModel.play() },
+                icon = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                contentDescription = if (isPlaying) "Pause" else "Play",
+                modifier = Modifier.size(60.dp)
+            )
 
-            IconButton(
-                onClick = {
-                    viewModel.skipToNext()
-                },
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-                modifier = Modifier.size(size = 50.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.SkipNext,
-                    contentDescription = "Skip to next",
-                )
-            }
+            PlayerIconButton(
+                onClick = { viewModel.skipToNext() },
+                icon = Icons.Filled.SkipNext,
+                contentDescription = "Skip to next",
+                modifier = Modifier.size(40.dp)
+            )
 
-            IconButton(
-                onClick = {
-                    viewModel.fastForwardBy10Secs()
-                },
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-                modifier = Modifier.size(size = 50.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Forward10,
-                    contentDescription = "Fast forward by 10 seconds",
-                )
-            }
+            PlayerIconButton(
+                onClick = { viewModel.fastForwardBy10Secs() },
+                icon = Icons.Filled.Forward10,
+                contentDescription = "Fast forward by 10 seconds",
+                modifier = Modifier.size(30.dp)
+            )
         }
+    }
+}
+
+@Composable
+private fun PlayerIconButton(
+    onClick: () -> Unit,
+    icon: ImageVector,
+    contentDescription: String,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        onClick = onClick,
+        colors = IconButtonDefaults.iconButtonColors(
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        ),
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
 

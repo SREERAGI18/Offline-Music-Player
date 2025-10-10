@@ -44,6 +44,18 @@ data class SongsEntity(
         return albumUri
     }
 
+    fun getExistingAlbumUri(context: Context): Uri? {
+        val uri = getAlbumUri()
+        return try {
+            // Try to open an input stream from the URI.
+            // If it succeeds, the file exists. We close it immediately.
+            context.contentResolver.openInputStream(uri)?.close()
+            uri
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 
     fun getAlbumArt(context: Context, size: Size = Size(56, 56)): Bitmap? {
         val uri = getContentUri()

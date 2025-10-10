@@ -45,9 +45,9 @@ fun SongItem(
             contentDescription = "Album art for ${song.title}",
             modifier = Modifier
                 .size(56.dp)
-                .clip(
-                    shape = RoundedCornerShape(8.dp),
-                ),
+                .clip(shape = RoundedCornerShape(8.dp),)
+                .background(color = MaterialTheme.colorScheme.surfaceVariant)
+                .padding(if(song.getExistingAlbumUri(context) == null) 10.dp else 0.dp),
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.width(16.dp))
