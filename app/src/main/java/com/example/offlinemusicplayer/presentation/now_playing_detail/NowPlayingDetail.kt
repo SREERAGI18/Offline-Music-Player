@@ -1,14 +1,17 @@
 package com.example.offlinemusicplayer.presentation.now_playing_detail
 
+import android.util.Log
 import android.util.Size
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,6 +39,8 @@ import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SliderState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -48,6 +53,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +63,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -91,24 +98,36 @@ fun NowPlayingDetail(
             modifier = Modifier
                 .fillMaxSize()
                 .blur(radius = 24.dp),
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.FillHeight,
             contentDescription = ""
         )
         // Add a transparent black tint over the blurred image
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.4f))
+                .background(Color.Black.copy(alpha = 0.7f))
         )
         BottomSheetScaffold(
             scaffoldState = scaffoldState,
-            sheetPeekHeight = if (currentSong != null) 72.dp else 20.dp,
+            sheetPeekHeight = if (scaffoldState.bottomSheetState.hasExpandedState) 72.dp else 10.dp,
             sheetContent = {
                 PlayerControls(viewModel)
             },
             topBar = {
                 TopBar(currentSong, onCollapse)
             },
+            sheetDragHandle = {
+                Box(
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(4.dp)
+                        .background(
+                            color = Color.White.copy(alpha = 0.3f),
+                            shape = CircleShape
+                        )
+                )
+            },
+            sheetShadowElevation = 0.dp,
             sheetContainerColor = Color.Transparent,
         ) {  paddingValues ->
             LyricsView()
@@ -116,6 +135,7 @@ fun NowPlayingDetail(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PlayerControls(
     viewModel: MainVM
@@ -152,15 +172,56 @@ private fun PlayerControls(
                 modifier = Modifier.width(40.dp)
             )
 
+            Spacer(modifier = Modifier.width(8.dp))
+
             Slider(
-                valueRange = 0F..(currentSong?.duration?.toFloat() ?: 0F),
                 value = progress.toFloat(),
-                onValueChange = {},
-                onValueChangeFinished = {
+                valueRange = 0F..(currentSong?.duration?.toFloat() ?: 0F),
+                onValueChange = {
+                    progress = it.toLong()
                     viewModel.seekTo(progress)
+                },
+                track = { sliderState ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(4.dp) // Your desired track height
+                    ) {
+                        // Inactive track (the full background)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    color = Color.White.copy(alpha = 0.3f),
+                                    shape = CircleShape
+                                )
+                        )
+
+                        // Active track (the progress)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(sliderState.value / (currentSong?.duration?.toFloat() ?: 1f))
+                                .fillMaxHeight()
+                                .background(
+                                    color = Color.White,
+                                    shape = CircleShape
+                                )
+                        )
+                    }
+                },
+                thumb = {
+                    SliderDefaults.Thumb(
+                        interactionSource = remember { MutableInteractionSource() },
+                        thumbSize = DpSize(18.dp, 18.dp),
+                        colors = SliderDefaults.colors(
+                            thumbColor = Color.White,
+                        )
+                    )
                 },
                 modifier = Modifier.weight(1f)
             )
+
+            Spacer(modifier = Modifier.width(8.dp))
 
             Text(
                 text = currentSong?.duration.toTimeMmSs(),
@@ -224,6 +285,7 @@ private fun PlayerControls(
                 Icon(
                     imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                     contentDescription = if (isPlaying) "Pause" else "Play",
+                    modifier = Modifier.fillMaxSize()
                 )
             }
 
@@ -296,12 +358,15 @@ private fun TopBar(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Column(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 8.dp)
                 ) {
                     Text(
                         text = song?.title ?: "",
                         style = MaterialTheme.typography.titleSmall.copy(
-                            textAlign = TextAlign.Start
+                            textAlign = TextAlign.Start,
+                            color = MaterialTheme.colorScheme.onPrimary
                         ),
                         maxLines = 1,
                         modifier = Modifier
@@ -311,7 +376,8 @@ private fun TopBar(
                     Text(
                         text = song?.artist ?: "",
                         style = MaterialTheme.typography.bodySmall.copy(
-                            textAlign = TextAlign.Start
+                            textAlign = TextAlign.Start,
+                            color = MaterialTheme.colorScheme.onPrimary
                         ),
                         maxLines = 1,
                         modifier = Modifier

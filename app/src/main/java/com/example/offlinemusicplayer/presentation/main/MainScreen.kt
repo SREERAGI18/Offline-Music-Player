@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,6 +13,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.PrimaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -49,7 +51,12 @@ fun MainScreen() {
 
     if (isSheetVisible && currentSong != null) {
         ModalBottomSheet(
-            onDismissRequest = { isSheetVisible = false },
+            onDismissRequest = {
+                scope.launch {
+                    sheetState.hide()
+                    isSheetVisible = false
+                }
+            },
             sheetState = sheetState,
             containerColor = MaterialTheme.colorScheme.surface,
             dragHandle = null,
@@ -58,7 +65,10 @@ fun MainScreen() {
             NowPlayingDetail(
                 viewModel = viewModel,
                 onCollapse = {
-                    isSheetVisible = false
+                    scope.launch {
+                        sheetState.hide()
+                        isSheetVisible = false
+                    }
                 }
             )
         }
@@ -76,8 +86,10 @@ fun MainScreen() {
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 indicator = { tabPositions ->
-                    PrimaryIndicator(
-                        modifier = Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
+                    TabRowDefaults.SecondaryIndicator(
+                        modifier = Modifier
+                            .tabIndicatorOffset(tabPositions[pagerState.currentPage])
+                            .fillMaxWidth(),
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
@@ -96,7 +108,6 @@ fun MainScreen() {
                                 style = MaterialTheme.typography.titleSmall
                             )
                         },
-                        modifier = Modifier.weight(1f),
                     )
                 }
             }
@@ -121,7 +132,12 @@ fun MainScreen() {
         if (currentSong != null && sheetState.currentValue == SheetValue.Hidden) {
             NowPlayingBar(
                 viewModel = viewModel,
-                onClick = { isSheetVisible = true },
+                onClick = {
+                    scope.launch {
+                        isSheetVisible = true
+                        sheetState.expand()
+                    }
+                },
             )
         }
     }

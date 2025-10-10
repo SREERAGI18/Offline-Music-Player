@@ -24,19 +24,19 @@ class SongListVM @Inject constructor(
 
     val songs: Flow<PagingData<SongsEntity>> = getAllSongsPaginated()
 
-    fun setMediaList() {
+    fun setMediaList(initialSongPosition:Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val songs = getAllSongs()
             Log.e("SongListVM", "songs: $songs")
             withContext(Dispatchers.Main) {
-                playerRepository.setMediaList(songs)
+                playerRepository.setMediaList(mediaList = songs, index = initialSongPosition)
             }
         }
     }
 
     fun playSong(index: Int) {
         if(playerRepository.getMediaList().isEmpty()) {
-            setMediaList()
+            setMediaList(index)
         }
         playerRepository.skipToMediaByIndex(index)
         playerRepository.play()

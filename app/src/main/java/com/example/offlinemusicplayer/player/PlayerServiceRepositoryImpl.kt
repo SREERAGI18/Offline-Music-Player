@@ -504,9 +504,9 @@ class PlayerServiceRepositoryImpl @Inject constructor(
                         prepare()
                     }
                 }
-                Log.e(TAG, "CurrentPlayingMediaList: ${newItems.map {med ->
-                    med.artist + "\n"
-                }}")
+//                Log.e(TAG, "CurrentPlayingMediaList: ${newItems.map {med ->
+//                    med.artist + "\n"
+//                }}")
                 oldItems = newItems
             }
         }

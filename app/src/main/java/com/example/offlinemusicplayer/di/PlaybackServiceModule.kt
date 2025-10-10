@@ -2,6 +2,7 @@ package com.example.offlinemusicplayer.di
 
 import android.app.PendingIntent
 import android.app.Service
+import android.content.ComponentName
 import android.content.Context
 import androidx.annotation.OptIn
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -26,19 +27,31 @@ import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.extractor.DefaultExtractorsFactory
 import androidx.media3.extractor.ExtractorsFactory
+import androidx.media3.session.MediaController
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
+import androidx.media3.session.SessionToken
 import com.example.offlinemusicplayer.player.MediaSessionCallback
+import com.example.offlinemusicplayer.player.MusicService
+import com.example.offlinemusicplayer.player.PlayerServiceRepository
+import com.example.offlinemusicplayer.player.PlayerServiceRepositoryImpl
+import com.example.offlinemusicplayer.player.mapper.MediaMapper
+import com.google.common.util.concurrent.ListenableFuture
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.guava.await
+import kotlinx.coroutines.launch
+import javax.inject.Singleton
 
 @OptIn(UnstableApi::class)
 @Module
@@ -136,35 +149,21 @@ object PlaybackServiceModule {
     @Provides
     fun player(
         exoPlayer: ExoPlayer
-    ): Player =
-        ForwardingPlayer(exoPlayer)
+    ): Player = ForwardingPlayer(exoPlayer)
 
+    @OptIn(UnstableApi::class)
     @Provides
-    fun serviceCoroutineScope(
-        service: Service
-    ): CoroutineScope {
-        return CoroutineScope(SupervisorJob() + Dispatchers.Default).also {
-            (service as LifecycleOwner).lifecycle.addObserver(object : DefaultLifecycleObserver {
-                override fun onStop(owner: LifecycleOwner) {
-                    it.cancel()
-                }
-            })
-        }
-    }
-
-//    @OptIn(UnstableApi::class)
-//    @Provides
-//    fun sessionCallback(
-//        service: Service,
-//        context: Context,
-//        coroutineScope: CoroutineScope
-//    ): MediaSession.Callback =
-//        AutomotiveMedia3SessionCallback(
+    fun sessionCallback(
+        service: Service,
+        @ApplicationContext context: Context,
+        coroutineScope: CoroutineScope
+    ): MediaSession.Callback =
+        MediaSessionCallback(
 //            browseTree = Media3BrowseTree.getInstance(context),
 //            sharedPreferenceManager = sharedPreferenceManager,
 //            kukuAutomotiveApiService = apiService,
 //            coroutineScope = coroutineScope
-//        )
+        )
 
 
     @Provides
