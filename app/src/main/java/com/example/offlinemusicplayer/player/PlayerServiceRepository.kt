@@ -1,9 +1,9 @@
 package com.example.offlinemusicplayer.player
 
 import androidx.media3.common.Player
-import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.model.Command
 import com.example.offlinemusicplayer.domain.model.PlayerState
+import com.example.offlinemusicplayer.domain.model.Song
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
 
@@ -30,14 +30,14 @@ interface PlayerServiceRepository {
     val currentState: StateFlow<PlayerState>
 
     /**
-     * Returns the current [SongsEntity] playing, or that would play when player starts playing.
+     * Returns the current [com.example.offlinemusicplayer.domain.model.Song] playing, or that would play when player starts playing.
      */
-    val currentMedia: StateFlow<SongsEntity?>
+    val currentMedia: StateFlow<Song?>
 
     val mediaPosition: StateFlow<Long?>
 
     /**
-     * Returns the current value for shuffling of [SongsEntity] mode.
+     * Returns the current value for shuffling of [Song] mode.
      */
     val shuffleModeEnabled: StateFlow<Boolean>
 
@@ -77,27 +77,27 @@ interface PlayerServiceRepository {
     fun stop()
 
     /**
-     * Returns whether a previous [SongsEntity] exists.
+     * Returns whether a previous [Song] exists.
      */
     fun hasPreviousMedia(): Boolean
 
     /**
-     * Skips to the default position of previous [SongsEntity].
+     * Skips to the default position of previous [Song].
      */
     fun skipToPreviousMedia()
 
     /**
-     * Skips to specific position [Int] from the playlist [SongsEntity].
+     * Skips to specific position [Int] from the playlist [Song].
      */
     fun skipToMediaByIndex(index: Int)
 
     /**
-     * Returns whether a next [SongsEntity] exists.
+     * Returns whether a next [Song] exists.
      */
     fun hasNextMedia(): Boolean
 
     /**
-     * Skips to the default position of next [SongsEntity].
+     * Skips to the default position of next [Song].
      */
     fun skipToNextMedia()
 
@@ -119,58 +119,58 @@ interface PlayerServiceRepository {
     fun seekToPosition(seekPosition:Long)
 
     /**
-     * Sets whether shuffling of [SongsEntity] is enabled.
+     * Sets whether shuffling of [Song] is enabled.
      */
     fun setShuffleModeEnabled(shuffleModeEnabled: Boolean)
 
     /**
-     * Clears the playlist, adds the specified [SongsEntity] and resets the position to
+     * Clears the playlist, adds the specified [Song] and resets the position to
      * the default position.
      */
-    fun setMedia(media: SongsEntity)
+    fun setMedia(media: Song)
 
     /**
-     * Clears the playlist, adds the specified [SongsEntity] list and resets the position to
+     * Clears the playlist, adds the specified [Song] list and resets the position to
      * the default position.
      *
-     * @param mediaList The new [SongsEntity] list.
+     * @param mediaList The new [Song] list.
      */
-    fun setMediaList(mediaList: List<SongsEntity>)
+    fun setMediaList(mediaList: List<Song>)
 
     /**
-     * Clears the playlist, adds the specified [SongsEntity] list and resets the position to
+     * Clears the playlist, adds the specified [Song] list and resets the position to
      * the provided position.
      *
-     * @param mediaList The new [SongsEntity] list.
-     * @param index The [SongsEntity] index to start playback from
+     * @param mediaList The new [Song] list.
+     * @param index The [Song] index to start playback from
      * @param position The position to start playback from.
      */
 
-    fun setMediaList(mediaList: List<SongsEntity>, index: Int, position: Duration? = null)
+    fun setMediaList(mediaList: List<Song>, index: Int, position: Duration? = null)
 
     /**
      * returns a list of current playing playlist.
      */
-    fun getMediaList():List<SongsEntity>
+    fun getMediaList():List<Song>
 
     /**
-     * Adds a [SongsEntity] to the end of the playlist.
+     * Adds a [Song] to the end of the playlist.
      */
-    fun addMedia(media: SongsEntity)
+    fun addMedia(media: Song)
 
     /**
-     * Adds a [SongsEntity] at the given index of the playlist.
+     * Adds a [Song] at the given index of the playlist.
      *
-     * @param index The index at which to add the [SongsEntity]. If the index is larger than the size
+     * @param index The index at which to add the [Song]. If the index is larger than the size
      * of the playlist, the media is added to the end of the playlist.
-     * @param media The [SongsEntity] to add.
+     * @param media The [Song] to add.
      */
-    fun addMedia(index: Int, media: SongsEntity)
+    fun addMedia(index: Int, media: Song)
 
     /**
-     * Removes the [SongsEntity] at the given index of the playlist.
+     * Removes the [Song] at the given index of the playlist.
      *
-     * @param index The index at which to remove the [SongsEntity].
+     * @param index The index at which to remove the [Song].
      */
     fun removeMedia(index: Int)
 
@@ -180,17 +180,17 @@ interface PlayerServiceRepository {
     fun clearMediaList()
 
     /**
-     * Returns the number of [SongsEntity] in the playlist.
+     * Returns the number of [Song] in the playlist.
      */
     fun getMediaCount(): Int
 
     /**
-     * Returns the [SongsEntity] at the given index.
+     * Returns the [Song] at the given index.
      */
-    fun getMediaAt(index: Int): SongsEntity?
+    fun getMediaAt(index: Int): Song?
 
     /**
-     * Returns the index of the current [SongsEntity].
+     * Returns the index of the current [Song].
      */
     fun getCurrentMediaIndex(): Int
 

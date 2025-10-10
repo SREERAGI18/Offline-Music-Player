@@ -1,7 +1,7 @@
 package com.example.offlinemusicplayer.domain.usecase
 
-import com.example.offlinemusicplayer.data.repository.MusicRepository
+import com.example.offlinemusicplayer.data.repository.SongsRepository
 
-class GetAllSongsPaginated(private val repo: MusicRepository) {
+class GetAllSongsPaginated(private val repo: SongsRepository) {
     operator fun invoke() = repo.getAllSongsPaginated()
 }

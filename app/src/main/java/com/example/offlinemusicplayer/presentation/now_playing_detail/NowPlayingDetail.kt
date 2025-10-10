@@ -71,6 +71,7 @@ import coil3.compose.AsyncImage
 import com.example.offlinemusicplayer.R
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.model.PlayerState
+import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.CachedAlbumArt
 import com.example.offlinemusicplayer.presentation.components.LyricsView
 import com.example.offlinemusicplayer.presentation.main.MainVM
@@ -303,7 +304,7 @@ private fun PlayerIconButton(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
-    song: SongsEntity?,
+    song: Song?,
     onCollapse: () -> Unit
 ) {
     TopAppBar(

@@ -11,11 +11,12 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import com.example.offlinemusicplayer.R
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
+import com.example.offlinemusicplayer.domain.model.Song
 
 @Composable
 fun CachedAlbumArt(
     modifier: Modifier = Modifier,
-    song: SongsEntity?,
+    song: Song?,
     contentDescription:String,
     contentScale: ContentScale,
 ) {

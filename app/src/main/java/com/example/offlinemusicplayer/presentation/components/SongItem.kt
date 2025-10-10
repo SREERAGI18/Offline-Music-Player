@@ -21,11 +21,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
+import com.example.offlinemusicplayer.domain.model.Song
 
 @Composable
 fun SongItem(
-    song: SongsEntity,
-    onSongClick: (SongsEntity) -> Unit,
+    song: Song,
+    onSongClick: (Song) -> Unit,
 ) {
     val context = LocalContext.current
 

@@ -10,6 +10,7 @@ import android.util.Size
 import androidx.core.net.toUri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.offlinemusicplayer.domain.model.Song
 
 @Entity(tableName = "songs")
 data class SongsEntity(
@@ -30,31 +31,32 @@ data class SongsEntity(
     val albumArtist: String?,
     val lastScanned: Long = System.currentTimeMillis()
 ) {
+
+    fun toSong(): Song {
+        return Song(
+            id = id,
+            title = title,
+            artist = artist,
+            album = album,
+            duration = duration,
+            path = path,
+            albumId = albumId,
+            size = size,
+            dateAdded = dateAdded,
+            trackNumber = trackNumber,
+            year = year,
+            dateModified = dateModified,
+            artistId = artistId,
+            composer = composer,
+            albumArtist = albumArtist
+        )
+    }
     fun getContentUri(): Uri {
         val contentUri = ContentUris.withAppendedId(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
             id
         )
         return contentUri
-    }
-
-    fun getAlbumUri(): Uri {
-        val localUri = "content://media/external/audio/albumart".toUri()
-        val albumUri = ContentUris.withAppendedId(localUri, albumId)
-        return albumUri
-    }
-
-    fun getExistingAlbumUri(context: Context): Uri? {
-        val uri = getAlbumUri()
-        return try {
-            // Try to open an input stream from the URI.
-            // If it succeeds, the file exists. We close it immediately.
-            context.contentResolver.openInputStream(uri)?.close()
-            uri
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
     }
 
     fun getAlbumArt(context: Context, size: Size = Size(56, 56)): Bitmap? {

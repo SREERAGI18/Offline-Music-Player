@@ -7,8 +7,10 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.offlinemusicplayer.data.local.dao.PlaylistDao
 import com.example.offlinemusicplayer.data.local.dao.SongsDao
-import com.example.offlinemusicplayer.data.repository.MusicRepository
-import com.example.offlinemusicplayer.data.repository.MusicRepositoryImpl
+import com.example.offlinemusicplayer.data.repository.PlaylistRepository
+import com.example.offlinemusicplayer.data.repository.PlaylistRepositoryImpl
+import com.example.offlinemusicplayer.data.repository.SongsRepository
+import com.example.offlinemusicplayer.data.repository.SongsRepositoryImpl
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongsPaginated
 import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
@@ -38,30 +40,31 @@ import kotlinx.coroutines.launch
 object AppModule {
 
     @Provides
-    fun provideRepository(
-        app: Application,
-        playlistDao: PlaylistDao,
+    fun provideSongsRepository(
         songsDao: SongsDao,
         audioFilesFetcher: AudioFilesFetcher
-    ): MusicRepository =
-        MusicRepositoryImpl(
-            context = app,
-            playlistDao = playlistDao,
+    ): SongsRepository =
+        SongsRepositoryImpl(
             songsDao = songsDao,
             audioFilesFetcher = audioFilesFetcher
         )
 
     @Provides
-    fun provideGetAllSongsPaginated(repo: MusicRepository) = GetAllSongsPaginated(repo)
+    fun providePlaylistRepository(
+        playlistDao: PlaylistDao,
+    ): PlaylistRepository = PlaylistRepositoryImpl(playlistDao = playlistDao)
 
     @Provides
-    fun provideGetAllSongs(repo: MusicRepository) = GetAllSongs(repo)
+    fun provideGetAllSongsPaginated(repo: SongsRepository) = GetAllSongsPaginated(repo)
 
     @Provides
-    fun provideSearchSongsPaginated(repo: MusicRepository) = SearchSongs(repo)
+    fun provideGetAllSongs(repo: SongsRepository) = GetAllSongs(repo)
 
     @Provides
-    fun provideGetPlaylists(repo: MusicRepository) = GetPlaylists(repo)
+    fun provideSearchSongsPaginated(repo: SongsRepository) = SearchSongs(repo)
+
+    @Provides
+    fun provideGetPlaylists(repo: PlaylistRepository) = GetPlaylists(repo)
 
     @Provides
     fun provideAudioFileFetcher(app: Application, songsDao: SongsDao) = AudioFilesFetcher(app, songsDao)

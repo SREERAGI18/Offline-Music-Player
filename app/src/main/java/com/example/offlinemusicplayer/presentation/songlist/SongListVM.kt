@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
+import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongsPaginated
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
@@ -22,7 +23,7 @@ class SongListVM @Inject constructor(
     private val playerRepository: PlayerServiceRepository,
 ) : ViewModel() {
 
-    val songs: Flow<PagingData<SongsEntity>> = getAllSongsPaginated()
+    val songs: Flow<PagingData<Song>> = getAllSongsPaginated()
 
     fun setMediaList(initialSongPosition:Int) {
         viewModelScope.launch(Dispatchers.IO) {

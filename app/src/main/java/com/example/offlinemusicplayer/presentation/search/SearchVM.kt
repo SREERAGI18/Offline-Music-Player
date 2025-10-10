@@ -3,6 +3,7 @@ package com.example.offlinemusicplayer.presentation.search
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagingData
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
+import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.SearchSongs
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +26,7 @@ class SearchVM @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    val songs: Flow<PagingData<SongsEntity>> = searchQuery
+    val songs: Flow<PagingData<Song>> = searchQuery
         .debounce(300L)
         .flatMapLatest { query ->
             searchSongs(query)
@@ -35,7 +36,7 @@ class SearchVM @Inject constructor(
         _searchQuery.value = query
     }
 
-    fun setPlayerList(songList: List<SongsEntity>) {
+    fun setPlayerList(songList: List<Song>) {
         playerRepository.setMediaList(songList)
     }
 

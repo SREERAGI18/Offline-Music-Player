@@ -13,11 +13,12 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
+import com.example.offlinemusicplayer.domain.model.Song
 
 @Composable
 fun SongsList(
-    songs: LazyPagingItems<SongsEntity>,
-    onSongClick: (SongsEntity, Int) -> Unit,
+    songs: LazyPagingItems<Song>,
+    onSongClick: (Song, Int) -> Unit,
 ) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {

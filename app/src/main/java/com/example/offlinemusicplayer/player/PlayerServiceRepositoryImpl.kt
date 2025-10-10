@@ -5,9 +5,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
-import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.model.Command
 import com.example.offlinemusicplayer.domain.model.PlayerState
+import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.player.mapper.MediaMapper
 import com.example.offlinemusicplayer.player.mapper.PlayerStateMapper
 import com.example.offlinemusicplayer.player.mapper.SetCommandMapper
@@ -60,8 +60,8 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     /**
      * The current media playing, or that would play when user hit play.
      */
-    private var _currentMedia = MutableStateFlow<SongsEntity?>(null)
-    override val currentMedia: StateFlow<SongsEntity?> get() = _currentMedia
+    private var _currentMedia = MutableStateFlow<Song?>(null)
+    override val currentMedia: StateFlow<Song?> get() = _currentMedia
 
     private var _shuffleModeEnabled = MutableStateFlow(false)
     override val shuffleModeEnabled: StateFlow<Boolean> get() = _shuffleModeEnabled
@@ -79,7 +79,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
     private var mediaIndexToSeekTo: Int? = null
 
-    private val playingMediaFlow: MutableStateFlow<List<SongsEntity>> = MutableStateFlow(listOf())
+    private val playingMediaFlow: MutableStateFlow<List<Song>> = MutableStateFlow(listOf())
 
     init {
         observePlaylist()
@@ -342,7 +342,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
      * This operation will stop the current MediaItem that is playing, if there is one, as per
      * [Player.setMediaItem].
      */
-    override fun setMedia(media: SongsEntity) {
+    override fun setMedia(media: Song) {
         checkNotClosed()
 
         player.value?.let {
@@ -355,32 +355,32 @@ class PlayerServiceRepositoryImpl @Inject constructor(
      * This operation will stop the current [MediaItem] that is playing, if there is one, as per
      * [Player.setMediaItems].
      */
-    override fun setMediaList(mediaList: List<SongsEntity>) {
+    override fun setMediaList(mediaList: List<Song>) {
         checkNotClosed()
 
         playingMediaFlow.value = mediaList
     }
 
-    override fun getMediaList(): List<SongsEntity> {
+    override fun getMediaList(): List<Song> {
         checkNotClosed()
 
         return playingMediaFlow.value
     }
 
-    override fun setMediaList(mediaList: List<SongsEntity>, index: Int, position: Duration?) {
+    override fun setMediaList(mediaList: List<Song>, index: Int, position: Duration?) {
         checkNotClosed()
 
         playingMediaFlow.value = mediaList
         mediaIndexToSeekTo = index
     }
 
-    override fun addMedia(media: SongsEntity) {
+    override fun addMedia(media: Song) {
         checkNotClosed()
 
         player.value?.addMediaItem(mediaMapper.mapToMediaItem(media))
     }
 
-    override fun addMedia(index: Int, media: SongsEntity) {
+    override fun addMedia(index: Int, media: Song) {
         checkNotClosed()
 
         player.value?.addMediaItem(index, mediaMapper.mapToMediaItem(media))
@@ -404,7 +404,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         return player.value?.mediaItemCount ?: 0
     }
 
-    override fun getMediaAt(index: Int): SongsEntity? {
+    override fun getMediaAt(index: Int): Song? {
         checkNotClosed()
 
         return player.value?.getMediaItemAt(index)?.let {
@@ -440,7 +440,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
     private fun observePlaylist() {
         coroutineScope.launch {
-            var oldItems:List<SongsEntity> = emptyList()
+            var oldItems:List<Song> = emptyList()
             playingMediaFlow.collect {
                 val newItems = it
                 val patches = withContext(Dispatchers.IO) {

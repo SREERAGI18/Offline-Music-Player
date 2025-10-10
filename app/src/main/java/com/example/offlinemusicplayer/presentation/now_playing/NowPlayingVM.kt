@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.model.PlayerState
+import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -18,7 +19,7 @@ class NowPlayingVM @Inject constructor(
 ): ViewModel() {
 
     val currentPlayerState: StateFlow<PlayerState> = playerRepository.currentState
-    val currentMedia: StateFlow<SongsEntity?> = playerRepository.currentMedia
+    val currentMedia: StateFlow<Song?> = playerRepository.currentMedia
     val mediaPosition: StateFlow<Long?> = playerRepository.mediaPosition
     val player: StateFlow<Player?> = playerRepository.player
 
@@ -65,7 +66,7 @@ class NowPlayingVM @Inject constructor(
         return playerRepository.getDuration()
     }
 
-    fun getCurrentPlaylist():List<SongsEntity> {
+    fun getCurrentPlaylist():List<Song> {
         return playerRepository.getMediaList()
     }
 

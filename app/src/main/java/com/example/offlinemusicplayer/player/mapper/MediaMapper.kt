@@ -4,18 +4,18 @@ import android.os.Bundle
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import com.example.offlinemusicplayer.data.local.entity.SongsEntity
+import com.example.offlinemusicplayer.domain.model.Song
 
 class MediaMapper {
 
     fun mapToSong(
         mediaItem: MediaItem,
         defaultArtist: String = "<Unknown>"
-    ): SongsEntity {
+    ): Song {
         val metadata = mediaItem.mediaMetadata
         val extras = metadata.extras ?: Bundle.EMPTY
 
-        return SongsEntity(
+        return Song(
             id = mediaItem.mediaId.toLongOrNull() ?: 0,
             path = mediaItem.localConfiguration?.uri?.toString() ?: "",
             title = metadata.title?.toString() ?: "",
@@ -31,12 +31,11 @@ class MediaMapper {
             artistId = extras.getLong("artistId", 0L),
             composer = extras.getString("composer"),
             albumArtist = extras.getString("albumArtist"),
-            lastScanned = System.currentTimeMillis()
         )
     }
 
     fun mapToMediaItem(
-        songsEntity: SongsEntity
+        songsEntity: Song
     ): MediaItem {
         val metadata = MediaMetadata.Builder()
             .setTitle(songsEntity.title)
