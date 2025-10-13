@@ -3,6 +3,7 @@ package com.example.offlinemusicplayer.player
 import androidx.media3.common.Player
 import com.example.offlinemusicplayer.domain.model.Command
 import com.example.offlinemusicplayer.domain.model.PlayerState
+import com.example.offlinemusicplayer.domain.model.RepeatMode
 import com.example.offlinemusicplayer.domain.model.Song
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
@@ -40,6 +41,11 @@ interface PlayerServiceRepository {
      * Returns the current value for shuffling of [Song] mode.
      */
     val shuffleModeEnabled: StateFlow<Boolean>
+
+    /**
+     * Returns the current value for repeat mode.
+     */
+    val repeatMode: StateFlow<RepeatMode>
 
     /**
      * Returns the [seekBack] increment.
@@ -122,6 +128,11 @@ interface PlayerServiceRepository {
      * Sets whether shuffling of [Song] is enabled.
      */
     fun setShuffleModeEnabled(shuffleModeEnabled: Boolean)
+
+    /**
+     * Sets the repeat mode.
+     */
+    fun setRepeatMode(repeatMode: RepeatMode)
 
     /**
      * Clears the playlist, adds the specified [Song] and resets the position to

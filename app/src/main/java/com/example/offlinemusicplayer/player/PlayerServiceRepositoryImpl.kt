@@ -7,9 +7,11 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import com.example.offlinemusicplayer.domain.model.Command
 import com.example.offlinemusicplayer.domain.model.PlayerState
+import com.example.offlinemusicplayer.domain.model.RepeatMode
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.player.mapper.MediaMapper
 import com.example.offlinemusicplayer.player.mapper.PlayerStateMapper
+import com.example.offlinemusicplayer.player.mapper.RepeatModeMapper
 import com.example.offlinemusicplayer.player.mapper.SetCommandMapper
 import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
@@ -66,6 +68,9 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     private var _shuffleModeEnabled = MutableStateFlow(false)
     override val shuffleModeEnabled: StateFlow<Boolean> get() = _shuffleModeEnabled
 
+    private var _repeatMode = MutableStateFlow(RepeatMode.ALL)
+    override val repeatMode: StateFlow<RepeatMode> get() = _repeatMode
+
     /**
      * The current playback speed relative to 1.0.
      */
@@ -91,6 +96,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
             Player.EVENT_AVAILABLE_COMMANDS_CHANGED to ::updateAvailableCommands,
             Player.EVENT_MEDIA_ITEM_TRANSITION to ::updateCurrentMediaItem,
             Player.EVENT_SHUFFLE_MODE_ENABLED_CHANGED to ::updateShuffleMode,
+            Player.EVENT_REPEAT_MODE_CHANGED to ::updateRepeatMode,
             Player.EVENT_PLAYBACK_PARAMETERS_CHANGED to ::updatePlaybackSpeed,
             Player.EVENT_SEEK_BACK_INCREMENT_CHANGED to ::updateSeekBackIncrement,
             Player.EVENT_SEEK_FORWARD_INCREMENT_CHANGED to ::updateSeekForwardIncrement,
@@ -145,6 +151,10 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
     private fun updateShuffleMode(player: Player) {
         _shuffleModeEnabled.value = player.shuffleModeEnabled
+    }
+
+    private fun updateRepeatMode(player: Player) {
+        _repeatMode.value = RepeatModeMapper.map(player)
     }
 
     private fun updateCurrentMediaItem(player: Player) {
@@ -207,6 +217,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         updateCurrentMediaItem(player)
         updateAvailableCommands(player)
         updateShuffleMode(player)
+        updateRepeatMode(player)
         updateState(player)
         updatePlaybackSpeed(player)
         updateSeekBackIncrement(player)
@@ -336,6 +347,12 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         checkNotClosed()
 
         player.value?.shuffleModeEnabled = shuffleModeEnabled
+    }
+
+    override fun setRepeatMode(repeatMode: RepeatMode) {
+        checkNotClosed()
+
+        player.value?.repeatMode = RepeatModeMapper.map(repeatMode)
     }
 
     /**

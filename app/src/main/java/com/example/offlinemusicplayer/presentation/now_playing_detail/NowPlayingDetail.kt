@@ -25,7 +25,11 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Forward10
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.RepeatOn
+import androidx.compose.material.icons.filled.RepeatOne
 import androidx.compose.material.icons.filled.Replay10
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.BottomSheetScaffold
@@ -71,6 +75,7 @@ import coil3.compose.AsyncImage
 import com.example.offlinemusicplayer.R
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.model.PlayerState
+import com.example.offlinemusicplayer.domain.model.RepeatMode
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.CachedAlbumArt
 import com.example.offlinemusicplayer.presentation.components.LyricsView
@@ -146,6 +151,8 @@ private fun PlayerControls(
     val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()
     val currentPosition by viewModel.currentMediaPosition.collectAsStateWithLifecycle()
     val playerState by viewModel.playerState.collectAsStateWithLifecycle()
+    val shuffleModeEnabled by viewModel.shuffleModeEnabled.collectAsStateWithLifecycle()
+    val repeatMode by viewModel.repeatMode.collectAsStateWithLifecycle()
 
     val isPlaying = playerState == PlayerState.Playing
 
@@ -241,6 +248,30 @@ private fun PlayerControls(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround
         ) {
+            val repeatModeIcon = when (repeatMode) {
+                RepeatMode.ONE -> Icons.Filled.RepeatOne
+                RepeatMode.ALL -> Icons.Filled.Repeat
+                RepeatMode.OFF -> Icons.Filled.Repeat
+            }
+            val repeatModeIconColor = if (repeatMode == RepeatMode.OFF) {
+                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+            } else {
+                MaterialTheme.colorScheme.onPrimary
+            }
+
+            val shuffleModeIconColor = if (shuffleModeEnabled) {
+                MaterialTheme.colorScheme.onPrimary
+            } else {
+                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+            }
+            PlayerIconButton(
+                onClick = { viewModel.toggleRepeatMode() },
+                icon = repeatModeIcon,
+                contentDescription = "Current repeat mode",
+                contentColor = repeatModeIconColor,
+                modifier = Modifier.size(25.dp)
+            )
+
             PlayerIconButton(
                 onClick = { viewModel.rewindBy10Secs() },
                 icon = Icons.Filled.Replay10,
@@ -275,22 +306,33 @@ private fun PlayerControls(
                 contentDescription = "Fast forward by 10 seconds",
                 modifier = Modifier.size(30.dp)
             )
+
+            PlayerIconButton(
+                onClick = { viewModel.toggleShuffleMode() },
+                icon = Icons.Filled.Shuffle,
+                contentColor = shuffleModeIconColor,
+                contentDescription = "Fast forward by 10 seconds",
+                modifier = Modifier.size(25.dp)
+            )
         }
     }
 }
 
 @Composable
 private fun PlayerIconButton(
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
     icon: ImageVector,
     contentDescription: String,
-    modifier: Modifier = Modifier
+    contentColor: Color = MaterialTheme.colorScheme.onPrimary,
+    enabled: Boolean = true
 ) {
     IconButton(
         onClick = onClick,
         colors = IconButtonDefaults.iconButtonColors(
-            contentColor = MaterialTheme.colorScheme.onPrimary
+            contentColor = contentColor
         ),
+        enabled = enabled,
         modifier = modifier
     ) {
         Icon(

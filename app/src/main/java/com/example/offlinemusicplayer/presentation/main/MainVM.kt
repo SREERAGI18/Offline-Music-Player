@@ -16,6 +16,10 @@ class MainVM @Inject constructor(
 
     val currentMediaPosition = playerRepository.mediaPosition
 
+    val shuffleModeEnabled = playerRepository.shuffleModeEnabled
+
+    val repeatMode = playerRepository.repeatMode
+
     fun play() {
         playerRepository.play()
     }
@@ -42,5 +46,14 @@ class MainVM @Inject constructor(
 
     fun rewindBy10Secs() {
         playerRepository.seekBack()
+    }
+
+    fun toggleShuffleMode() {
+        playerRepository.setShuffleModeEnabled(!shuffleModeEnabled.value)
+    }
+
+    fun toggleRepeatMode() {
+        val nextRepeatMode = repeatMode.value.nextRepeatMode()
+        playerRepository.setRepeatMode(nextRepeatMode)
     }
 }
