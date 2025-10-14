@@ -22,4 +22,9 @@ data class PlaylistEntity(
             songIds = songIdList
         )
     }
+
+    companion object {
+        const val RECENTLY_ADDED_PLAYLIST_NAME = "Recently Added"
+        const val RECENTLY_PLAYED_PLAYLIST_NAME = "Recently Played"
+    }
 }

@@ -120,11 +120,7 @@ fun MainScreen() {
             ) { page ->
                 when (page) {
                     0 -> SongListScreen()
-                    1 -> PlaylistScreen(
-                        onCreatePlaylist = {
-
-                        }
-                    )
+                    1 -> PlaylistScreen()
                 }
             }
         }

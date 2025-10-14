@@ -41,9 +41,7 @@ fun AppNavHost(
         }
 
         composable(Screens.Playlist.route) {
-            PlaylistScreen(
-                onCreatePlaylist = { /* insert into DB */ }
-            )
+            PlaylistScreen()
         }
     }
 }

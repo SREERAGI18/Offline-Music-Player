@@ -24,7 +24,8 @@ data class Song(
     val dateModified: Long,
     val artistId: Long,
     val composer: String?,
-    val albumArtist: String?
+    val albumArtist: String?,
+    var selected: Boolean = false,
 ) {
     fun toSongsEntity(): SongsEntity {
         return SongsEntity(

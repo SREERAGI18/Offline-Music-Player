@@ -25,13 +25,14 @@ import com.example.offlinemusicplayer.domain.model.Song
 
 @Composable
 fun SongItem(
+    modifier: Modifier = Modifier,
     song: Song,
     onSongClick: (Song) -> Unit,
 ) {
     val context = LocalContext.current
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
             .clickable {

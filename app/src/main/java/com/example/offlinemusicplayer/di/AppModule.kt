@@ -11,6 +11,7 @@ import com.example.offlinemusicplayer.data.repository.PlaylistRepository
 import com.example.offlinemusicplayer.data.repository.PlaylistRepositoryImpl
 import com.example.offlinemusicplayer.data.repository.SongsRepository
 import com.example.offlinemusicplayer.data.repository.SongsRepositoryImpl
+import com.example.offlinemusicplayer.domain.usecase.CreatePlaylist
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongsPaginated
 import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
@@ -65,6 +66,9 @@ object AppModule {
 
     @Provides
     fun provideGetPlaylists(repo: PlaylistRepository) = GetPlaylists(repo)
+
+    @Provides
+    fun provideCreatePlaylist(repo: PlaylistRepository) = CreatePlaylist(repo)
 
     @Provides
     fun provideAudioFileFetcher(app: Application, songsDao: SongsDao) = AudioFilesFetcher(app, songsDao)
