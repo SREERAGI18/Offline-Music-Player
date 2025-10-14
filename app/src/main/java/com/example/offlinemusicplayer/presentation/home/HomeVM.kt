@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.presentation.main
+package com.example.offlinemusicplayer.presentation.home
 
 import androidx.lifecycle.ViewModel
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class MainVM @Inject constructor(
+class HomeVM @Inject constructor(
     private val playerRepository: PlayerServiceRepository
 ): ViewModel (){
 

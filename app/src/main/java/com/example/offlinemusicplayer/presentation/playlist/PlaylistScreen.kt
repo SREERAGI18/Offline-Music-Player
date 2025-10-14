@@ -19,13 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.offlinemusicplayer.domain.model.Playlist
 import com.example.offlinemusicplayer.domain.usecase.CreatePlaylist
 import com.example.offlinemusicplayer.presentation.components.PlaylistItem
 import com.example.offlinemusicplayer.presentation.dialogs.CreatePlaylistDialog
 import com.example.offlinemusicplayer.presentation.dialogs.SongSelectionDialog
 
 @Composable
-fun PlaylistScreen() {
+fun PlaylistScreen(
+    onPlaylistClicked: (Playlist) -> Unit
+) {
     val viewModel = hiltViewModel<PlaylistVM>()
     val playlists by viewModel.playlists.collectAsStateWithLifecycle()
 
@@ -93,7 +96,7 @@ fun PlaylistScreen() {
                 PlaylistItem(
                     playlist = playlist,
                     onClick = {
-
+                        onPlaylistClicked(playlist)
                     }
                 )
             }

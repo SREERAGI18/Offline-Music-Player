@@ -1,0 +1,113 @@
+package com.example.offlinemusicplayer.presentation.playlist_detail
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.offlinemusicplayer.R
+import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
+import com.example.offlinemusicplayer.domain.model.Song
+import com.example.offlinemusicplayer.presentation.components.SongsList
+
+@Composable
+fun PlaylistDetailScreen() {
+    val viewModel: PlaylistDetailVM = hiltViewModel()
+    val playlist by viewModel.playlist.collectAsStateWithLifecycle()
+    val songs = viewModel.songs.collectAsLazyPagingItems()
+
+    Scaffold(
+
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Determine which icon to show for default playlists
+                    when (playlist?.name) {
+                        PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> {
+                            Image(
+                                painter = painterResource(id = R.drawable.recently_played),
+                                contentDescription = "${playlist?.name} playlist icon",
+                                modifier = Modifier.fillMaxSize(),
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+                            )
+                        }
+                        PlaylistEntity.RECENTLY_ADDED_PLAYLIST_NAME -> {
+                            Image(
+                                imageVector = Icons.Filled.History,
+                                contentDescription = "${playlist?.name} playlist icon",
+                                modifier = Modifier.fillMaxSize(),
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+                            )
+                        }
+                        else -> {
+                            Image(
+                                imageVector = Icons.Filled.MusicNote,
+                                contentDescription = "${playlist?.name} playlist icon",
+                                modifier = Modifier.fillMaxSize(),
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(20.dp))
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = playlist?.name ?: "",
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                }
+            }
+            SongsList(
+                songs = songs,
+                onSongClick = { song, index ->
+                    viewModel.playSong(index)
+                }
+            )
+        }
+    }
+}

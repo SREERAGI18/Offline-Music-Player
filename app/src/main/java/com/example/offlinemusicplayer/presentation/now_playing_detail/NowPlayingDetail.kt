@@ -1,7 +1,5 @@
 package com.example.offlinemusicplayer.presentation.now_playing_detail
 
-import android.util.Log
-import android.util.Size
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -10,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,25 +23,20 @@ import androidx.compose.material.icons.filled.Forward10
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Repeat
-import androidx.compose.material.icons.filled.RepeatOn
 import androidx.compose.material.icons.filled.RepeatOne
 import androidx.compose.material.icons.filled.Replay10
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RangeSlider
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.SliderState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -53,11 +45,8 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,19 +62,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.example.offlinemusicplayer.R
-import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.model.PlayerState
 import com.example.offlinemusicplayer.domain.model.RepeatMode
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.CachedAlbumArt
 import com.example.offlinemusicplayer.presentation.components.LyricsView
-import com.example.offlinemusicplayer.presentation.main.MainVM
+import com.example.offlinemusicplayer.presentation.home.HomeVM
 import com.example.offlinemusicplayer.util.toTimeMmSs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NowPlayingDetail(
-    viewModel: MainVM,
+    viewModel: HomeVM,
     onCollapse: () -> Unit
 ) {
 
@@ -145,7 +133,7 @@ fun NowPlayingDetail(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PlayerControls(
-    viewModel: MainVM
+    viewModel: HomeVM
 ) {
 
     val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()

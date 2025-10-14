@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.dagger.hilt)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 val keystorePropertiesFile = rootProject.file("keystore.properties")
@@ -102,4 +103,6 @@ dependencies {
     implementation(libs.paging.compose)
 
     implementation(libs.java.diff.utils)
+
+    implementation(libs.kotlinx.serialization.json)
 }

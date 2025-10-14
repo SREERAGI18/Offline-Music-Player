@@ -30,12 +30,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.offlinemusicplayer.domain.model.PlayerState
 import com.example.offlinemusicplayer.presentation.components.CachedAlbumArt
-import com.example.offlinemusicplayer.presentation.main.MainVM
+import com.example.offlinemusicplayer.presentation.home.HomeVM
 
 @Composable
 fun NowPlayingBar(
     onClick: () -> Unit,
-    viewModel: MainVM,
+    viewModel: HomeVM,
 ) {
     val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()
     val playerState by viewModel.playerState.collectAsStateWithLifecycle()

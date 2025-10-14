@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SongsDao {
@@ -25,7 +24,10 @@ interface SongsDao {
 //    fun getSongsByVolumePaged(volume: String): PagingSource<Int, SongsEntity>
 
     @Query("SELECT * FROM songs WHERE id IN (:songIds)")
-    fun getSongsByIds(songIds: List<Long>): PagingSource<Int, SongsEntity>
+    fun getSongsByIdsPaginated(songIds: List<Long>): PagingSource<Int, SongsEntity>
+
+    @Query("SELECT * FROM songs WHERE id IN (:songIds)")
+    suspend fun getSongsByIds(songIds: List<Long>): List<SongsEntity>
 
     @Query("SELECT * FROM songs WHERE artist = :artist ORDER BY title ASC")
     fun getSongsByArtistPaged(artist: String): PagingSource<Int, SongsEntity>

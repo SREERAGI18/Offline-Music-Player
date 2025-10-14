@@ -16,6 +16,12 @@ class PlaylistRepositoryImpl(
             }
         }
 
+    override fun getPlaylistById(playlistId: Long): Flow<Playlist?> {
+        return playlistDao.getPlaylistById(playlistId).map {
+            it?.toPlaylist()
+        }
+    }
+
     override suspend fun insertPlaylist(playlist: Playlist) {
         playlistDao.insertPlaylist(
             playlist.toPlaylistEntity()

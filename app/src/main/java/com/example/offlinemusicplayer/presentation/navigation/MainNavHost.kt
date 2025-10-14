@@ -1,47 +1,48 @@
 package com.example.offlinemusicplayer.presentation.navigation
 
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.media3.common.MediaItem
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.offlinemusicplayer.presentation.main.MainScreen
+import com.example.offlinemusicplayer.presentation.home.HomeScreen
 import com.example.offlinemusicplayer.presentation.playlist.PlaylistScreen
 import com.example.offlinemusicplayer.presentation.search.SearchScreen
 import com.example.offlinemusicplayer.presentation.songlist.SongListScreen
-import java.io.File
 
 @Composable
-fun AppNavHost(
+fun MainNavHost(
     navController: NavHostController,
+    rootNavController: NavHostController,
     query: String,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-
     NavHost(
         navController = navController,
-        startDestination = Screens.Main.route,
+        startDestination = Screens.Home,
         modifier = modifier
     ) {
-        composable(Screens.Main.route) {
-            MainScreen()
+        composable<Screens.Home> {
+            HomeScreen()
         }
-        composable(Screens.SongList.route) {
+        composable<Screens.SongList> {
             SongListScreen()
         }
 
-        composable(Screens.Search.route) {
+        composable<Screens.Search> {
             SearchScreen(
                 query = query
             )
         }
 
-        composable(Screens.Playlist.route) {
-            PlaylistScreen()
+        composable<Screens.Playlist> {
+            PlaylistScreen(
+                onPlaylistClicked = { playlist ->
+                    rootNavController.navigate(
+                        route = Screens.PlaylistDetail(playlist.id)
+                    )
+                }
+            )
         }
     }
 }
