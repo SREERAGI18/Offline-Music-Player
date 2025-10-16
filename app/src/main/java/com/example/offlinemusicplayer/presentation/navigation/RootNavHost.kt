@@ -17,8 +17,11 @@ fun RootNavHost(
         startDestination = Screens.Main
     ) {
         composable<Screens.PlaylistDetail> { backStackEntry ->
-//            val playlistDetail:Screens.PlaylistDetail = backStackEntry.toRoute()
-            PlaylistDetailScreen()
+            PlaylistDetailScreen(
+                onBackPress = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         composable<Screens.Main> {

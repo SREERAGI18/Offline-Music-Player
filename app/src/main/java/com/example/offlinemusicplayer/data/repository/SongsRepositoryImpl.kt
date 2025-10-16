@@ -52,8 +52,20 @@ class SongsRepositoryImpl(
         }
     }
 
+    override fun searchSongs(query: String): List<Song> {
+        return songsDao.searchSongs(query).map {
+            it.toSong()
+        }
+    }
+
     override fun searchSongsPaginated(query: String): Flow<PagingData<Song>> {
-        return audioFilesFetcher.searchSongsPaged(query).map { pagingData ->
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { songsDao.searchSongsPaged(query) }
+        ).flow.map { pagingData ->
             pagingData.map {
                 it.toSong()
             }

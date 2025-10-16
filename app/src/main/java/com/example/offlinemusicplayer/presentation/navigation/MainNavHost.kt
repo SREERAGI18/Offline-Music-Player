@@ -6,15 +6,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.offlinemusicplayer.presentation.home.HomeScreen
-import com.example.offlinemusicplayer.presentation.playlist.PlaylistScreen
-import com.example.offlinemusicplayer.presentation.playlist_detail.PlaylistDetailScreen
 import com.example.offlinemusicplayer.presentation.search.SearchScreen
-import com.example.offlinemusicplayer.presentation.songlist.SongListScreen
 
 @Composable
 fun MainNavHost(
     navController: NavHostController,
-    rootNavController: NavHostController,
     query: String,
     onNavigate:(Screens) -> Unit,
     modifier: Modifier = Modifier
@@ -26,8 +22,6 @@ fun MainNavHost(
     ) {
         composable<Screens.Home> {
             HomeScreen(
-                navController = navController,
-                rootNavController = rootNavController,
                 onNavigate = onNavigate
             )
         }

@@ -375,6 +375,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     override fun setMediaList(mediaList: List<Song>) {
         checkNotClosed()
 
+        _player.value?.clearMediaItems()
         playingMediaFlow.value = mediaList
     }
 
@@ -387,6 +388,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     override fun setMediaList(mediaList: List<Song>, index: Int, position: Duration?) {
         checkNotClosed()
 
+        _player.value?.clearMediaItems()
         playingMediaFlow.value = mediaList
         mediaIndexToSeekTo = index
     }

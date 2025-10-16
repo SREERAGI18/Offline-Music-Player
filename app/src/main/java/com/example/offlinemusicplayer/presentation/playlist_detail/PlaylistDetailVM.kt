@@ -56,7 +56,7 @@ class PlaylistDetailVM @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             playlist.value?.let { currentPlayList ->
                 val songs = getSongsByIds(currentPlayList.songIds)
-                Log.e("SongListVM", "songs: $songs")
+                Log.e("PlaylistDetailVM", "songs: $songs")
                 withContext(Dispatchers.Main) {
                     playerRepository.setMediaList(mediaList = songs, index = initialSongPosition)
                 }
@@ -65,9 +65,7 @@ class PlaylistDetailVM @Inject constructor(
     }
 
     fun playSong(index: Int) {
-        if(playerRepository.getMediaList().isEmpty()) {
-            setMediaList(index)
-        }
+        setMediaList(index)
         playerRepository.skipToMediaByIndex(index)
         playerRepository.play()
     }

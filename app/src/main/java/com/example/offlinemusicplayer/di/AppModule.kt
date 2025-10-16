@@ -19,6 +19,7 @@ import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
 import com.example.offlinemusicplayer.domain.usecase.GetSongsByIds
 import com.example.offlinemusicplayer.domain.usecase.GetSongsByIdsPaginated
 import com.example.offlinemusicplayer.domain.usecase.SearchSongs
+import com.example.offlinemusicplayer.domain.usecase.SearchSongsPaginated
 import com.example.offlinemusicplayer.player.AudioFilesFetcher
 import com.example.offlinemusicplayer.player.MusicService
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
@@ -65,7 +66,10 @@ object AppModule {
     fun provideGetAllSongs(repo: SongsRepository) = GetAllSongs(repo)
 
     @Provides
-    fun provideSearchSongsPaginated(repo: SongsRepository) = SearchSongs(repo)
+    fun provideSearchSongsPaginated(repo: SongsRepository) = SearchSongsPaginated(repo)
+
+    @Provides
+    fun provideSearchSongs(repo: SongsRepository) = SearchSongs(repo)
 
     @Provides
     fun provideGetSongsByIdPaginated(repo: SongsRepository) = GetSongsByIdsPaginated(repo)

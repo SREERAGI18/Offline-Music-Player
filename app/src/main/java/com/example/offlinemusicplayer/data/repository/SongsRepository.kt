@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface SongsRepository {
     fun getAllSongsPaginated(): Flow<PagingData<Song>>
     fun searchSongsPaginated(query: String): Flow<PagingData<Song>>
+    fun searchSongs(query: String): List<Song>
     fun getSongsByIdsPaginated(songIds: List<Long>): Flow<PagingData<Song>>
     suspend fun getSongsByIds(songIds: List<Long>): List<Song>
     suspend fun getAllSongs(): List<Song>

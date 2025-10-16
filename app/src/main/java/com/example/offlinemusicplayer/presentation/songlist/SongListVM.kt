@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongsPaginated
@@ -36,21 +35,8 @@ class SongListVM @Inject constructor(
     }
 
     fun playSong(index: Int) {
-        if(playerRepository.getMediaList().isEmpty()) {
-            setMediaList(index)
-        }
+        setMediaList(index)
         playerRepository.skipToMediaByIndex(index)
         playerRepository.play()
-    }
-
-    fun refresh() {
-        viewModelScope.launch {
-//            repository.forceRefresh()
-        }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-//        repository.cleanup()
     }
 }

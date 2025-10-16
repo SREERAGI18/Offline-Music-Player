@@ -1,7 +1,10 @@
 package com.example.offlinemusicplayer.presentation.search
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
@@ -18,16 +21,11 @@ fun SearchScreen(
         viewModel.updateSearchQuery(query)
     }
 
-    LaunchedEffect(songs.itemSnapshotList.items) {
-        if (songs.itemSnapshotList.isNotEmpty()) {
-            viewModel.setPlayerList(songs.itemSnapshotList.items)
-        }
-    }
-
     SongsList(
         onSongClick = { song, index ->
             viewModel.playSong(index)
         },
-        songs = songs
+        songs = songs,
+        modifier = Modifier.padding(horizontal = 16.dp)
     )
 }

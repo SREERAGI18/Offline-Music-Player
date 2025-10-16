@@ -5,20 +5,37 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class Screens {
     @Serializable
-    object SongList : Screens()
+    data object SongList : Screens()
     @Serializable
-    object Search : Screens()
+    data object Search : Screens()
 
     @Serializable
-    object Playlist : Screens()
+    data object Playlist : Screens()
     @Serializable
     data class PlaylistDetail(val playlistId: Long) : Screens()
     @Serializable
-    object Home : Screens()
+    data object Home : Screens()
     @Serializable
-    object Main : Screens()
+    data object Main : Screens()
 
     companion object {
         const val PLAYLIST_ID_KEY = "playlistId"
+
+        fun fromRoute(route: String?): Screens? {
+            val formattedRoute = route?.split(".")?.last()
+            return when {
+                formattedRoute == null -> null
+                formattedRoute.contains("PlaylistDetail") -> {
+                    val id = formattedRoute.substringAfter("PlaylistDetail/").toLongOrNull() ?: 0L
+                    PlaylistDetail(id)
+                }
+                formattedRoute == SongList.toString() -> SongList
+                formattedRoute == "Search" -> Search
+                formattedRoute == "Playlist" -> Playlist
+                formattedRoute == "Home" -> Home
+                formattedRoute == "Main" -> Main
+                else -> null
+            }
+        }
     }
 }

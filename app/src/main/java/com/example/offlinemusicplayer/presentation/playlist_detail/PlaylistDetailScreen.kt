@@ -14,11 +14,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -35,14 +42,43 @@ import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.SongsList
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlaylistDetailScreen() {
+fun PlaylistDetailScreen(
+    onBackPress: () -> Unit
+) {
     val viewModel: PlaylistDetailVM = hiltViewModel()
     val playlist by viewModel.playlist.collectAsStateWithLifecycle()
     val songs = viewModel.songs.collectAsLazyPagingItems()
 
     Scaffold(
-
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Playlist",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = onBackPress,
+                        colors = IconButtonDefaults.iconButtonColors(
+                            contentColor = MaterialTheme.colorScheme.onBackground
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = "Back",
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                )
+            )
+        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -62,7 +98,6 @@ fun PlaylistDetailScreen() {
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Determine which icon to show for default playlists
                     when (playlist?.name) {
                         PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> {
                             Image(
@@ -101,14 +136,31 @@ fun PlaylistDetailScreen() {
                         text = playlist?.name ?: "",
                         style = MaterialTheme.typography.titleLarge,
                     )
+                    Text(
+                        text = "${songs.itemCount} Songs",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                 }
             }
-            SongsList(
-                songs = songs,
-                onSongClick = { song, index ->
-                    viewModel.playSong(index)
+
+            if(songs.itemCount != 0) {
+                SongsList(
+                    songs = songs,
+                    onSongClick = { song, index ->
+                        viewModel.playSong(index)
+                    }
+                )
+            } else {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No songs added in playlist",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
-            )
+            }
         }
     }
 }
