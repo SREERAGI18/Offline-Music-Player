@@ -22,7 +22,11 @@ fun RootNavHost(
         }
 
         composable<Screens.Main> {
-            MainScreen()
+            MainScreen(
+                onNavigate = {
+                    navController.navigate(it)
+                }
+            )
         }
     }
 }

@@ -39,7 +39,9 @@ import com.example.offlinemusicplayer.presentation.navigation.Screens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    onNavigate:(Screens) -> Unit
+) {
     val navController = rememberNavController()
     var query by rememberSaveable { mutableStateOf("") }
     var isSearchActive by rememberSaveable { mutableStateOf(false) }
@@ -156,6 +158,7 @@ fun MainScreen() {
             navController = navController,
             rootNavController = navController,
             modifier = Modifier.padding(innerPadding),
+            onNavigate = onNavigate,
             query = query
         )
     }

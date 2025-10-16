@@ -17,11 +17,12 @@ import com.example.offlinemusicplayer.domain.model.Song
 
 @Composable
 fun SongsList(
+    modifier: Modifier = Modifier,
     songs: LazyPagingItems<Song>,
     onSongClick: (Song, Int) -> Unit,
 ) {
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(modifier = modifier.fillMaxSize()) {
         items(
             count = songs.itemCount,
             key = songs.itemKey { it.id }
@@ -37,9 +38,7 @@ fun SongsList(
                         onSongClick(song, index)
                     }
                 )
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+                HorizontalDivider()
             }
         }
     }

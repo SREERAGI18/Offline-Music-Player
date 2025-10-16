@@ -34,7 +34,7 @@ import com.example.offlinemusicplayer.domain.model.Playlist
 fun PlaylistItem(
     playlist: Playlist,
     modifier: Modifier = Modifier,
-    onClick: (Playlist) -> Unit = {}
+    onClick: (Playlist) -> Unit
 ) {
     Column(
         modifier = modifier

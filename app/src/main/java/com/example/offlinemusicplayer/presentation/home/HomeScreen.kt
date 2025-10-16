@@ -27,6 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import com.example.offlinemusicplayer.presentation.navigation.Screens
 import com.example.offlinemusicplayer.presentation.now_playing.NowPlayingBar
 import com.example.offlinemusicplayer.presentation.now_playing_detail.NowPlayingDetail
 import com.example.offlinemusicplayer.presentation.playlist.PlaylistScreen
@@ -35,7 +37,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    navController: NavController,
+    rootNavController: NavController,
+    onNavigate: (Screens) -> Unit
+) {
 
     val viewModel = hiltViewModel<HomeVM>()
     val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()
@@ -119,8 +125,8 @@ fun HomeScreen() {
                 when (page) {
                     0 -> SongListScreen()
                     1 -> PlaylistScreen(
-                        onPlaylistClicked = {
-
+                        onPlaylistClicked = { playlist ->
+                            onNavigate(Screens.PlaylistDetail(playlist.id))
                         }
                     )
                 }

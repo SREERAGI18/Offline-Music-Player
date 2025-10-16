@@ -38,7 +38,7 @@ fun SongItem(
             .clickable {
                 onSongClick(song)
             }
-            .padding(16.dp),
+            .padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

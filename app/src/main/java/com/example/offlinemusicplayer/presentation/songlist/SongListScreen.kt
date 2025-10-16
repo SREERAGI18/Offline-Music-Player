@@ -1,6 +1,9 @@
 package com.example.offlinemusicplayer.presentation.songlist
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.offlinemusicplayer.presentation.components.SongsList
@@ -14,6 +17,7 @@ fun SongListScreen() {
         onSongClick = { song, index ->
             viewModel.playSong(index)
         },
-        songs = songs
+        songs = songs,
+        modifier = Modifier.padding(horizontal = 16.dp)
     )
 }
