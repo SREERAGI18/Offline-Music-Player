@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.filled.Forward10
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -68,13 +69,15 @@ import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.CachedAlbumArt
 import com.example.offlinemusicplayer.presentation.components.LyricsView
 import com.example.offlinemusicplayer.presentation.home.HomeVM
+import com.example.offlinemusicplayer.presentation.navigation.Screens
 import com.example.offlinemusicplayer.util.toTimeMmSs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NowPlayingDetail(
     viewModel: HomeVM,
-    onCollapse: () -> Unit
+    onCollapse: () -> Unit,
+    onNavigate: (Screens) -> Unit,
 ) {
 
     val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()
@@ -106,7 +109,10 @@ fun NowPlayingDetail(
             scaffoldState = scaffoldState,
             sheetPeekHeight = if (scaffoldState.bottomSheetState.hasExpandedState) 72.dp else 10.dp,
             sheetContent = {
-                PlayerControls(viewModel)
+                PlayerControls(
+                    viewModel = viewModel,
+                    onNavigate = onNavigate
+                )
             },
             topBar = {
                 TopBar(currentSong, onCollapse)
@@ -133,7 +139,8 @@ fun NowPlayingDetail(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PlayerControls(
-    viewModel: HomeVM
+    viewModel: HomeVM,
+    onNavigate: (Screens) -> Unit
 ) {
 
     val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()
@@ -302,6 +309,27 @@ private fun PlayerControls(
                 contentDescription = "Fast forward by 10 seconds",
                 modifier = Modifier.size(25.dp)
             )
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Absolute.Center
+        ) {
+            IconButton(
+                onClick = {
+                    onNavigate(Screens.NowPlayingQueue)
+                },
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.QueueMusic,
+                    contentDescription = "Show playing queue"
+                )
+            }
         }
     }
 }

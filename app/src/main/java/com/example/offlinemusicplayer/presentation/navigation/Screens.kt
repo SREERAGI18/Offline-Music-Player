@@ -18,6 +18,9 @@ sealed class Screens {
     @Serializable
     data object Main : Screens()
 
+    @Serializable
+    data object NowPlayingQueue : Screens()
+
     companion object {
         const val PLAYLIST_ID_KEY = "playlistId"
 
@@ -29,11 +32,12 @@ sealed class Screens {
                     val id = formattedRoute.substringAfter("PlaylistDetail/").toLongOrNull() ?: 0L
                     PlaylistDetail(id)
                 }
-                formattedRoute == SongList.toString() -> SongList
+                formattedRoute == "SongList" -> SongList
                 formattedRoute == "Search" -> Search
                 formattedRoute == "Playlist" -> Playlist
                 formattedRoute == "Home" -> Home
                 formattedRoute == "Main" -> Main
+                formattedRoute == "NowPlayingQueue" -> NowPlayingQueue
                 else -> null
             }
         }

@@ -382,7 +382,12 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     override fun getMediaList(): List<Song> {
         checkNotClosed()
 
-        return playingMediaFlow.value
+        val player = this.player.value ?: return emptyList()
+
+        return List(player.mediaItemCount) { index ->
+            Log.e(TAG, "getCurrentMediaList: $index ${player.getMediaItemAt(index)}")
+            mediaMapper.mapToSong(player.getMediaItemAt(index))
+        }
     }
 
     override fun setMediaList(mediaList: List<Song>, index: Int, position: Duration?) {

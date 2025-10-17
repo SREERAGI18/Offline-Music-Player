@@ -185,7 +185,8 @@ fun MainScreen(
                             sheetState.hide()
                             isSheetVisible = false
                         }
-                    }
+                    },
+                    onNavigate = onNavigate
                 )
             }
         }
@@ -198,7 +199,7 @@ fun MainScreen(
                 onNavigate = onNavigate,
                 query = query
             )
-            if (currentSong != null && sheetState.currentValue == SheetValue.Hidden) {
+            if (currentSong != null && !isSheetVisible) {
                 NowPlayingBar(
                     viewModel = viewModel,
                     onClick = {
