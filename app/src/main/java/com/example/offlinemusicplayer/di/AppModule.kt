@@ -39,6 +39,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -96,6 +97,7 @@ object AppModule {
     fun mediaMapper(): MediaMapper = MediaMapper()
 
     @Provides
+    @Singleton
     fun playerRepositoryImpl(
         mediaMapper: MediaMapper,
         coroutineScope: CoroutineScope,
@@ -118,6 +120,7 @@ object AppModule {
     }
 
     @Provides
+    @Singleton
     fun provideMediaController(
         @ApplicationContext context: Context,
         scope: CoroutineScope
