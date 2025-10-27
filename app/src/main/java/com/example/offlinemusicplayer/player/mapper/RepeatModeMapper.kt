@@ -1,7 +1,7 @@
 package com.example.offlinemusicplayer.player.mapper
 
 import androidx.media3.common.Player
-import com.example.offlinemusicplayer.domain.model.RepeatMode
+import com.example.offlinemusicplayer.domain.enum_classes.RepeatMode
 
 /**
  * Maps the Media3 Player's integer-based repeat mode to the domain's [RepeatMode] enum.

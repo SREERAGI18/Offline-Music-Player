@@ -5,9 +5,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
-import com.example.offlinemusicplayer.domain.model.Command
-import com.example.offlinemusicplayer.domain.model.PlayerState
-import com.example.offlinemusicplayer.domain.model.RepeatMode
+import com.example.offlinemusicplayer.domain.enum_classes.Command
+import com.example.offlinemusicplayer.domain.enum_classes.PlayerState
+import com.example.offlinemusicplayer.domain.enum_classes.RepeatMode
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.player.mapper.MediaMapper
 import com.example.offlinemusicplayer.player.mapper.PlayerStateMapper
@@ -414,6 +414,12 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         checkNotClosed()
 
         player.value?.removeMediaItem(index)
+    }
+
+    override fun moveMedia(fromIndex: Int, toIndex: Int) {
+        checkNotClosed()
+
+        player.value?.moveMediaItem( fromIndex , toIndex)
     }
 
     override fun clearMediaList() {

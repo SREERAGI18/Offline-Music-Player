@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.domain.model
+package com.example.offlinemusicplayer.domain.enum_classes
 
 enum class Command {
     PlayPause,

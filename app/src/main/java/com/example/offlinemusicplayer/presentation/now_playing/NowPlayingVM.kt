@@ -3,8 +3,7 @@ package com.example.offlinemusicplayer.presentation.now_playing
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
-import com.example.offlinemusicplayer.data.local.entity.SongsEntity
-import com.example.offlinemusicplayer.domain.model.PlayerState
+import com.example.offlinemusicplayer.domain.enum_classes.PlayerState
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

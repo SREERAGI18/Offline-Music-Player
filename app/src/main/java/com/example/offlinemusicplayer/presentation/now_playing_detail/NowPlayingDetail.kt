@@ -63,8 +63,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.example.offlinemusicplayer.R
-import com.example.offlinemusicplayer.domain.model.PlayerState
-import com.example.offlinemusicplayer.domain.model.RepeatMode
+import com.example.offlinemusicplayer.domain.enum_classes.PlayerState
+import com.example.offlinemusicplayer.domain.enum_classes.RepeatMode
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.CachedAlbumArt
 import com.example.offlinemusicplayer.presentation.components.LyricsView

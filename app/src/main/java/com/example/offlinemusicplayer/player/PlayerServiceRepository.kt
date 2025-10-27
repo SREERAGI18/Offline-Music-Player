@@ -1,9 +1,9 @@
 package com.example.offlinemusicplayer.player
 
 import androidx.media3.common.Player
-import com.example.offlinemusicplayer.domain.model.Command
-import com.example.offlinemusicplayer.domain.model.PlayerState
-import com.example.offlinemusicplayer.domain.model.RepeatMode
+import com.example.offlinemusicplayer.domain.enum_classes.Command
+import com.example.offlinemusicplayer.domain.enum_classes.PlayerState
+import com.example.offlinemusicplayer.domain.enum_classes.RepeatMode
 import com.example.offlinemusicplayer.domain.model.Song
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
@@ -184,6 +184,14 @@ interface PlayerServiceRepository {
      * @param index The index at which to remove the [Song].
      */
     fun removeMedia(index: Int)
+
+    /**
+     * Moves the [Song] from its last position at the given position of the playlist.
+     *
+     * @param fromIndex The index from which the [Song] is moved.
+     * @param toIndex The index to which the [Song] is moved.
+     */
+    fun moveMedia(fromIndex: Int, toIndex: Int)
 
     /**
      * Clears the playlist.

@@ -7,7 +7,7 @@ import androidx.media3.common.Player.COMMAND_SEEK_FORWARD
 import androidx.media3.common.Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM
 import androidx.media3.common.Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM
 import androidx.media3.common.Player.COMMAND_SET_SHUFFLE_MODE
-import com.example.offlinemusicplayer.domain.model.Command
+import com.example.offlinemusicplayer.domain.enum_classes.Command
 
 object CommandMapper {
 

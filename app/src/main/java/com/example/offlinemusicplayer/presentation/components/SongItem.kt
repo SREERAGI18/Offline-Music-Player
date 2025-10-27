@@ -27,7 +27,7 @@ import com.example.offlinemusicplayer.domain.model.Song
 fun SongItem(
     modifier: Modifier = Modifier,
     song: Song,
-    onSongClick: (Song) -> Unit,
+    onSongClick: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -36,7 +36,7 @@ fun SongItem(
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
             .clickable {
-                onSongClick(song)
+                onSongClick()
             }
             .padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,

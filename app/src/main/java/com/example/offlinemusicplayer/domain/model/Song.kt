@@ -26,6 +26,7 @@ data class Song(
     val composer: String?,
     val albumArtist: String?,
     var selected: Boolean = false,
+    var isPlaying: Boolean = false,
 ) {
     fun toSongsEntity(): SongsEntity {
         return SongsEntity(
@@ -64,5 +65,26 @@ data class Song(
             e.printStackTrace()
             null
         }
+    }
+
+    companion object {
+        fun testSong() = Song(
+            id = -1,
+            title = "Suzume",
+            artist = "Radwimps",
+            album = "Suzume",
+            duration = 0,
+            path = "",
+            albumId = -1,
+            size = 0,
+            dateAdded = 0,
+            trackNumber = 0,
+            year = 0,
+            dateModified = 0,
+            artistId = -1,
+            composer = "",
+            albumArtist = "",
+            isPlaying = false
+        )
     }
 }
