@@ -1,5 +1,6 @@
 package com.example.offlinemusicplayer.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragHandle
@@ -47,6 +50,8 @@ fun QueueSongItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .background(color = MaterialTheme.colorScheme.background)
             .clickable {
                 onSongClick()
             },
@@ -77,7 +82,6 @@ fun QueueSongItem(
                 contentDescription = "Drag to reorder"
             )
         }
-        Spacer(modifier = Modifier.width(16.dp))
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.SpaceBetween,
@@ -92,6 +96,7 @@ fun QueueSongItem(
                 ),
                 maxLines = 1
             )
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = song.artist ?: "",
                 style = MaterialTheme.typography.bodyMedium,
@@ -144,7 +149,7 @@ private fun QueueOptionsDropDown(
                 },
                 onClick = {
                     onOptionSelected(option)
-                    onDismiss
+                    onDismiss()
                 }
             )
         }

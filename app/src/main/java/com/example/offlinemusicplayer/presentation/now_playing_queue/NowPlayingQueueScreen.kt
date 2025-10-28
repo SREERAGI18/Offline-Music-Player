@@ -92,7 +92,6 @@ fun NowPlayingQueueScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp)
         )
     }
 }

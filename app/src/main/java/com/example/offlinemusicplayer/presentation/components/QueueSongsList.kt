@@ -2,6 +2,7 @@
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -10,6 +11,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import com.example.offlinemusicplayer.domain.enum_classes.QueueSongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.QueueSongItem
+import com.example.offlinemusicplayer.ui.theme.shadow
 
 @Composable
 fun QueueSongsList(
@@ -24,6 +26,8 @@ fun QueueSongsList(
     var dragStartIndex = -1
     var dragEndIndex = -1
     var dragOffsetY by remember { mutableFloatStateOf(0f) }
+
+    val shadowColor = MaterialTheme.colorScheme.shadow
 
     LazyColumn(
         modifier = modifier
@@ -81,7 +85,9 @@ fun QueueSongsList(
                 modifier = Modifier.graphicsLayer {
                     // Apply visual effect to the item being dragged
                     translationY = if (isBeingDragged) dragOffsetY else 0f
-                    shadowElevation = if (isBeingDragged) 8f else 0f
+                    shadowElevation = if (isBeingDragged) 6f else 0f
+                    ambientShadowColor = shadowColor
+                    spotShadowColor = shadowColor
                 }
             )
         }

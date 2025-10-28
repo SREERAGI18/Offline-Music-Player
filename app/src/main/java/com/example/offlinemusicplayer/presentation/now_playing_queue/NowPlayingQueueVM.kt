@@ -39,6 +39,7 @@ class NowPlayingQueueVM @Inject constructor(
     }
 
     fun removeSong(index: Int) {
+        currentQueue.removeAt(index)
         playerRepository.removeMedia(index)
     }
 
