@@ -13,7 +13,6 @@ import com.example.offlinemusicplayer.presentation.search.SearchScreen
 @Composable
 fun MainNavHost(
     navController: NavHostController,
-    query: String,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -24,12 +23,6 @@ fun MainNavHost(
         composable<Screens.Home> {
             HomeScreen(
                 navController = navController
-            )
-        }
-
-        composable<Screens.Search> {
-            SearchScreen(
-                query = query
             )
         }
 

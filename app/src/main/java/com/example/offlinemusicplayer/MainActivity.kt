@@ -13,21 +13,35 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.offlinemusicplayer.presentation.navigation.RootNavHost
+import com.example.offlinemusicplayer.presentation.navigation.Screens
 import com.example.offlinemusicplayer.ui.theme.OfflineMusicPlayerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,17 +63,100 @@ class MainActivity : ComponentActivity() {
                 }
 
                 if(isPermissionGranted) {
-                    val navController = rememberNavController()
-
-                    BackHandler {
-                        navController.popBackStack()
-                    }
-
-                    RootNavHost(navController)
+                    MainBody()
                 } else {
                     RequestPermissionButton()
                 }
             }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun MainBody() {
+        val navController = rememberNavController()
+
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute: Screens? = remember(navBackStackEntry) {
+            Screens.fromRoute(navBackStackEntry?.destination?.route)
+        }
+
+        val showBackButton = currentRoute !is Screens.Home
+        val showTopBar = currentRoute !is Screens.PlaylistDetail && currentRoute !is Screens.NowPlayingQueue
+
+        BackHandler {
+            navController.popBackStack()
+        }
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                if(showTopBar) {
+                    TopAppBar(
+//                        navigationIcon = {
+//                            if (showBackButton) {
+//                                IconButton(
+//                                    onClick = {
+//                                        navController.popBackStack()
+//                                    }
+//                                ) {
+//                                    Icon(
+//                                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
+//                                        contentDescription = "Back",
+//                                        tint = MaterialTheme.colorScheme.onPrimary
+//                                    )
+//                                }
+//                            }
+//                        },
+                        title = {
+                            Text(
+                                text = "Offline Music Player",
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            )
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
+                    )
+                }
+            },
+            bottomBar = {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ) {
+                    Screens.bottomMenuItems.forEach { item ->
+                        NavigationBarItem(
+                            selected = currentRoute == item.screen,
+                            onClick = {
+                                navController.navigate(item.screen)
+                            },
+                            icon = {
+                                Icon(
+                                    imageVector = item.imageVector,
+                                    contentDescription = item.label
+                                )
+                            },
+                            label = { Text(item.label) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                indicatorColor = Color.Transparent
+                            )
+                        )
+                    }
+                }
+            }
+
+        ) { innerPadding ->
+            val contentPadding = if(showTopBar) innerPadding else PaddingValues(0.dp)
+            RootNavHost(
+                navController = navController,
+                modifier = Modifier.padding(contentPadding)
+            )
         }
     }
 

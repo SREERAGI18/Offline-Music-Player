@@ -1,5 +1,10 @@
 package com.example.offlinemusicplayer.presentation.navigation
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LibraryMusic
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -19,7 +24,16 @@ sealed class Screens {
     data object Main : Screens()
 
     @Serializable
+    data object Shazam : Screens()
+
+    @Serializable
     data object NowPlayingQueue : Screens()
+
+    data class BottomMenuItem(
+        val screen: Screens,
+        val label: String,
+        val imageVector: ImageVector
+    )
 
     companion object {
         const val PLAYLIST_ID_KEY = "playlistId"
@@ -37,9 +51,29 @@ sealed class Screens {
                 formattedRoute == "Playlist" -> Playlist
                 formattedRoute == "Home" -> Home
                 formattedRoute == "Main" -> Main
+                formattedRoute == "Shazam" -> Shazam
                 formattedRoute == "NowPlayingQueue" -> NowPlayingQueue
                 else -> null
             }
         }
+
+        val bottomMenuItems = listOf(
+            BottomMenuItem(
+                screen = Main,
+                label = "Music",
+                imageVector = Icons.Default.LibraryMusic
+            ),
+            BottomMenuItem(
+                screen = Shazam,
+                label = "Shazam",
+                imageVector = Icons.Default.Mic
+            ),
+            BottomMenuItem(
+                screen = Search,
+                label = "Search",
+                imageVector = Icons.Default.Search
+            )
+        )
+
     }
 }
