@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.presentation.now_playing
+package com.example.offlinemusicplayer.presentation.mini_player_bar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -33,7 +33,7 @@ import com.example.offlinemusicplayer.presentation.components.CachedAlbumArt
 import com.example.offlinemusicplayer.presentation.main.MainVM
 
 @Composable
-fun NowPlayingBar(
+fun MiniPlayerBar(
     onClick: () -> Unit,
     viewModel: MainVM,
 ) {

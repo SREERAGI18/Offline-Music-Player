@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.offlinemusicplayer.presentation.navigation.RootNavHost
@@ -81,47 +82,12 @@ class MainActivity : ComponentActivity() {
             Screens.fromRoute(navBackStackEntry?.destination?.route)
         }
 
-        val showBackButton = currentRoute !is Screens.Home
-        val showTopBar = currentRoute !is Screens.PlaylistDetail && currentRoute !is Screens.NowPlayingQueue
-
         BackHandler {
             navController.popBackStack()
         }
+
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            topBar = {
-                if(showTopBar) {
-                    TopAppBar(
-//                        navigationIcon = {
-//                            if (showBackButton) {
-//                                IconButton(
-//                                    onClick = {
-//                                        navController.popBackStack()
-//                                    }
-//                                ) {
-//                                    Icon(
-//                                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
-//                                        contentDescription = "Back",
-//                                        tint = MaterialTheme.colorScheme.onPrimary
-//                                    )
-//                                }
-//                            }
-//                        },
-                        title = {
-                            Text(
-                                text = "Offline Music Player",
-                                style = MaterialTheme.typography.titleLarge.copy(
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
-                            )
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            titleContentColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                    )
-                }
-            },
             bottomBar = {
                 NavigationBar(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -130,7 +96,14 @@ class MainActivity : ComponentActivity() {
                         NavigationBarItem(
                             selected = currentRoute == item.screen,
                             onClick = {
-                                navController.navigate(item.screen)
+                                navController.navigate(item.screen) {
+                                    // This is the key to independent back stacks
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                             },
                             icon = {
                                 Icon(
@@ -138,7 +111,12 @@ class MainActivity : ComponentActivity() {
                                     contentDescription = item.label
                                 )
                             },
-                            label = { Text(item.label) },
+                            label = {
+                                Text(
+                                    text = item.label,
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            },
                             colors = NavigationBarItemDefaults.colors(
                                 selectedIconColor = MaterialTheme.colorScheme.primary,
                                 selectedTextColor = MaterialTheme.colorScheme.primary,
@@ -152,10 +130,9 @@ class MainActivity : ComponentActivity() {
             }
 
         ) { innerPadding ->
-            val contentPadding = if(showTopBar) innerPadding else PaddingValues(0.dp)
             RootNavHost(
                 navController = navController,
-                modifier = Modifier.padding(contentPadding)
+                modifier = Modifier.padding(innerPadding)
             )
         }
     }

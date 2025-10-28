@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.presentation.home
+package com.example.offlinemusicplayer.presentation.music
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
+fun MusicScreen(
     navController: NavController
 ) {
 
