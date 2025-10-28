@@ -68,14 +68,14 @@ import com.example.offlinemusicplayer.domain.enum_classes.RepeatMode
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.CachedAlbumArt
 import com.example.offlinemusicplayer.presentation.components.LyricsView
-import com.example.offlinemusicplayer.presentation.home.HomeVM
+import com.example.offlinemusicplayer.presentation.main.MainVM
 import com.example.offlinemusicplayer.presentation.navigation.Screens
 import com.example.offlinemusicplayer.util.toTimeMmSs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NowPlayingDetail(
-    viewModel: HomeVM,
+    viewModel: MainVM,
     onCollapse: () -> Unit,
     onNavigate: (Screens) -> Unit,
 ) {
@@ -111,7 +111,10 @@ fun NowPlayingDetail(
             sheetContent = {
                 PlayerControls(
                     viewModel = viewModel,
-                    onNavigate = onNavigate
+                    onNavigate = {
+                        onNavigate(it)
+                        onCollapse()
+                    }
                 )
             },
             topBar = {
@@ -139,7 +142,7 @@ fun NowPlayingDetail(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PlayerControls(
-    viewModel: HomeVM,
+    viewModel: MainVM,
     onNavigate: (Screens) -> Unit
 ) {
 

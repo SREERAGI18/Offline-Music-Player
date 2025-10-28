@@ -19,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -56,29 +57,34 @@ class MainActivity : ComponentActivity() {
 
                     RootNavHost(navController)
                 } else {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize(),
-                    ) {
-                        TextButton(
-                            onClick = {
-                                requestStoragePermission()
-                            },
-                            modifier = Modifier.clickable {
-                                requestStoragePermission()
-                            },
-                            colors = ButtonDefaults.textButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            )
-                        ) {
-                            Text(
-                                text = "Grant Storage permission",
-                                style = MaterialTheme.typography.displayMedium
-                            )
-                        }
-                    }
+                    RequestPermissionButton()
                 }
+            }
+        }
+    }
+
+    @Composable
+    private fun RequestPermissionButton() {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            TextButton(
+                onClick = {
+                    requestStoragePermission()
+                },
+                modifier = Modifier.clickable {
+                    requestStoragePermission()
+                },
+                colors = ButtonDefaults.textButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text(
+                    text = "Grant Storage permission",
+                    style = MaterialTheme.typography.displayMedium
+                )
             }
         }
     }

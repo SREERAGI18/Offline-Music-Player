@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import com.example.offlinemusicplayer.presentation.navigation.Screens
 import com.example.offlinemusicplayer.presentation.playlist.PlaylistScreen
 import com.example.offlinemusicplayer.presentation.songlist.SongListScreen
@@ -25,7 +26,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigate: (Screens) -> Unit
+    navController: NavController
 ) {
 
     val tabs = remember { listOf("Songs", "Playlists") }
@@ -76,7 +77,7 @@ fun HomeScreen(
                 0 -> SongListScreen()
                 1 -> PlaylistScreen(
                     onPlaylistClicked = { playlist ->
-                        onNavigate(Screens.PlaylistDetail(playlist.id))
+                        navController.navigate(Screens.PlaylistDetail(playlist.id))
                     }
                 )
             }

@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.presentation.home
+package com.example.offlinemusicplayer.presentation.main
 
 import androidx.lifecycle.ViewModel
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
@@ -6,9 +6,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeVM @Inject constructor(
+class MainVM @Inject constructor(
     private val playerRepository: PlayerServiceRepository
-): ViewModel (){
+): ViewModel(){
 
     val currentMedia = playerRepository.currentMedia
 

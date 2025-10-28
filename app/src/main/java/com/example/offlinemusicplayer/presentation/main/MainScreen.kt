@@ -1,6 +1,7 @@
 package com.example.offlinemusicplayer.presentation.main
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,7 +16,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -37,11 +37,11 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.offlinemusicplayer.presentation.home.HomeVM
 import com.example.offlinemusicplayer.presentation.navigation.MainNavHost
 import com.example.offlinemusicplayer.presentation.navigation.Screens
 import com.example.offlinemusicplayer.presentation.now_playing.NowPlayingBar
@@ -53,7 +53,7 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     onNavigate:(Screens) -> Unit
 ) {
-    val viewModel = hiltViewModel<HomeVM>()
+    val viewModel = hiltViewModel<MainVM>()
     val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()
 
     val navController = rememberNavController()
@@ -68,6 +68,7 @@ fun MainScreen(
     }
 
     val showBackButton = currentRoute !is Screens.Home
+    val showTopBar = currentRoute !is Screens.PlaylistDetail && currentRoute !is Screens.NowPlayingQueue
 
     LaunchedEffect(currentRoute) {
         if(currentRoute is Screens.Home) {
@@ -90,80 +91,85 @@ fun MainScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    if (showBackButton) {
-                        IconButton(
-                            onClick = {
-                                navController.popBackStack()
+            if(showTopBar) {
+                TopAppBar(
+                    navigationIcon = {
+                        if (showBackButton) {
+                            IconButton(
+                                onClick = {
+                                    navController.popBackStack()
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                    contentDescription = "Back",
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                                contentDescription = "Back",
-                                tint = MaterialTheme.colorScheme.onPrimary
-                            )
                         }
-                    }
-                },
-                title = {
-                    if (isSearchActive) {
-                        TextField(
-                            value = query,
-                            onValueChange = { query = it },
-                            placeholder = { Text("Search songs...", color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .focusRequester(focusRequester)
-                                .onFocusChanged { focusState ->
-                                    if (focusState.isFocused) {
-                                        if (navController.currentBackStackEntry?.destination != Screens.Search) {
-                                            navController.navigate(Screens.Search)
+                    },
+                    title = {
+                        if (isSearchActive) {
+                            TextField(
+                                value = query,
+                                onValueChange = { query = it },
+                                placeholder = { Text("Search songs...", color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .focusRequester(focusRequester)
+                                    .onFocusChanged { focusState ->
+                                        if (focusState.isFocused) {
+                                            if (navController.currentBackStackEntry?.destination != Screens.Search) {
+                                                navController.navigate(Screens.Search)
+                                            }
                                         }
-                                    }
-                                },
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                            keyboardActions = KeyboardActions(onSearch = { /* a soft keyboard might be hidden here */ }),
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                                unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                                cursorColor = MaterialTheme.colorScheme.onPrimary,
-                                unfocusedContainerColor = Color.Transparent,
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent
+                                    },
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                                keyboardActions = KeyboardActions(onSearch = { /* a soft keyboard might be hidden here */ }),
+                                colors = TextFieldDefaults.colors(
+                                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                    cursorColor = MaterialTheme.colorScheme.onPrimary,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    focusedIndicatorColor = Color.Transparent
+                                )
                             )
-                        )
-                    } else {
-                        Text(
-                            text = "Offline Music Player",
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                actions = {
-                    if (!isSearchActive) {
-                        IconButton(onClick = { isSearchActive = true }) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Search",
-                                tint = MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            Text(
+                                text = "Offline Music Player",
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
                             )
                         }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    actions = {
+                        if (!isSearchActive) {
+                            IconButton(onClick = { isSearchActive = true }) {
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = "Search",
+                                    tint = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
+                        }
                     }
-                }
-            )                        },
+                )
+            }
+        },
     ) { innerPadding ->
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         var isSheetVisible by remember { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
+
+        val contentPadding = if (showTopBar) innerPadding else PaddingValues(0.dp)
 
         if (isSheetVisible && currentSong != null) {
             ModalBottomSheet(
@@ -186,17 +192,18 @@ fun MainScreen(
                             isSheetVisible = false
                         }
                     },
-                    onNavigate = onNavigate
+                    onNavigate = {
+                        navController.navigate(it)
+                    }
                 )
             }
         }
         Box(
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier.padding(contentPadding),
             contentAlignment = Alignment.BottomCenter
         ) {
             MainNavHost(
                 navController = navController,
-                onNavigate = onNavigate,
                 query = query
             )
             if (currentSong != null && !isSheetVisible) {

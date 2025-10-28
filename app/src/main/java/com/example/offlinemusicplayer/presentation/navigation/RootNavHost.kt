@@ -17,21 +17,6 @@ fun RootNavHost(
         navController = navController,
         startDestination = Screens.Main
     ) {
-        composable<Screens.PlaylistDetail> { backStackEntry ->
-            PlaylistDetailScreen(
-                onBackPress = {
-                    navController.popBackStack()
-                }
-            )
-        }
-
-        composable<Screens.NowPlayingQueue> { backStackEntry ->
-            NowPlayingQueueScreen(
-                onBackPress = {
-                    navController.popBackStack()
-                }
-            )
-        }
 
         composable<Screens.Main> {
             MainScreen(
