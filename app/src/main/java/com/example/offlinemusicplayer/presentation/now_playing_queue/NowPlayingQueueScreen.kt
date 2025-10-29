@@ -1,6 +1,7 @@
 package com.example.offlinemusicplayer.presentation.now_playing_queue
 
 import QueueSongsList
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -45,7 +46,11 @@ fun NowPlayingQueueScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                color = MaterialTheme.colorScheme.background
+            )
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

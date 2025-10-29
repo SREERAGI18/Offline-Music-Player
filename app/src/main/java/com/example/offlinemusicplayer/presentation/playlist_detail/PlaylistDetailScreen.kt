@@ -54,6 +54,9 @@ fun PlaylistDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(
+                color = MaterialTheme.colorScheme.background
+            )
             .padding(horizontal = 16.dp)
     ) {
         Row(

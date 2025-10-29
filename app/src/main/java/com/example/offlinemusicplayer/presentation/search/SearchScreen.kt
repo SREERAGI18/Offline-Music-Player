@@ -50,6 +50,9 @@ fun SearchScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(
+                color = MaterialTheme.colorScheme.background
+            )
             .padding(top = 16.dp)
     ) {
         Box(

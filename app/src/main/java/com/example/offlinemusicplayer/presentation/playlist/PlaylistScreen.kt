@@ -1,5 +1,6 @@
 package com.example.offlinemusicplayer.presentation.playlist
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -74,7 +75,13 @@ fun PlaylistScreen(
         )
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                color = MaterialTheme.colorScheme.background
+            )
+    ) {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 140.dp),
             modifier = Modifier.fillMaxSize(),
