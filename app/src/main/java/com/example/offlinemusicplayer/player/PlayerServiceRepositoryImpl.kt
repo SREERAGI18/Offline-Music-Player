@@ -13,6 +13,7 @@ import com.example.offlinemusicplayer.player.mapper.MediaMapper
 import com.example.offlinemusicplayer.player.mapper.PlayerStateMapper
 import com.example.offlinemusicplayer.player.mapper.RepeatModeMapper
 import com.example.offlinemusicplayer.player.mapper.SetCommandMapper
+import com.example.offlinemusicplayer.util.PreferencesManager
 import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +33,7 @@ import kotlin.time.toDuration
 class PlayerServiceRepositoryImpl @Inject constructor(
     private val mediaMapper: MediaMapper,
     private val coroutineScope: CoroutineScope,
+    private val preferencesManager: PreferencesManager
 ): PlayerServiceRepository, Closeable {
 
     private companion object {
@@ -86,6 +88,8 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
     private val playingMediaFlow: MutableStateFlow<List<Song>> = MutableStateFlow(listOf())
 
+    private var isLastPlayedInitialised = false
+
     init {
         observePlaylist()
         observeSeekPosition()
@@ -125,6 +129,10 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         }
 
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            if(reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED && !isLastPlayedInitialised) {
+                initialiseLastPlayedSongIfExist()
+                isLastPlayedInitialised = true
+            }
             updateTimeline(player.value!!)
         }
 
@@ -145,6 +153,22 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
     }
 
+    fun initialiseLastPlayedSongIfExist() {
+        val lastPlayedSongId = preferencesManager.getLastPlayedSongId()
+        val lastPlayedPosition = preferencesManager.getLastPlayedPosition()
+        val repeatMode = preferencesManager.getRepeatMode()
+        val shuffleModeEnabled = preferencesManager.getShuffleMode()
+
+        if (lastPlayedSongId != 0L) {
+            val mediaList = getMediaList()
+            val lastPlayedMedia = mediaList.indexOfFirst { it.id == lastPlayedSongId }
+            mediaIndexToSeekTo = lastPlayedMedia
+            setRepeatMode(repeatMode)
+            setShuffleModeEnabled(shuffleModeEnabled)
+//            seekToPosition(lastPlayedPosition)
+        }
+    }
+
     private fun updatePlaybackSpeed(player: Player) {
         _playbackSpeed.value = player.playbackParameters.speed
     }
@@ -158,8 +182,12 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     }
 
     private fun updateCurrentMediaItem(player: Player) {
-        _currentMedia.value = player.currentMediaItem?.let {
+        val song = player.currentMediaItem?.let {
             mediaMapper.mapToSong(it)
+        }
+        _currentMedia.value = song
+        if(song != null) {
+            preferencesManager.setLastPlayedSong(song.id)
         }
         updatePosition()
     }
@@ -210,7 +238,6 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         }
 
         _player.value = player
-        player.prepare()
         _connected.value = true
         player.addListener(listener)
 
@@ -322,6 +349,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         player.value?.let {
             it.seekBack()
             updatePosition()
+            saveLastPlayedPosition()
         }
     }
 
@@ -331,6 +359,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         player.value?.let {
             it.seekForward()
             updatePosition()
+            saveLastPlayedPosition()
         }
     }
 
@@ -347,12 +376,14 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         checkNotClosed()
 
         player.value?.shuffleModeEnabled = shuffleModeEnabled
+        preferencesManager.saveShuffleMode(shuffleModeEnabled)
     }
 
     override fun setRepeatMode(repeatMode: RepeatMode) {
         checkNotClosed()
 
         player.value?.repeatMode = RepeatModeMapper.map(repeatMode)
+        preferencesManager.saveRepeatMode(repeatMode)
     }
 
     /**
@@ -471,8 +502,8 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     private fun observePlaylist() {
         coroutineScope.launch {
             var oldItems:List<Song> = emptyList()
-            playingMediaFlow.collect {
-                val newItems = it
+            playingMediaFlow.collect { songList ->
+                val newItems = songList
                 val patches = withContext(Dispatchers.IO) {
                     DiffUtils.diff(oldItems, newItems) { oldItem, newItem ->
                         oldItem.id == newItem.id && oldItem.path==newItem.path
@@ -531,6 +562,8 @@ class PlayerServiceRepositoryImpl @Inject constructor(
                     }
                     updatePosition()
                     if (oldItems.isEmpty() && newItems.isNotEmpty()) {
+//                        val mediaItems = songList.map { mediaMapper.mapToMediaItem(it) }
+//                        _player.value?.setMediaItems(mediaItems)
                         prepare()
                     }
                 }
@@ -546,9 +579,15 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         coroutineScope.launch(Dispatchers.Main) {
             while (isActive) {
                 updatePosition()
+                saveLastPlayedPosition()
                 delay(1000)
             }
         }
+    }
+
+    private fun saveLastPlayedPosition() {
+        val currentPosition = player.value?.currentPosition
+        preferencesManager.setLastPlayedPosition(currentPosition ?: 0L)
     }
 
     override fun getDuration(): Long {

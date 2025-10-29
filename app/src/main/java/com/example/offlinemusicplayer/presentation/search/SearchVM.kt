@@ -35,6 +35,7 @@ class SearchVM @Inject constructor(
     val songs: Flow<PagingData<Song>> = searchQuery
         .debounce(300L)
         .flatMapLatest { query ->
+            setMediaList(query)
             searchSongsPaginated(query)
         }
 
@@ -42,19 +43,17 @@ class SearchVM @Inject constructor(
         _searchQuery.value = query
     }
 
-    fun setMediaList(initialSongPosition:Int) {
+    fun setMediaList(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val songs = searchSongs(searchQuery.value)
+            val songs = searchSongs(query)
             Log.e("SearchVM", "songs: $songs")
             withContext(Dispatchers.Main) {
-                playerRepository.setMediaList(mediaList = songs, index = initialSongPosition)
+                playerRepository.setMediaList(mediaList = songs)
             }
         }
     }
 
     fun playSong(index: Int) {
-        setMediaList(index)
-
         playerRepository.skipToMediaByIndex(index)
         playerRepository.play()
     }

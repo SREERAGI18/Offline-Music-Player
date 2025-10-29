@@ -11,6 +11,7 @@ import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -24,18 +25,26 @@ class SongListVM @Inject constructor(
 
     val songs: Flow<PagingData<Song>> = getAllSongsPaginated()
 
+    init {
+        setMediaList(0)
+    }
+
     fun setMediaList(initialSongPosition:Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            val songs = getAllSongs()
-            Log.e("SongListVM", "songs: $songs")
-            withContext(Dispatchers.Main) {
-                playerRepository.setMediaList(mediaList = songs, index = initialSongPosition)
+            playerRepository.connected.collectLatest {
+                if(!it) return@collectLatest
+
+                val songs = getAllSongs()
+                Log.e("SongListVM", "songs: $songs")
+                withContext(Dispatchers.Main) {
+                    playerRepository.setMediaList(mediaList = songs, index = initialSongPosition)
+                }
             }
         }
     }
 
     fun playSong(index: Int) {
-        setMediaList(index)
+//        setMediaList(index)
         playerRepository.skipToMediaByIndex(index)
         playerRepository.play()
     }

@@ -35,29 +35,29 @@ class MediaMapper {
     }
 
     fun mapToMediaItem(
-        songsEntity: Song
+        song: Song
     ): MediaItem {
         val metadata = MediaMetadata.Builder()
-            .setTitle(songsEntity.title)
-            .setArtist(songsEntity.artist)
-            .setAlbumTitle(songsEntity.album)
+            .setTitle(song.title)
+            .setArtist(song.artist)
+            .setAlbumTitle(song.album)
             .setExtras(Bundle().apply {
-                putLong("duration", songsEntity.duration)
-                putLong("size", songsEntity.size)
-                putLong("dateAdded", songsEntity.dateAdded)
-                putInt("trackNumber", songsEntity.trackNumber)
-                putInt("year", songsEntity.year)
-                putLong("dateModified", songsEntity.dateModified)
-                putLong("albumId", songsEntity.albumId)
-                putLong("artistId", songsEntity.artistId)
-                putString("composer", songsEntity.composer)
-                putString("albumArtist", songsEntity.albumArtist)
+                putLong("duration", song.duration)
+                putLong("size", song.size)
+                putLong("dateAdded", song.dateAdded)
+                putInt("trackNumber", song.trackNumber)
+                putInt("year", song.year)
+                putLong("dateModified", song.dateModified)
+                putLong("albumId", song.albumId)
+                putLong("artistId", song.artistId)
+                putString("composer", song.composer)
+                putString("albumArtist", song.albumArtist)
             })
             .build()
 
         return MediaItem.Builder()
-            .setMediaId(songsEntity.id.toString())
-            .setUri(songsEntity.path.toUri())
+            .setMediaId(song.id.toString())
+            .setUri(song.path.toUri())
             .setMediaMetadata(metadata)
             .build()
     }

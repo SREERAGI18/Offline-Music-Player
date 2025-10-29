@@ -98,7 +98,7 @@ fun PlaylistScreen(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 16.dp)
-                .padding(bottom = if(currentMedia == null) 16.dp else 80.dp),
+                .padding(bottom = 16.dp),
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
         ) {

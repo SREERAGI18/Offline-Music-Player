@@ -101,10 +101,12 @@ object AppModule {
     fun playerRepositoryImpl(
         mediaMapper: MediaMapper,
         coroutineScope: CoroutineScope,
+        preferencesManager: PreferencesManager,
         controller: Deferred<@JvmSuppressWildcards MediaController>,
     ): PlayerServiceRepository = PlayerServiceRepositoryImpl(
         mediaMapper = mediaMapper,
         coroutineScope = coroutineScope,
+        preferencesManager = preferencesManager
     ).also { playerRepository ->
         coroutineScope.launch(Dispatchers.Main) {
             val player = controller.await()
