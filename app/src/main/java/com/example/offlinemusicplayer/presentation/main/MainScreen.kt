@@ -18,16 +18,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.example.offlinemusicplayer.presentation.navigation.MainNavHost
-import com.example.offlinemusicplayer.presentation.navigation.Screens
-import com.example.offlinemusicplayer.presentation.now_playing.NowPlayingBar
+import com.example.offlinemusicplayer.presentation.mini_player_bar.MiniPlayerBar
 import com.example.offlinemusicplayer.presentation.now_playing_detail.NowPlayingDetail
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(
-    onNavigate:(Screens) -> Unit,
-) {
+fun MainScreen() {
     val viewModel = hiltViewModel<MainVM>()
     val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()
 
@@ -72,7 +69,7 @@ fun MainScreen(
             navController = navController,
         )
         if (currentSong != null && !isSheetVisible) {
-            NowPlayingBar(
+            MiniPlayerBar(
                 viewModel = viewModel,
                 onClick = {
                     scope.launch {

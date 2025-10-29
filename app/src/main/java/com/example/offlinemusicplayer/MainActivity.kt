@@ -13,14 +13,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
@@ -29,19 +29,26 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.offlinemusicplayer.presentation.navigation.RootNavHost
 import com.example.offlinemusicplayer.presentation.navigation.Screens
+import com.example.offlinemusicplayer.presentation.providers.LocalBottomScrollBehavior
+import com.example.offlinemusicplayer.presentation.providers.LocalScrollBehavior
 import com.example.offlinemusicplayer.ui.theme.OfflineMusicPlayerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -81,14 +88,39 @@ class MainActivity : ComponentActivity() {
             Screens.fromRoute(navBackStackEntry?.destination?.route)
         }
 
-        val showBackButton = currentRoute !is Screens.Home
+//        val showBackButton = currentRoute !is Screens.Home
         val showTopBar = currentRoute !is Screens.PlaylistDetail && currentRoute !is Screens.NowPlayingQueue
+        val topBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+        val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
+
+        val mergedScrollConnection = remember {
+            object : NestedScrollConnection {
+                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                    val bottomConsumed = bottomBarScrollBehavior.nestedScrollConnection
+                        .onPreScroll(available, source)
+                    val topConsumed = topBarScrollBehavior.nestedScrollConnection
+                        .onPreScroll(available - bottomConsumed, source)
+                    return bottomConsumed + topConsumed
+                }
+
+                override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+                    val bottomConsumed = bottomBarScrollBehavior.nestedScrollConnection
+                        .onPostScroll(consumed, available, source)
+                    val topConsumed = topBarScrollBehavior.nestedScrollConnection
+                        .onPostScroll(consumed, available - bottomConsumed, source)
+                    return bottomConsumed + topConsumed
+                }
+            }
+        }
 
         BackHandler {
             navController.popBackStack()
         }
+
         Scaffold(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(mergedScrollConnection),
             topBar = {
                 if(showTopBar) {
                     TopAppBar(
@@ -107,6 +139,7 @@ class MainActivity : ComponentActivity() {
 //                                }
 //                            }
 //                        },
+                        scrollBehavior = topBarScrollBehavior,
                         title = {
                             Text(
                                 text = "Offline Music Player",
@@ -123,14 +156,22 @@ class MainActivity : ComponentActivity() {
                 }
             },
             bottomBar = {
-                NavigationBar(
+                BottomAppBar(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    scrollBehavior = bottomBarScrollBehavior
                 ) {
                     Screens.bottomMenuItems.forEach { item ->
                         NavigationBarItem(
                             selected = currentRoute == item.screen,
                             onClick = {
-                                navController.navigate(item.screen)
+                                navController.navigate(item.screen) {
+                                    // This is the key to independent back stacks
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                             },
                             icon = {
                                 Icon(
@@ -138,7 +179,12 @@ class MainActivity : ComponentActivity() {
                                     contentDescription = item.label
                                 )
                             },
-                            label = { Text(item.label) },
+                            label = {
+                                Text(
+                                    text = item.label,
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            },
                             colors = NavigationBarItemDefaults.colors(
                                 selectedIconColor = MaterialTheme.colorScheme.primary,
                                 selectedTextColor = MaterialTheme.colorScheme.primary,
@@ -152,11 +198,15 @@ class MainActivity : ComponentActivity() {
             }
 
         ) { innerPadding ->
-            val contentPadding = if(showTopBar) innerPadding else PaddingValues(0.dp)
-            RootNavHost(
-                navController = navController,
-                modifier = Modifier.padding(contentPadding)
-            )
+            CompositionLocalProvider(
+                LocalScrollBehavior provides topBarScrollBehavior,
+                LocalBottomScrollBehavior provides bottomBarScrollBehavior,
+            ) {
+                RootNavHost(
+                    navController = navController,
+                    modifier = Modifier.padding(innerPadding)
+                )
+            }
         }
     }
 

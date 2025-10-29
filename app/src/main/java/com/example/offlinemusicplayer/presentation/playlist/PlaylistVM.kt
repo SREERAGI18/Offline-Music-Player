@@ -6,6 +6,7 @@ import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.CreatePlaylist
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
 import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
+import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,10 +18,13 @@ import javax.inject.Inject
 class PlaylistVM @Inject constructor(
     getPlaylists: GetPlaylists,
     getAllSongs: GetAllSongs,
-    private val createPlaylist: CreatePlaylist
+    private val createPlaylist: CreatePlaylist,
+    playerRepository: PlayerServiceRepository
 ) : ViewModel() {
 
     var songs: List<Song> = emptyList()
+
+    val currentMedia = playerRepository.currentMedia
 
     init {
         viewModelScope.launch {

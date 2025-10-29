@@ -51,115 +51,108 @@ fun PlaylistDetailScreen(
     val playlist by viewModel.playlist.collectAsStateWithLifecycle()
     val songs = viewModel.songs.collectAsLazyPagingItems()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Playlist",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onBackPress,
-                        colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = MaterialTheme.colorScheme.onBackground
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = "Back",
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconButton(
+                onClick = onBackPress,
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onBackground
                 )
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = "Back",
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = "Playlist",
+                style = MaterialTheme.typography.titleLarge
             )
         }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp)
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(MaterialTheme.shapes.medium)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                    contentAlignment = Alignment.Center
-                ) {
-                    when (playlist?.name) {
-                        PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> {
-                            Image(
-                                painter = painterResource(id = R.drawable.recently_played),
-                                contentDescription = "${playlist?.name} playlist icon",
-                                modifier = Modifier.fillMaxSize(),
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
-                            )
-                        }
-                        PlaylistEntity.RECENTLY_ADDED_PLAYLIST_NAME -> {
-                            Image(
-                                imageVector = Icons.Filled.History,
-                                contentDescription = "${playlist?.name} playlist icon",
-                                modifier = Modifier.fillMaxSize(),
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
-                            )
-                        }
-                        else -> {
-                            Image(
-                                imageVector = Icons.Filled.MusicNote,
-                                contentDescription = "${playlist?.name} playlist icon",
-                                modifier = Modifier.fillMaxSize(),
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
-                            )
-                        }
+                when (playlist?.name) {
+                    PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> {
+                        Image(
+                            painter = painterResource(id = R.drawable.recently_played),
+                            contentDescription = "${playlist?.name} playlist icon",
+                            modifier = Modifier.fillMaxSize(),
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+                        )
                     }
-                }
-
-                Spacer(modifier = Modifier.width(20.dp))
-
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = playlist?.name ?: "",
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                    Text(
-                        text = "${songs.itemCount} Songs",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                    PlaylistEntity.RECENTLY_ADDED_PLAYLIST_NAME -> {
+                        Image(
+                            imageVector = Icons.Filled.History,
+                            contentDescription = "${playlist?.name} playlist icon",
+                            modifier = Modifier.fillMaxSize(),
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+                        )
+                    }
+                    else -> {
+                        Image(
+                            imageVector = Icons.Filled.MusicNote,
+                            contentDescription = "${playlist?.name} playlist icon",
+                            modifier = Modifier.fillMaxSize(),
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+                        )
+                    }
                 }
             }
 
-            if(songs.itemCount != 0) {
-                SongsList(
-                    songs = songs,
-                    onSongClick = { song, index ->
-                        viewModel.playSong(index)
-                    }
+            Spacer(modifier = Modifier.width(20.dp))
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = playlist?.name ?: "",
+                    style = MaterialTheme.typography.titleLarge,
                 )
-            } else {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "No songs added in playlist",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                Text(
+                    text = "${songs.itemCount} Songs",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+
+        if(songs.itemCount != 0) {
+            SongsList(
+                songs = songs,
+                onSongClick = { song, index ->
+                    viewModel.playSong(index)
                 }
+            )
+        } else {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No songs added in playlist",
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
         }
     }

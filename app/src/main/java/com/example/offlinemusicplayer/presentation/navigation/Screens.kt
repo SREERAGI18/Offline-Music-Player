@@ -19,7 +19,7 @@ sealed class Screens {
     @Serializable
     data class PlaylistDetail(val playlistId: Long) : Screens()
     @Serializable
-    data object Home : Screens()
+    data object Music : Screens()
     @Serializable
     data object Main : Screens()
 
@@ -49,7 +49,7 @@ sealed class Screens {
                 formattedRoute == "SongList" -> SongList
                 formattedRoute == "Search" -> Search
                 formattedRoute == "Playlist" -> Playlist
-                formattedRoute == "Home" -> Home
+                formattedRoute == "Music" -> Music
                 formattedRoute == "Main" -> Main
                 formattedRoute == "Shazam" -> Shazam
                 formattedRoute == "NowPlayingQueue" -> NowPlayingQueue
