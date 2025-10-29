@@ -47,6 +47,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -155,9 +156,16 @@ private fun PlayerControls(
     val isPlaying = playerState == PlayerState.Playing
 
     var progress by remember { mutableLongStateOf(0L) }
+    var hasNext by remember { mutableStateOf(true) }
+    var hasPrev by remember { mutableStateOf(true) }
 
     LaunchedEffect(currentPosition) {
         progress = currentPosition ?: 0L
+    }
+
+    LaunchedEffect(currentSong, playerState) {
+        hasNext = viewModel.hasNext()
+        hasPrev = viewModel.hasPrevious()
     }
 
     Column(
@@ -281,7 +289,8 @@ private fun PlayerControls(
                 onClick = { viewModel.skipToPrev() },
                 icon = Icons.Filled.SkipPrevious,
                 contentDescription = "Skip to previous",
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(40.dp),
+                enabled = hasPrev
             )
 
             PlayerIconButton(
@@ -295,7 +304,8 @@ private fun PlayerControls(
                 onClick = { viewModel.skipToNext() },
                 icon = Icons.Filled.SkipNext,
                 contentDescription = "Skip to next",
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(40.dp),
+                enabled = hasNext
             )
 
             PlayerIconButton(

@@ -32,9 +32,13 @@ class MainVM @Inject constructor(
         playerRepository.skipToPreviousMedia()
     }
 
+    fun hasPrevious() = playerRepository.hasPreviousMedia()
+
     fun skipToNext() {
         playerRepository.skipToNextMedia()
     }
+
+    fun hasNext() = playerRepository.hasNextMedia()
 
     fun seekTo(position: Long) {
         playerRepository.seekToPosition(position)
