@@ -21,6 +21,7 @@ class NowPlayingQueueVM @Inject constructor(
 
         Log.e("NowPlayingQueueVM", "getCurrentMediaList: $songs")
 
+        currentQueue.clear()
         currentQueue.addAll(songs)
     }
 

@@ -32,13 +32,5 @@ fun MainNavHost(
                 }
             )
         }
-
-        composable<Screens.NowPlayingQueue> { backStackEntry ->
-            NowPlayingQueueScreen(
-                onBackPress = {
-                    navController.popBackStack()
-                }
-            )
-        }
     }
 }
