@@ -113,19 +113,19 @@ class MainActivity : ComponentActivity() {
         val mergedScrollConnection = remember {
             object : NestedScrollConnection {
                 override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                    val bottomConsumed = bottomBarScrollBehavior.nestedScrollConnection
-                        .onPreScroll(available, source)
+//                    val bottomConsumed = bottomBarScrollBehavior.nestedScrollConnection
+//                        .onPreScroll(available, source)
                     val topConsumed = topBarScrollBehavior.nestedScrollConnection
-                        .onPreScroll(available - bottomConsumed, source)
-                    return bottomConsumed + topConsumed
+                        .onPreScroll(available, source)
+                    return topConsumed
                 }
 
                 override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
-                    val bottomConsumed = bottomBarScrollBehavior.nestedScrollConnection
-                        .onPostScroll(consumed, available, source)
+//                    val bottomConsumed = bottomBarScrollBehavior.nestedScrollConnection
+//                        .onPostScroll(consumed, available, source)
                     val topConsumed = topBarScrollBehavior.nestedScrollConnection
-                        .onPostScroll(consumed, available - bottomConsumed, source)
-                    return bottomConsumed + topConsumed
+                        .onPostScroll(consumed, available, source)
+                    return topConsumed
                 }
             }
         }
