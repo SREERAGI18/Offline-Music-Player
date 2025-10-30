@@ -37,6 +37,8 @@ class PlaylistDetailVM @Inject constructor(
 ): ViewModel() {
     private val playlistId: Long = savedStateHandle[Screens.PLAYLIST_ID_KEY] ?: 0L
 
+    val currentMedia = playerRepository.currentMedia
+
     val playlist: StateFlow<Playlist?> = getPlaylistById(playlistId)
         .stateIn(
             scope = viewModelScope,

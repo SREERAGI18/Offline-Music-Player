@@ -66,6 +66,9 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     private var _currentMedia = MutableStateFlow<Song?>(null)
     override val currentMedia: StateFlow<Song?> get() = _currentMedia
 
+    private var _currentMediaIndex = MutableStateFlow<Int?>(null)
+    override val currentMediaIndex: StateFlow<Int?> get() = _currentMediaIndex
+
     private var _shuffleModeEnabled = MutableStateFlow(false)
     override val shuffleModeEnabled: StateFlow<Boolean> get() = _shuffleModeEnabled
 
@@ -191,6 +194,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
             mediaMapper.mapToSong(it)
         }
         _currentMedia.value = song
+        _currentMediaIndex.value = player.currentMediaItemIndex
         if(song != null) {
             preferencesManager.setLastPlayedSong(song.id)
         }

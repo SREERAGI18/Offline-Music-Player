@@ -1,6 +1,7 @@
 package com.example.offlinemusicplayer.presentation.songlist
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -24,10 +25,14 @@ class SongListVM @Inject constructor(
     private val playerRepository: PlayerServiceRepository,
 ) : ViewModel() {
 
-    val songs: Flow<PagingData<Song>> = getAllSongsPaginated()
+    val songs = mutableStateListOf<Song>()
+    val currentMediaIndex = playerRepository.currentMediaIndex
 
     init {
         setMediaList(0)
+        viewModelScope.launch {
+            songs.addAll(getAllSongs())
+        }
     }
 
     fun setMediaList(initialSongPosition:Int) {

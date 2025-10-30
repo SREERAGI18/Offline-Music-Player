@@ -27,6 +27,7 @@ import com.example.offlinemusicplayer.domain.model.Song
 fun SongItem(
     modifier: Modifier = Modifier,
     song: Song,
+    isPlaying: Boolean,
     onSongClick: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -59,7 +60,12 @@ fun SongItem(
         ) {
             Text(
                 text = song.title,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = if(isPlaying)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.onBackground
+                ),
                 maxLines = 1
             )
             Text(

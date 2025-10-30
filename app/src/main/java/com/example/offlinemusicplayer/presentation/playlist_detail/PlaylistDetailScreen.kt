@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.History
@@ -27,7 +28,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +55,20 @@ fun PlaylistDetailScreen(
     val viewModel: PlaylistDetailVM = hiltViewModel()
     val playlist by viewModel.playlist.collectAsStateWithLifecycle()
     val songs = viewModel.songs.collectAsLazyPagingItems()
+    val currentMedia by viewModel.currentMedia.collectAsStateWithLifecycle()
+
+    val songListState = rememberLazyListState()
+
+    var currentPlayingIndex by remember {
+        mutableIntStateOf(0)
+    }
+
+    LaunchedEffect(currentMedia, songs) {
+        currentPlayingIndex = songs
+            .itemSnapshotList
+            .items
+            .indexOfFirst { currentMedia?.id == it.id }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -142,9 +161,11 @@ fun PlaylistDetailScreen(
         if(songs.itemCount != 0) {
             SongsList(
                 songs = songs,
+                scrollState = songListState,
                 onSongClick = { song, index ->
                     viewModel.playSong(index)
                 },
+                currentPlayingIndex = currentPlayingIndex,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)

@@ -31,9 +31,14 @@ interface PlayerServiceRepository {
     val currentState: StateFlow<PlayerState>
 
     /**
-     * Returns the current [com.example.offlinemusicplayer.domain.model.Song] playing, or that would play when player starts playing.
+     * Returns the current [Song] playing, or that would play when player starts playing.
      */
     val currentMedia: StateFlow<Song?>
+
+    /**
+     * Returns the current playing [Song] index in the current playlist.
+     */
+    val currentMediaIndex: StateFlow<Int?>
 
     val mediaPosition: StateFlow<Long?>
 

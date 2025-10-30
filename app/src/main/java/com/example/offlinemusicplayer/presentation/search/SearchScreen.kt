@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -42,6 +43,8 @@ fun SearchScreen() {
     val focusRequester = remember { FocusRequester() }
 
     var query by rememberSaveable { mutableStateOf("") }
+
+    val songListState = rememberLazyListState()
 
     LaunchedEffect(query) {
         viewModel.updateSearchQuery(query)
@@ -91,6 +94,7 @@ fun SearchScreen() {
                 viewModel.playSong(index)
             },
             songs = songs,
+            scrollState = songListState,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
