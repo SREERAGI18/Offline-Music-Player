@@ -70,4 +70,31 @@ class PlaylistDetailVM @Inject constructor(
         playerRepository.skipToMediaByIndex(index)
         playerRepository.play()
     }
+
+    fun playNext(song: Song) {
+        viewModelScope.launch {
+            // Find if the song already exists in the playlist
+            val existingIndex = playerRepository.findIndexOfSongInPlaylist(song.id)
+            val currentIndex = playerRepository.getCurrentMediaIndex()
+            val nextIndex = currentIndex + 1
+
+            if (existingIndex != null) {
+                // Song exists, move it
+                playerRepository.moveMedia(existingIndex, nextIndex)
+            } else {
+                // Song doesn't exist, add it
+                playerRepository.addMedia(nextIndex, song)
+            }
+        }
+    }
+
+    fun addToQueue(song: Song) {
+        viewModelScope.launch {
+            val existingIndex = playerRepository.findIndexOfSongInPlaylist(song.id)
+            if (existingIndex == null) {
+                // Only add the song if it's not already in the queue
+                playerRepository.addMedia(song)
+            }
+        }
+    }
 }

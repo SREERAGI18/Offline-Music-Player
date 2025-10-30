@@ -532,6 +532,16 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         return player.value?.currentMediaItemIndex ?: 0
     }
 
+    override fun findIndexOfSongInPlaylist(songId: Long?): Int? {
+        checkNotClosed()
+
+        val songs = getMediaList()
+
+        val songIndex = songs.indexOfFirst { it.id == songId }
+
+        return if(songIndex != -1) songIndex else null
+    }
+
     override fun release() {
         checkNotClosed()
         player.value?.release()

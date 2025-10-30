@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.offlinemusicplayer.R
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
+import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.SongsList
 
@@ -144,6 +145,25 @@ fun PlaylistDetailScreen(
                 songs = songs,
                 onSongClick = { song, index ->
                     viewModel.playSong(index)
+                },
+                onOptionSelected = { song, option ->
+                    when(option) {
+                        SongOptions.PlayNext -> {
+                            viewModel.playNext(song)
+                        }
+                        SongOptions.AddToQueue -> {
+                            viewModel.addToQueue(song)
+                        }
+                        SongOptions.EditSongInfo -> {
+
+                        }
+                        SongOptions.Delete -> {
+
+                        }
+                        SongOptions.Details -> {
+
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()

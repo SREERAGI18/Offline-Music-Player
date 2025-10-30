@@ -214,6 +214,15 @@ interface PlayerServiceRepository {
     fun getCurrentMediaIndex(): Int
 
     /**
+     * Returns the index of the [Song] in the playlist.
+     * Returns null if the song is not found.
+     *
+     * @param songId The id of the [Song] to find.
+     *
+     */
+    fun findIndexOfSongInPlaylist(songId: Long?): Int?
+
+    /**
      * Releases the player. This method must be called when the player is no longer required. The
      * player must not be used after calling this method.
      */
