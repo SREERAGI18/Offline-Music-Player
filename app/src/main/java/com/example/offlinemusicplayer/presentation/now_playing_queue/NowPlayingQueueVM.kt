@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
+import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -19,7 +20,7 @@ class NowPlayingQueueVM @Inject constructor(
     fun getCurrentMediaList() {
         val songs = playerRepository.getMediaList()
 
-        Log.e("NowPlayingQueueVM", "getCurrentMediaList: $songs")
+        Logger.logError("NowPlayingQueueVM", "getCurrentMediaList: $songs")
 
         currentQueue.clear()
         currentQueue.addAll(songs)

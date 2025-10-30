@@ -1,6 +1,5 @@
 package com.example.offlinemusicplayer.presentation.search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -8,6 +7,7 @@ import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.SearchSongs
 import com.example.offlinemusicplayer.domain.usecase.SearchSongsPaginated
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
+import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flatMapLatest
@@ -35,7 +35,6 @@ class SearchVM @Inject constructor(
     val songs: Flow<PagingData<Song>> = searchQuery
         .debounce(300L)
         .flatMapLatest { query ->
-            setMediaList(query)
             searchSongsPaginated(query)
         }
 
@@ -43,17 +42,18 @@ class SearchVM @Inject constructor(
         _searchQuery.value = query
     }
 
-    fun setMediaList(query: String) {
+    fun setMediaList(mediaIndex: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            val songs = searchSongs(query)
-            Log.e("SearchVM", "songs: $songs")
+            val songs = searchSongs(searchQuery.value)
+            Logger.logError("SearchVM", "songs: $songs")
             withContext(Dispatchers.Main) {
-                playerRepository.setMediaList(mediaList = songs)
+                playerRepository.setMediaList(mediaList = songs, index = mediaIndex)
             }
         }
     }
 
     fun playSong(index: Int) {
+        setMediaList(index)
         playerRepository.skipToMediaByIndex(index)
         playerRepository.play()
     }

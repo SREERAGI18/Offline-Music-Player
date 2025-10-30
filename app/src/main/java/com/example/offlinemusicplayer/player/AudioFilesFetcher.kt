@@ -19,6 +19,7 @@ import androidx.paging.PagingData
 import com.example.offlinemusicplayer.data.local.dao.SongsDao
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.model.Song
+import com.example.offlinemusicplayer.util.Logger
 import com.example.offlinemusicplayer.util.getIntFromCol
 import com.example.offlinemusicplayer.util.getLongFromCol
 import com.example.offlinemusicplayer.util.getStringFromCol
@@ -74,7 +75,7 @@ class AudioFilesFetcher(
         batchSize: Int = 100,
         onProgress: ((Int, Int) -> Unit)? = null
     ): List<Song> {
-        Log.e("AudioFilesFetcher", "scanAndCacheSongs")
+        Logger.logError("AudioFilesFetcher", "scanAndCacheSongs")
 
         val audioFiles = mutableListOf<Song>()
 
@@ -140,7 +141,7 @@ class AudioFilesFetcher(
                 val composer = cursor.getStringOrNullFromCol(AudioColumns.COMPOSER)
                 val albumArtist = cursor.getStringOrNullFromCol(MediaStore.Audio.Media.ALBUM_ARTIST)
 
-                Log.e("AudioFilesFetcher", "Song ID: $id, Name: $title, Artist: $artistName, Album: $albumName")
+                Logger.logError("AudioFilesFetcher", "Song ID: $id, Name: $title, Artist: $artistName, Album: $albumName")
 
                 val entity = SongsEntity(
                     id = id,
@@ -209,7 +210,7 @@ class AudioFilesFetcher(
             config = PagingConfig(
                 pageSize = 20,
                 enablePlaceholders = false,
-                prefetchDistance = 10
+                prefetchDistance = 20
             ),
             pagingSourceFactory = { songsDao.getAllSongsPaged() }
         ).flow

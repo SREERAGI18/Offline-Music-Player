@@ -1,10 +1,11 @@
 package com.example.offlinemusicplayer.player
 
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
+import androidx.media3.datasource.HttpDataSource
 import com.example.offlinemusicplayer.domain.enum_classes.Command
 import com.example.offlinemusicplayer.domain.enum_classes.PlayerState
 import com.example.offlinemusicplayer.domain.enum_classes.RepeatMode
@@ -13,9 +14,8 @@ import com.example.offlinemusicplayer.player.mapper.MediaMapper
 import com.example.offlinemusicplayer.player.mapper.PlayerStateMapper
 import com.example.offlinemusicplayer.player.mapper.RepeatModeMapper
 import com.example.offlinemusicplayer.player.mapper.SetCommandMapper
+import com.example.offlinemusicplayer.util.Logger
 import com.example.offlinemusicplayer.util.PreferencesManager
-import com.github.difflib.DiffUtils
-import com.github.difflib.patch.DeltaType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.Closeable
 import javax.inject.Inject
 import kotlin.time.Duration
@@ -86,12 +85,9 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
     private var mediaIndexToSeekTo: Int? = null
 
-    private val playingMediaFlow: MutableStateFlow<List<Song>> = MutableStateFlow(listOf())
-
     private var isLastPlayedInitialised = false
 
     init {
-        observePlaylist()
         observeSeekPosition()
     }
 
@@ -138,19 +134,28 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
         override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
             super.onMediaMetadataChanged(mediaMetadata)
-            val currentMediaItemIndex = _player.value?.currentMediaItemIndex ?:0
-            if (currentMediaItemIndex >= playingMediaFlow.value.size) {
-                // Bug when app gets restarted
-                Log.e(TAG, "ErrorCheck: Index($currentMediaItemIndex) >= ListSize(${playingMediaFlow.value.size})")
-                // Even after using fallback if this check is not satisfied then return
-                if (currentMediaItemIndex >= playingMediaFlow.value.size) {
-                    Log.e(TAG, "ErrorResult: Index($currentMediaItemIndex) >= ListSize(${playingMediaFlow.value.size})")
-                    return
-                }
-            }
+            Logger.logInfo(TAG, "onMediaMetadataChanged")
         }
 
-
+        override fun onPlayerError(error: PlaybackException) {
+            val cause = error.cause
+            if (cause is HttpDataSource.HttpDataSourceException) {
+                // An HTTP error occurred
+                val httpError = cause
+                if (httpError is HttpDataSource.InvalidResponseCodeException) {
+                    // Specific HTTP error with response code
+                    val responseCode = httpError.responseCode
+                    // Log or display the error details
+                    Logger.logError(tag = TAG, message = "HTTP Error: Response code $responseCode")
+                } else {
+                    // Other HTTP error
+                    Logger.logError(tag = TAG, message = "HTTP DataSource Error: ${httpError.message}")
+                }
+            } else {
+                // Handle other types of PlaybackException
+                Logger.logError(tag = TAG, message = "Playback Error: ${error.message}")
+            }
+        }
     }
 
     fun initialiseLastPlayedSongIfExist() {
@@ -161,8 +166,8 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
         if (lastPlayedSongId != 0L) {
             val mediaList = getMediaList()
-            val lastPlayedMedia = mediaList.indexOfFirst { it.id == lastPlayedSongId }
-            mediaIndexToSeekTo = lastPlayedMedia
+            val lastPlayedMediaIndex = mediaList.indexOfFirst { it.id == lastPlayedSongId }
+            mediaIndexToSeekTo = lastPlayedMediaIndex
             setRepeatMode(repeatMode)
             setShuffleModeEnabled(shuffleModeEnabled)
 //            seekToPosition(lastPlayedPosition)
@@ -199,7 +204,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     private fun updateState(player: Player) {
         _currentState.value = PlayerStateMapper.map(player)
 
-        Log.e(TAG, "Player state changed to ${_currentState.value}")
+        Logger.logError(TAG, "Player state changed to ${_currentState.value}")
     }
 
     private fun updateAvailableCommands(player: Player) {
@@ -218,10 +223,11 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
     private fun updateTimeline(player: Player) {
         mediaIndexToSeekTo?.let { index ->
-            player.seekTo(index, 0)
-            player.prepare()
-            player.play()
-            mediaIndexToSeekTo = null
+            if(index < player.mediaItemCount) {
+                player.seekTo(index, 0)
+                player.prepare()
+                mediaIndexToSeekTo = null
+            }
         }
     }
 
@@ -406,8 +412,15 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     override fun setMediaList(mediaList: List<Song>) {
         checkNotClosed()
 
-        _player.value?.clearMediaItems()
-        playingMediaFlow.value = mediaList
+        if(isSamePlaylist(mediaList)) return
+
+        _player.value?.let { player ->
+            player.clearMediaItems()
+            val mediaItems = mediaList.map { mediaMapper.mapToMediaItem(it) }
+            player.setMediaItems(mediaItems)
+            prepare()
+        }
+        updatePosition()
     }
 
     override fun getMediaList(): List<Song> {
@@ -416,7 +429,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         val player = this.player.value ?: return emptyList()
 
         return List(player.mediaItemCount) { index ->
-            Log.e(TAG, "getCurrentMediaList: $index ${player.getMediaItemAt(index)}")
+            Logger.logError(TAG, "getCurrentMediaList: $index ${player.getMediaItemAt(index)}")
             mediaMapper.mapToSong(player.getMediaItemAt(index))
         }
     }
@@ -424,9 +437,50 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     override fun setMediaList(mediaList: List<Song>, index: Int, position: Duration?) {
         checkNotClosed()
 
-        _player.value?.clearMediaItems()
-        playingMediaFlow.value = mediaList
+        if(isSamePlaylist(mediaList)) return
+
         mediaIndexToSeekTo = index
+        _player.value?.let { player ->
+            player.clearMediaItems()
+            val mediaItems = mediaList.map { mediaMapper.mapToMediaItem(it) }
+            player.setMediaItems(mediaItems)
+            prepare()
+        }
+    }
+
+    /**
+     * Efficiently checks if the provided list of songs is the same as the one
+     * currently loaded in the player.
+     *
+     * @param newList The new list of songs to compare.
+     * @return `true` if the playlists are identical (same songs in the same order),
+     *         `false` otherwise.
+     */
+    private fun isSamePlaylist(newList: List<Song>): Boolean {
+        val player = _player.value ?: return false
+        val currentListSize = player.mediaItemCount
+
+        // 1. Quick check: If sizes are different, they can't be the same list.
+        if (newList.size != currentListSize) {
+            return false
+        }
+
+        // 2. If both are empty, they are the same.
+        if (newList.isEmpty()) {
+            return true
+        }
+
+        // 3. Compare song IDs in order. The `mediaId` in a MediaItem corresponds to our song ID.
+        for (i in newList.indices) {
+            val newSongId = newList[i].id.toString()
+            val currentMediaId = player.getMediaItemAt(i).mediaId
+            if (newSongId != currentMediaId) {
+                return false
+            }
+        }
+
+        // If all checks pass, the playlists are the same.
+        return true
     }
 
     override fun addMedia(media: Song) {
@@ -497,82 +551,6 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
     private fun checkNotClosed() {
         check(!closed) { "Player is already closed." }
-    }
-
-    private fun observePlaylist() {
-        coroutineScope.launch {
-            var oldItems:List<Song> = emptyList()
-            playingMediaFlow.collect { songList ->
-                val newItems = songList
-                val patches = withContext(Dispatchers.IO) {
-                    DiffUtils.diff(oldItems, newItems) { oldItem, newItem ->
-                        oldItem.id == newItem.id && oldItem.path==newItem.path
-                    }
-                }
-                withContext(Dispatchers.Main) {
-                    _player.value?.let { player ->
-                        if (patches.deltas.size == 1 && patches.deltas.firstOrNull()?.type == DeltaType.INSERT && player.mediaItemCount == 0) {
-                            Log.e(TAG, "DeltaType.INSERT all")
-                            player.setMediaItems(
-                                patches.deltas.first().target.lines.map { song ->
-                                    mediaMapper.mapToMediaItem(song)
-                                }
-                            )
-                        } else {
-                            patches.deltas.forEach { delta ->
-                                when(delta.type) {
-                                    DeltaType.DELETE -> {
-                                        player.removeMediaItems(
-                                            delta.target.position,
-                                            delta.target.position + delta.source.lines.size
-                                        )
-                                        Log.e(TAG, "DeltaType.DELETE")
-                                    }
-                                    DeltaType.INSERT -> {
-                                        player.addMediaItems(
-                                            delta.target.position,
-                                            delta.target.lines.map { song ->
-                                                mediaMapper.mapToMediaItem(song)
-                                            }
-                                        )
-                                        Log.e(TAG, "DeltaType.INSERT")
-                                    }
-                                    DeltaType.CHANGE -> {
-                                        player.removeMediaItems(
-                                            delta.target.position,
-                                            delta.target.position + delta.source.lines.size
-                                        )
-                                        player.addMediaItems(
-                                            delta.target.position,
-                                            delta.target.lines.map { song ->
-                                                mediaMapper.mapToMediaItem(song)
-                                            }
-                                        )
-                                        Log.e(TAG, "DeltaType.CHANGE")
-                                    }
-                                    DeltaType.EQUAL -> {
-                                        // Ignore
-                                    }
-                                    null -> {
-                                        // Ignore
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    updatePosition()
-                    if (oldItems.isEmpty() && newItems.isNotEmpty()) {
-//                        val mediaItems = songList.map { mediaMapper.mapToMediaItem(it) }
-//                        _player.value?.setMediaItems(mediaItems)
-                        prepare()
-                    }
-                }
-//                Log.e(TAG, "CurrentPlayingMediaList: ${newItems.map {med ->
-//                    med.artist + "\n"
-//                }}")
-                oldItems = newItems
-            }
-        }
     }
 
     private fun observeSeekPosition() {

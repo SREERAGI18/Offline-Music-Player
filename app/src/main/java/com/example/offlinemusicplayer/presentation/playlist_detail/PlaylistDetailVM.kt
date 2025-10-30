@@ -13,6 +13,7 @@ import com.example.offlinemusicplayer.domain.usecase.GetSongsByIds
 import com.example.offlinemusicplayer.domain.usecase.GetSongsByIdsPaginated
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import com.example.offlinemusicplayer.presentation.navigation.Screens
+import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -56,7 +57,7 @@ class PlaylistDetailVM @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             playlist.value?.let { currentPlayList ->
                 val songs = getSongsByIds(currentPlayList.songIds)
-                Log.e("PlaylistDetailVM", "songs: $songs")
+                Logger.logError("PlaylistDetailVM", "songs: $songs")
                 withContext(Dispatchers.Main) {
                     playerRepository.setMediaList(mediaList = songs, index = initialSongPosition)
                 }

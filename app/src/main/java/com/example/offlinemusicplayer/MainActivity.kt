@@ -59,6 +59,7 @@ import com.example.offlinemusicplayer.presentation.now_playing_detail.NowPlaying
 import com.example.offlinemusicplayer.presentation.providers.LocalBottomScrollBehavior
 import com.example.offlinemusicplayer.presentation.providers.LocalScrollBehavior
 import com.example.offlinemusicplayer.ui.theme.OfflineMusicPlayerTheme
+import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -316,7 +317,7 @@ class MainActivity : ComponentActivity() {
         var permissionGranted = true
 
         permissions.entries.forEach {
-            Log.d("DEBUG", "${it.key} = ${it.value}")
+            Logger.logDebug("DEBUG", "${it.key} = ${it.value}")
             if(!it.value) {
                 permissionGranted = false
             }

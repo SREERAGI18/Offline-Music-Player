@@ -8,6 +8,7 @@ import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongsPaginated
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
+import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -35,7 +36,7 @@ class SongListVM @Inject constructor(
                 if(!it) return@collectLatest
 
                 val songs = getAllSongs()
-                Log.e("SongListVM", "songs: $songs")
+                Logger.logError("SongListVM", "songs: $songs")
                 withContext(Dispatchers.Main) {
                     playerRepository.setMediaList(mediaList = songs, index = initialSongPosition)
                 }
@@ -44,7 +45,7 @@ class SongListVM @Inject constructor(
     }
 
     fun playSong(index: Int) {
-//        setMediaList(index)
+        setMediaList(index)
         playerRepository.skipToMediaByIndex(index)
         playerRepository.play()
     }

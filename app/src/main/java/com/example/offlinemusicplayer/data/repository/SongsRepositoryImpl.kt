@@ -8,6 +8,7 @@ import androidx.paging.map
 import com.example.offlinemusicplayer.data.local.dao.SongsDao
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.player.AudioFilesFetcher
+import com.example.offlinemusicplayer.util.Logger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -17,7 +18,7 @@ class SongsRepositoryImpl(
 ) : SongsRepository {
 
     override fun getAllSongsPaginated(): Flow<PagingData<Song>> {
-        Log.e("MusicRepositoryImpl", "getAllSongs")
+        Logger.logError("MusicRepositoryImpl", "getAllSongs")
 
         return audioFilesFetcher.getAllSongsPaged().map { pagingData ->
             pagingData.map {

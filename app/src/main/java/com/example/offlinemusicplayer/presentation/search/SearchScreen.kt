@@ -50,7 +50,7 @@ fun SearchScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 16.dp)
+            .padding(top = 16.dp)
     ) {
         Box(
             modifier = Modifier
