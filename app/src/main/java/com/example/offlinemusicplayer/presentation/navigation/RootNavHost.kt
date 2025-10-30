@@ -14,6 +14,7 @@ import com.example.offlinemusicplayer.presentation.search.SearchScreen
 @Composable
 fun RootNavHost(
     navController: NavHostController,
+    mainNavController: NavHostController,
     modifier: Modifier
 ) {
     NavHost(
@@ -23,7 +24,7 @@ fun RootNavHost(
     ) {
 
         composable<Screens.Main> {
-            MainScreen()
+            MainScreen(mainNavController)
         }
 
         composable<Screens.Shazam> {

@@ -52,12 +52,12 @@ fun PlaylistDetailScreen(
     val songs = viewModel.songs.collectAsLazyPagingItems()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(
@@ -81,7 +81,9 @@ fun PlaylistDetailScreen(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -142,7 +144,11 @@ fun PlaylistDetailScreen(
                 songs = songs,
                 onSongClick = { song, index ->
                     viewModel.playSong(index)
-                }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = 16.dp),
             )
         } else {
             Box(

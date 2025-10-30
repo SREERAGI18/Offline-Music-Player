@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -93,6 +92,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun MainBody() {
         val navController = rememberNavController()
+        val mainNavController = rememberNavController()
 
         val viewModel = hiltViewModel<MainVM>()
         val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()
@@ -105,9 +105,13 @@ class MainActivity : ComponentActivity() {
         val currentRoute: Screens? = remember(navBackStackEntry) {
             Screens.fromRoute(navBackStackEntry?.destination?.route)
         }
+        val mainNavBackStackEntry by mainNavController.currentBackStackEntryAsState()
+        val mainCurrentRoute: Screens? = remember(mainNavBackStackEntry) {
+            Screens.fromRoute(mainNavBackStackEntry?.destination?.route)
+        }
 
 //        val showBackButton = currentRoute !is Screens.Home
-        val showTopBar = currentRoute !is Screens.PlaylistDetail && currentRoute !is Screens.NowPlayingQueue
+        val showTopBar = mainCurrentRoute !is Screens.PlaylistDetail && currentRoute !is Screens.NowPlayingQueue
         val topBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
 
@@ -220,7 +224,7 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Screens.bottomMenuItems.forEach { item ->
                             NavigationBarItem(
-                                selected = currentRoute == item.screen,
+                                selected = mainCurrentRoute == item.screen,
                                 onClick = {
                                     navController.navigate(item.screen) {
                                         // This is the key to independent back stacks
@@ -263,6 +267,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 RootNavHost(
                     navController = navController,
+                    mainNavController = mainNavController,
                     modifier = Modifier.padding(innerPadding)
                 )
             }
