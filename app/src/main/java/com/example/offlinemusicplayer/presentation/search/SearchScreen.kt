@@ -37,6 +37,7 @@ import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.DeleteConfirmDialog
 import com.example.offlinemusicplayer.presentation.components.ProgressDialog
+import com.example.offlinemusicplayer.presentation.components.SongDetailDialog
 import com.example.offlinemusicplayer.presentation.components.SongsList
 
 @Composable
@@ -51,6 +52,9 @@ fun SearchScreen() {
 
     var showDeleteDialog by remember { mutableStateOf(false) }
     var songToDelete by remember { mutableStateOf<Song?>(null) }
+
+    var showDetailsDialog by remember { mutableStateOf(false) }
+    var songForDetails by remember { mutableStateOf<Song?>(null) }
 
     if(deleteProgress) {
         ProgressDialog(title = "Deleting...")
@@ -67,6 +71,17 @@ fun SearchScreen() {
             },
             description = "\"${songToDelete?.title}\" will be permanently deleted from storage."
         )
+    }
+
+    if(showDetailsDialog) {
+        songForDetails?.let { song ->
+            SongDetailDialog(
+                song = song,
+                onDismiss = {
+                    showDetailsDialog = false
+                }
+            )
+        }
     }
 
     LaunchedEffect(query) {
@@ -132,7 +147,8 @@ fun SearchScreen() {
                         showDeleteDialog = true
                     }
                     SongOptions.Details -> {
-
+                        songForDetails = song
+                        showDetailsDialog = true
                     }
                 }
             },

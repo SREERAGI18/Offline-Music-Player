@@ -429,7 +429,6 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         val player = this.player.value ?: return emptyList()
 
         return List(player.mediaItemCount) { index ->
-            Logger.logError(TAG, "getCurrentMediaList: $index ${player.getMediaItemAt(index)}")
             mediaMapper.mapToSong(player.getMediaItemAt(index))
         }
     }
