@@ -91,7 +91,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun MainBody() {
-        val navController = rememberNavController()
+        val rootNavController = rememberNavController()
         val mainNavController = rememberNavController()
 
         val viewModel = hiltViewModel<MainVM>()
@@ -101,9 +101,9 @@ class MainActivity : ComponentActivity() {
         var isSheetVisible by remember { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
 
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute: Screens? = remember(navBackStackEntry) {
-            Screens.fromRoute(navBackStackEntry?.destination?.route)
+        val rootNavBackStackEntry by rootNavController.currentBackStackEntryAsState()
+        val rootCurrentRoute: Screens? = remember(rootNavBackStackEntry) {
+            Screens.fromRoute(rootNavBackStackEntry?.destination?.route)
         }
         val mainNavBackStackEntry by mainNavController.currentBackStackEntryAsState()
         val mainCurrentRoute: Screens? = remember(mainNavBackStackEntry) {
@@ -111,7 +111,7 @@ class MainActivity : ComponentActivity() {
         }
 
 //        val showBackButton = currentRoute !is Screens.Home
-        val showTopBar = mainCurrentRoute !is Screens.PlaylistDetail && currentRoute !is Screens.NowPlayingQueue
+        val showTopBar = mainCurrentRoute !is Screens.PlaylistDetail && rootCurrentRoute !is Screens.NowPlayingQueue
         val topBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
 
@@ -157,14 +157,14 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     onNavigate = {
-                        navController.navigate(it)
+                        rootNavController.navigate(it)
                     }
                 )
             }
         }
 
         BackHandler {
-            navController.popBackStack()
+            rootNavController.popBackStack()
         }
 
         Scaffold(
@@ -224,11 +224,11 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Screens.bottomMenuItems.forEach { item ->
                             NavigationBarItem(
-                                selected = mainCurrentRoute == item.screen,
+                                selected = rootCurrentRoute == item.screen,
                                 onClick = {
-                                    navController.navigate(item.screen) {
+                                    rootNavController.navigate(item.screen) {
                                         // This is the key to independent back stacks
-                                        popUpTo(navController.graph.findStartDestination().id) {
+                                        popUpTo(rootNavController.graph.findStartDestination().id) {
                                             saveState = true
                                         }
                                         launchSingleTop = true
@@ -266,7 +266,7 @@ class MainActivity : ComponentActivity() {
                 LocalBottomScrollBehavior provides bottomBarScrollBehavior,
             ) {
                 RootNavHost(
-                    navController = navController,
+                    navController = rootNavController,
                     mainNavController = mainNavController,
                     modifier = Modifier.padding(innerPadding)
                 )
