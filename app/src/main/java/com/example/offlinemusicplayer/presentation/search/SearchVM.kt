@@ -1,12 +1,17 @@
 package com.example.offlinemusicplayer.presentation.search
 
+import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import com.example.offlinemusicplayer.domain.model.Playlist
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.DeleteSongById
+import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
 import com.example.offlinemusicplayer.domain.usecase.SearchSongs
 import com.example.offlinemusicplayer.domain.usecase.SearchSongsPaginated
+import com.example.offlinemusicplayer.domain.usecase.UpdatePlaylist
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -29,6 +35,8 @@ class SearchVM @Inject constructor(
     private val searchSongsPaginated: SearchSongsPaginated,
     private val searchSongs: SearchSongs,
     private val deleteSongById: DeleteSongById,
+    private val getPlaylists: GetPlaylists,
+    private val updatePlaylist: UpdatePlaylist,
     private val playerRepository: PlayerServiceRepository,
 ): ViewModel() {
     private val _searchQuery = MutableStateFlow("")
@@ -37,11 +45,17 @@ class SearchVM @Inject constructor(
     private val _deleteProgress: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val deleteProgress = _deleteProgress.asStateFlow()
 
+    val playlists = mutableStateListOf<Playlist>()
+
     val songs: Flow<PagingData<Song>> = searchQuery
         .debounce(300L)
         .flatMapLatest { query ->
             searchSongsPaginated(query)
         }
+
+    init {
+        getPlaylist()
+    }
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
@@ -95,6 +109,23 @@ class SearchVM @Inject constructor(
             _deleteProgress.value = true
             deleteSongById(song)
             _deleteProgress.value = false
+        }
+    }
+
+    fun getPlaylist() {
+        viewModelScope.launch {
+            getPlaylists().collectLatest {
+                playlists.clear()
+                playlists.addAll(it)
+                Log.d("SongListVM", "playlists: $playlists")
+            }
+        }
+    }
+
+    fun addToPlaylist(song: Song, playlist: Playlist) {
+        viewModelScope.launch {
+            val updatedSongIds = playlist.songIds + song.id
+            updatePlaylist(songIds = updatedSongIds, playlist = playlist)
         }
     }
 }

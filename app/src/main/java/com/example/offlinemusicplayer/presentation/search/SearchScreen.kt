@@ -35,16 +35,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
-import com.example.offlinemusicplayer.presentation.components.DeleteConfirmDialog
-import com.example.offlinemusicplayer.presentation.components.ProgressDialog
-import com.example.offlinemusicplayer.presentation.components.SongDetailDialog
+import com.example.offlinemusicplayer.presentation.dialogs.DeleteConfirmDialog
+import com.example.offlinemusicplayer.presentation.dialogs.ProgressDialog
+import com.example.offlinemusicplayer.presentation.dialogs.SongDetailDialog
 import com.example.offlinemusicplayer.presentation.components.SongsList
+import com.example.offlinemusicplayer.presentation.dialogs.AddToPlaylistDialog
 
 @Composable
 fun SearchScreen() {
     val viewModel: SearchVM = hiltViewModel()
     val songs = viewModel.songs.collectAsLazyPagingItems()
     val deleteProgress by viewModel.deleteProgress.collectAsStateWithLifecycle()
+    val playlists = viewModel.playlists
 
     val focusRequester = remember { FocusRequester() }
 
@@ -56,8 +58,24 @@ fun SearchScreen() {
     var showDetailsDialog by remember { mutableStateOf(false) }
     var songForDetails by remember { mutableStateOf<Song?>(null) }
 
+    var showAddToPlaylistDialog by remember { mutableStateOf(false) }
+    var songForPlaylist by remember { mutableStateOf<Song?>(null) }
+
     if(deleteProgress) {
         ProgressDialog(title = "Deleting...")
+    }
+
+    if (showAddToPlaylistDialog) {
+        songForPlaylist?.let { song ->
+            AddToPlaylistDialog(
+                playlists = playlists.filter { !it.songIds.contains(song.id) },
+                onPlaylistSelected = { playlist ->
+                    viewModel.addToPlaylist(song, playlist)
+                    showAddToPlaylistDialog = false
+                },
+                onDismiss = { showAddToPlaylistDialog = false }
+            )
+        }
     }
 
     if(showDeleteDialog) {
@@ -138,6 +156,10 @@ fun SearchScreen() {
                     }
                     SongOptions.AddToQueue -> {
                         viewModel.addToQueue(song)
+                    }
+                    SongOptions.AddToPlaylist -> {
+                        songForPlaylist = song
+                        showAddToPlaylistDialog = true
                     }
 //                    SongOptions.EditSongInfo -> {
 //

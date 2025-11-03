@@ -17,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -48,8 +49,10 @@ class PlaylistDetailVM @Inject constructor(
 
     fun getSongs() {
         viewModelScope.launch {
-            playlist.value?.let { currentPlayList ->
-                songs.addAll(getSongsByIds(currentPlayList.songIds))
+            playlist.collectLatest { currentPlayList ->
+                if(currentPlayList != null) {
+                    songs.addAll(getSongsByIds(currentPlayList.songIds))
+                }
             }
         }
     }
@@ -71,7 +74,7 @@ class PlaylistDetailVM @Inject constructor(
 
     fun removeSongFromPlaylist(song: Song) {
         viewModelScope.launch {
-            removeSongFromPlaylist(playlistId, song.id)
+            removeSongFromPlaylist(playlistId = playlistId, songId =  song.id)
             songs.remove(song)
         }
     }

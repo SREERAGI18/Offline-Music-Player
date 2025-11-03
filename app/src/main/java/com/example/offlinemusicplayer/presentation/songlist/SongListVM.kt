@@ -1,13 +1,17 @@
 package com.example.offlinemusicplayer.presentation.songlist
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import com.example.offlinemusicplayer.domain.model.Playlist
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.DeleteSongById
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongsPaginated
+import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
+import com.example.offlinemusicplayer.domain.usecase.UpdatePlaylist
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,17 +28,21 @@ import javax.inject.Inject
 class SongListVM @Inject constructor(
     getAllSongsPaginated: GetAllSongsPaginated,
     private val getAllSongs: GetAllSongs,
+    private val getPlaylists: GetPlaylists,
+    private val updatePlaylist: UpdatePlaylist,
     private val deleteSongById: DeleteSongById,
     private val playerRepository: PlayerServiceRepository,
 ) : ViewModel() {
 
     val songs: Flow<PagingData<Song>> = getAllSongsPaginated()
+    val playlists = mutableStateListOf<Playlist>()
 
     private val _deleteProgress: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val deleteProgress = _deleteProgress.asStateFlow()
 
     init {
         setMediaList(0)
+        getPlaylist()
     }
 
     fun setMediaList(initialSongPosition:Int) {
@@ -89,6 +97,23 @@ class SongListVM @Inject constructor(
             _deleteProgress.value = true
             deleteSongById(song)
             _deleteProgress.value = false
+        }
+    }
+
+    fun getPlaylist() {
+        viewModelScope.launch {
+            getPlaylists().collectLatest {
+                playlists.clear()
+                playlists.addAll(it)
+                Log.d("SongListVM", "playlists: $playlists")
+            }
+        }
+    }
+
+    fun addToPlaylist(song: Song, playlist: Playlist) {
+        viewModelScope.launch {
+            val updatedSongIds = playlist.songIds + song.id
+            updatePlaylist(songIds = updatedSongIds, playlist = playlist)
         }
     }
 

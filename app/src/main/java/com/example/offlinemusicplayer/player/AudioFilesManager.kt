@@ -12,7 +12,6 @@ import android.os.Looper
 import android.provider.BaseColumns
 import android.provider.MediaStore
 import android.provider.MediaStore.Audio.AudioColumns
-import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -33,7 +32,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AudioFilesFetcher(
+class AudioFilesManager(
     private val context: Context,
     private val songsDao: SongsDao
 ) {

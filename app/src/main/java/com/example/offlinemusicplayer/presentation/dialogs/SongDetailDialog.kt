@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.presentation.components
+package com.example.offlinemusicplayer.presentation.dialogs
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

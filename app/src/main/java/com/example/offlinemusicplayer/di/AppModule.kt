@@ -22,7 +22,8 @@ import com.example.offlinemusicplayer.domain.usecase.GetSongsByIdsPaginated
 import com.example.offlinemusicplayer.domain.usecase.RemoveSongFromPlaylist
 import com.example.offlinemusicplayer.domain.usecase.SearchSongs
 import com.example.offlinemusicplayer.domain.usecase.SearchSongsPaginated
-import com.example.offlinemusicplayer.player.AudioFilesFetcher
+import com.example.offlinemusicplayer.domain.usecase.UpdatePlaylist
+import com.example.offlinemusicplayer.player.AudioFilesManager
 import com.example.offlinemusicplayer.player.MusicService
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import com.example.offlinemusicplayer.player.PlayerServiceRepositoryImpl
@@ -50,13 +51,15 @@ object AppModule {
     @Provides
     fun provideSongsRepository(
         songsDao: SongsDao,
-        playlistDao: PlaylistDao,
-        audioFilesFetcher: AudioFilesFetcher
+        getPlaylists: GetPlaylists,
+        updatePlaylist: UpdatePlaylist,
+        audioFilesManager: AudioFilesManager
     ): SongsRepository =
         SongsRepositoryImpl(
             songsDao = songsDao,
-            playlistDao = playlistDao,
-            audioFilesFetcher = audioFilesFetcher
+            getPlaylists = getPlaylists,
+            updatePlaylist = updatePlaylist,
+            audioFilesManager = audioFilesManager
         )
 
     @Provides
@@ -92,13 +95,16 @@ object AppModule {
     fun provideCreatePlaylist(repo: PlaylistRepository) = CreatePlaylist(repo)
 
     @Provides
+    fun provideUpdatePlaylist(repo: PlaylistRepository) = UpdatePlaylist(repo)
+
+    @Provides
     fun provideGetPlaylistById(repo: PlaylistRepository) = GetPlaylistById(repo)
 
     @Provides
     fun provideRemoveSongFromPlaylist(repo: PlaylistRepository) = RemoveSongFromPlaylist(repo)
 
     @Provides
-    fun provideAudioFileFetcher(app: Application, songsDao: SongsDao) = AudioFilesFetcher(app, songsDao)
+    fun provideAudioFileFetcher(app: Application, songsDao: SongsDao) = AudioFilesManager(app, songsDao)
 
     @Provides
     fun providePreferenceManager(app: Application) = PreferencesManager(app)

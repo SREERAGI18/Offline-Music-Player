@@ -42,10 +42,11 @@ import com.example.offlinemusicplayer.domain.model.Song
 
 @Composable
 fun SongSelectionDialog(
+    modifier: Modifier = Modifier,
     songs: List<Song>,
+    selectedSongIds: List<Long> = emptyList(),
     onSubmit: (List<Song>) -> Unit,
     onCancel: () -> Unit,
-    modifier: Modifier = Modifier,
     title: String = stringResource(id = R.string.select_songs)
 ) {
     val songsList = remember { mutableStateListOf<Song>() }
@@ -53,6 +54,12 @@ fun SongSelectionDialog(
     LaunchedEffect(songs) {
         songsList.clear()
         songsList.addAll(songs.map { it.copy() })
+    }
+
+    LaunchedEffect(Unit) {
+        songsList.forEach { song ->
+            song.selected = song.id in selectedSongIds
+        }
     }
 
     Dialog(

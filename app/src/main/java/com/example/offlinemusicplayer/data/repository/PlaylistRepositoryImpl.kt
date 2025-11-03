@@ -28,6 +28,17 @@ class PlaylistRepositoryImpl(
         )
     }
 
+    override suspend fun updatePlaylist(
+        selectedSongIds: List<Long>,
+        playlist: Playlist
+    ) {
+        playlistDao.updatePlaylist(
+            playlist.copy(
+                songIds = selectedSongIds
+            ).toPlaylistEntity()
+        )
+    }
+
     override suspend fun removeSongFromPlaylist(songId: Long, playlistId: Long) {
         // 1. Get the current playlist
         val currentPlaylist = getPlaylistById(playlistId).first()
@@ -38,13 +49,8 @@ class PlaylistRepositoryImpl(
                 remove(songId)
             }
 
-            // 3. Create an updated playlist object
-            val updatedPlaylist = currentPlaylist.copy(
-                songIds = updatedSongIds
-            )
-
-            // 4. Update the playlist in the database
-            playlistDao.updatePlaylist(updatedPlaylist.toPlaylistEntity())
+            // 3. update playlist with updated Ids
+            updatePlaylist(updatedSongIds, currentPlaylist)
         }
     }
 }
