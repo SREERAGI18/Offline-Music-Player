@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.example.offlinemusicplayer.domain.model.Song
+import com.example.offlinemusicplayer.domain.usecase.DeleteSongById
 import com.example.offlinemusicplayer.domain.usecase.SearchSongs
 import com.example.offlinemusicplayer.domain.usecase.SearchSongsPaginated
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
@@ -27,10 +28,14 @@ import javax.inject.Inject
 class SearchVM @Inject constructor(
     private val searchSongsPaginated: SearchSongsPaginated,
     private val searchSongs: SearchSongs,
+    private val deleteSongById: DeleteSongById,
     private val playerRepository: PlayerServiceRepository,
 ): ViewModel() {
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+
+    private val _deleteProgress: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val deleteProgress = _deleteProgress.asStateFlow()
 
     val songs: Flow<PagingData<Song>> = searchQuery
         .debounce(300L)
@@ -82,6 +87,14 @@ class SearchVM @Inject constructor(
                 // Only add the song if it's not already in the queue
                 playerRepository.addMedia(song)
             }
+        }
+    }
+
+    fun deleteSongFile(song: Song) {
+        viewModelScope.launch {
+            _deleteProgress.value = true
+            deleteSongById(song)
+            _deleteProgress.value = false
         }
     }
 }

@@ -31,18 +31,43 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
+import com.example.offlinemusicplayer.domain.model.Song
+import com.example.offlinemusicplayer.presentation.components.DeleteConfirmDialog
+import com.example.offlinemusicplayer.presentation.components.ProgressDialog
 import com.example.offlinemusicplayer.presentation.components.SongsList
 
 @Composable
 fun SearchScreen() {
     val viewModel: SearchVM = hiltViewModel()
     val songs = viewModel.songs.collectAsLazyPagingItems()
+    val deleteProgress by viewModel.deleteProgress.collectAsStateWithLifecycle()
 
     val focusRequester = remember { FocusRequester() }
 
     var query by rememberSaveable { mutableStateOf("") }
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var songToDelete by remember { mutableStateOf<Song?>(null) }
+
+    if(deleteProgress) {
+        ProgressDialog(title = "Deleting...")
+    }
+
+    if(showDeleteDialog) {
+        DeleteConfirmDialog(
+            onDismiss = { showDeleteDialog = false },
+            onConfirm = {
+                songToDelete?.let { song ->
+                    viewModel.deleteSongFile(song)
+                }
+                showDeleteDialog = false
+            },
+            description = "\"${songToDelete?.title}\" will be permanently deleted from storage."
+        )
+    }
 
     LaunchedEffect(query) {
         viewModel.updateSearchQuery(query)
@@ -103,7 +128,8 @@ fun SearchScreen() {
 
                     }
                     SongOptions.Delete -> {
-
+                        songToDelete = song
+                        showDeleteDialog = true
                     }
                     SongOptions.Details -> {
 

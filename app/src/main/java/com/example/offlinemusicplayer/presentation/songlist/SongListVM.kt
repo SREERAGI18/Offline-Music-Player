@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import com.example.offlinemusicplayer.domain.model.Song
+import com.example.offlinemusicplayer.domain.usecase.DeleteSongById
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongsPaginated
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
@@ -12,6 +13,8 @@ import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -21,10 +24,14 @@ import javax.inject.Inject
 class SongListVM @Inject constructor(
     getAllSongsPaginated: GetAllSongsPaginated,
     private val getAllSongs: GetAllSongs,
+    private val deleteSongById: DeleteSongById,
     private val playerRepository: PlayerServiceRepository,
 ) : ViewModel() {
 
     val songs: Flow<PagingData<Song>> = getAllSongsPaginated()
+
+    private val _deleteProgress: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val deleteProgress = _deleteProgress.asStateFlow()
 
     init {
         setMediaList(0)
@@ -74,6 +81,14 @@ class SongListVM @Inject constructor(
                 // Only add the song if it's not already in the queue
                 playerRepository.addMedia(song)
             }
+        }
+    }
+
+    fun deleteSongFile(song: Song) {
+        viewModelScope.launch {
+            _deleteProgress.value = true
+            deleteSongById(song)
+            _deleteProgress.value = false
         }
     }
 

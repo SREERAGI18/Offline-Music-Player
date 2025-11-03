@@ -12,6 +12,7 @@ import com.example.offlinemusicplayer.data.repository.PlaylistRepositoryImpl
 import com.example.offlinemusicplayer.data.repository.SongsRepository
 import com.example.offlinemusicplayer.data.repository.SongsRepositoryImpl
 import com.example.offlinemusicplayer.domain.usecase.CreatePlaylist
+import com.example.offlinemusicplayer.domain.usecase.DeleteSongById
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongsPaginated
 import com.example.offlinemusicplayer.domain.usecase.GetPlaylistById
@@ -49,10 +50,12 @@ object AppModule {
     @Provides
     fun provideSongsRepository(
         songsDao: SongsDao,
+        playlistDao: PlaylistDao,
         audioFilesFetcher: AudioFilesFetcher
     ): SongsRepository =
         SongsRepositoryImpl(
             songsDao = songsDao,
+            playlistDao = playlistDao,
             audioFilesFetcher = audioFilesFetcher
         )
 
@@ -78,6 +81,9 @@ object AppModule {
 
     @Provides
     fun provideGetSongsById(repo: SongsRepository) = GetSongsByIds(repo)
+
+    @Provides
+    fun provideDeleteSongById(repo: SongsRepository) = DeleteSongById(repo)
 
     @Provides
     fun provideGetPlaylists(repo: PlaylistRepository) = GetPlaylists(repo)

@@ -1,6 +1,7 @@
 package com.example.offlinemusicplayer.player
 
 import android.Manifest
+import android.content.ContentUris
 import android.content.Context
 import android.content.pm.PackageManager
 import android.database.ContentObserver
@@ -30,6 +31,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AudioFilesFetcher(
     private val context: Context,
@@ -53,6 +55,35 @@ class AudioFilesFetcher(
     private suspend fun isCacheValid(): Boolean {
         val lastScan = songsDao.getLastScanTime() ?: return false
         return (System.currentTimeMillis() - lastScan) < CACHE_VALIDITY_MS
+    }
+
+    suspend fun deleteSongFile(song: Song) {
+        withContext(Dispatchers.IO) {
+            try {
+                // 1. Get the content URI for the song
+                val contentUri = ContentUris.withAppendedId(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    song.id
+                )
+
+                // 2. Use ContentResolver to delete the file
+                val deletedRows = context.contentResolver.delete(contentUri, null, null)
+
+                if (deletedRows > 0) {
+                    // 3. If file deletion was successful, remove from the local database
+                    songsDao.deleteSongById(song.id)
+                } else {
+                    // Handle the case where the file couldn't be deleted
+                    Logger.logError("AudioFilesFetcher", "Failed to delete file for song ID: ${song.id}")
+                }
+            } catch (e: SecurityException) {
+                // This can happen if you don't have the correct permissions,
+                // especially on Android 10+ for files you don't own.
+                Logger.logError("AudioFilesFetcher", "SecurityException on deleting song: ${e.message}")
+            } catch (e: Exception) {
+                Logger.logError("AudioFilesFetcher", "Error deleting song: ${e.message}")
+            }
+        }
     }
 
     // Check if permissions are granted
