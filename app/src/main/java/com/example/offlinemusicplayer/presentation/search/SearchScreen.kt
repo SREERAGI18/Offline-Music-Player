@@ -139,9 +139,9 @@ fun SearchScreen() {
                     SongOptions.AddToQueue -> {
                         viewModel.addToQueue(song)
                     }
-                    SongOptions.EditSongInfo -> {
-
-                    }
+//                    SongOptions.EditSongInfo -> {
+//
+//                    }
                     SongOptions.Delete -> {
                         songToDelete = song
                         showDeleteDialog = true
