@@ -1,16 +1,11 @@
 package com.example.offlinemusicplayer.presentation.songlist
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -27,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.offlinemusicplayer.presentation.components.SongsList
 import kotlinx.coroutines.launch
 
@@ -36,10 +30,17 @@ fun SongListScreen() {
     val viewModel: SongListVM = hiltViewModel()
     val songs = viewModel.songs
 
-    val currentMediaIndex by viewModel.currentMediaIndex.collectAsStateWithLifecycle()
+    val currentMedia by viewModel.currentMedia.collectAsStateWithLifecycle()
+    var currentMediaIndex by remember {
+        mutableIntStateOf(-1)
+    }
 
     val songListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(currentMedia) {
+        currentMediaIndex = viewModel.getMediaIndex(currentMedia)
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -56,8 +57,8 @@ fun SongListScreen() {
         FloatingActionButton(
             onClick = {
                 scope.launch {
-                    currentMediaIndex?.let {
-                        songListState.animateScrollToItem(it)
+                    if(currentMediaIndex != -1) {
+                        songListState.animateScrollToItem(currentMediaIndex)
                     }
                 }
             },

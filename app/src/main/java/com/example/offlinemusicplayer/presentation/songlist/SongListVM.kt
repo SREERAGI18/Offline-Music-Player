@@ -26,7 +26,7 @@ class SongListVM @Inject constructor(
 ) : ViewModel() {
 
     val songs = mutableStateListOf<Song>()
-    val currentMediaIndex = playerRepository.currentMediaIndex
+    val currentMedia = playerRepository.currentMedia
 
     init {
         setMediaList(0)
@@ -53,5 +53,11 @@ class SongListVM @Inject constructor(
         setMediaList(index)
         playerRepository.skipToMediaByIndex(index)
         playerRepository.play()
+    }
+
+    fun getMediaIndex(currentMedia: Song?): Int {
+        val index = songs.indexOfFirst { it.id == currentMedia?.id }
+
+        return index
     }
 }
