@@ -18,6 +18,7 @@ import com.example.offlinemusicplayer.domain.usecase.GetPlaylistById
 import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
 import com.example.offlinemusicplayer.domain.usecase.GetSongsByIds
 import com.example.offlinemusicplayer.domain.usecase.GetSongsByIdsPaginated
+import com.example.offlinemusicplayer.domain.usecase.RemoveSongFromPlaylist
 import com.example.offlinemusicplayer.domain.usecase.SearchSongs
 import com.example.offlinemusicplayer.domain.usecase.SearchSongsPaginated
 import com.example.offlinemusicplayer.player.AudioFilesFetcher
@@ -86,6 +87,9 @@ object AppModule {
 
     @Provides
     fun provideGetPlaylistById(repo: PlaylistRepository) = GetPlaylistById(repo)
+
+    @Provides
+    fun provideRemoveSongFromPlaylist(repo: PlaylistRepository) = RemoveSongFromPlaylist(repo)
 
     @Provides
     fun provideAudioFileFetcher(app: Application, songsDao: SongsDao) = AudioFilesFetcher(app, songsDao)

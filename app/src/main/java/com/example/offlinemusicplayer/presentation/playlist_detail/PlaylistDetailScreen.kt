@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,10 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,12 +32,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.offlinemusicplayer.R
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
-import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
-import com.example.offlinemusicplayer.domain.model.Song
-import com.example.offlinemusicplayer.presentation.components.SongsList
+import com.example.offlinemusicplayer.domain.enum_classes.PlaylistSongOptions
+import com.example.offlinemusicplayer.presentation.components.PlaylistSongList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +44,7 @@ fun PlaylistDetailScreen(
 ) {
     val viewModel: PlaylistDetailVM = hiltViewModel()
     val playlist by viewModel.playlist.collectAsStateWithLifecycle()
-    val songs = viewModel.songs.collectAsLazyPagingItems()
+    val songs = viewModel.songs
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -134,34 +128,31 @@ fun PlaylistDetailScreen(
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Text(
-                    text = "${songs.itemCount} Songs",
+                    text = "${songs.size} Songs",
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }
 
-        if(songs.itemCount != 0) {
-            SongsList(
+        if(songs.isNotEmpty()) {
+            PlaylistSongList(
                 songs = songs,
                 onSongClick = { song, index ->
                     viewModel.playSong(index)
                 },
+                onSongMoved = { from, to ->
+                    viewModel.moveSong(from, to)
+                },
                 onOptionSelected = { song, option ->
                     when(option) {
-                        SongOptions.PlayNext -> {
+                        PlaylistSongOptions.PlayNext -> {
                             viewModel.playNext(song)
                         }
-                        SongOptions.AddToQueue -> {
+                        PlaylistSongOptions.AddToQueue -> {
                             viewModel.addToQueue(song)
                         }
-                        SongOptions.EditSongInfo -> {
-
-                        }
-                        SongOptions.Delete -> {
-
-                        }
-                        SongOptions.Details -> {
-
+                        PlaylistSongOptions.RemoveFromPlaylist -> {
+                            viewModel.removeSongFromPlaylist(song)
                         }
                     }
                 },
