@@ -1,7 +1,10 @@
 package com.example.offlinemusicplayer.presentation.songlist
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -14,28 +17,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
+import com.example.offlinemusicplayer.presentation.components.SongsList
+import com.example.offlinemusicplayer.presentation.components.VerticalAlphabetScroller
+import com.example.offlinemusicplayer.presentation.dialogs.AddToPlaylistDialog
 import com.example.offlinemusicplayer.presentation.dialogs.DeleteConfirmDialog
 import com.example.offlinemusicplayer.presentation.dialogs.ProgressDialog
 import com.example.offlinemusicplayer.presentation.dialogs.SongDetailDialog
-import com.example.offlinemusicplayer.presentation.components.SongsList
 import kotlinx.coroutines.launch
-import com.example.offlinemusicplayer.presentation.dialogs.AddToPlaylistDialog
 
 @Composable
 fun SongListScreen() {
@@ -108,53 +107,83 @@ fun SongListScreen() {
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        SongsList(
-            onSongClick = { song, index ->
-                viewModel.playSong(index)
-            },
-            onOptionSelected = { song, option ->
-                when(option) {
-                    SongOptions.PlayNext -> {
-                        viewModel.playNext(song)
-                    }
-                    SongOptions.AddToQueue -> {
-                        viewModel.addToQueue(song)
-                    }
-                    SongOptions.AddToPlaylist -> {
-                        songForPlaylist = song
-                        showAddToPlaylistDialog = true
-                    }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SongsList(
+                onSongClick = { song, index ->
+                    viewModel.playSong(index)
+                },
+                onOptionSelected = { song, option ->
+                    when(option) {
+                        SongOptions.PlayNext -> {
+                            viewModel.playNext(song)
+                        }
+                        SongOptions.AddToQueue -> {
+                            viewModel.addToQueue(song)
+                        }
+                        SongOptions.AddToPlaylist -> {
+                            songForPlaylist = song
+                            showAddToPlaylistDialog = true
+                        }
 //                SongOptions.EditSongInfo -> {
 //
 //                }
-                    SongOptions.Delete -> {
-                        songToDelete = song
-                        showDeleteDialog = true
+                        SongOptions.Delete -> {
+                            songToDelete = song
+                            showDeleteDialog = true
+                        }
+                        SongOptions.Details -> {
+                            songForDetails = song
+                            showDetailsDialog = true
+                        }
                     }
-                    SongOptions.Details -> {
-                        songForDetails = song
-                        showDetailsDialog = true
+                },
+                scrollState = songListState,
+                currentPlayingIndex = currentMediaIndex,
+                songs = songs,
+                modifier = Modifier.weight(1f)
+            )
+
+            VerticalAlphabetScroller(
+                onLetterSelected = { letter ->
+                    val index = (0 until songs.size).find { i ->
+                        val songTitle = songs[i].title
+                        val firstChar = songTitle.firstOrNull()?.uppercaseChar()
+                        if (letter == "#") {
+                            firstChar !in 'A'..'Z'
+                        } else {
+                            firstChar == letter.first()
+                        }
                     }
-                }
-            },
-            scrollState = songListState,
-            currentPlayingIndex = currentMediaIndex,
-            songs = songs,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
+                    if (index != null) {
+                        scope.launch {
+                            songListState.scrollToItem(index)
+                        }
+                    }
+                },
+                scope = scope,
+                modifier = Modifier
+                    .fillMaxHeight(0.9f)
+//                    .padding(end = 4.dp)
+            )
+        }
 
         FloatingActionButton(
             onClick = {
                 scope.launch {
                     if(currentMediaIndex != -1) {
-                        songListState.animateScrollToItem(currentMediaIndex)
+                        songListState.scrollToItem(currentMediaIndex)
                     }
                 }
             },
             shape = CircleShape,
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp)
+                .align(Alignment.BottomStart)
+                .padding(start = 16.dp)
                 .padding(bottom = 16.dp),
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
