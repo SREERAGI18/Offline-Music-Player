@@ -11,4 +11,5 @@ interface SongsRepository {
     fun getSongsByIdsPaginated(songIds: List<Long>): Flow<PagingData<Song>>
     suspend fun getSongsByIds(songIds: List<Long>): List<Song>
     suspend fun getAllSongs(): List<Song>
+    suspend fun deleteSongFileById(song: Song)
 }

@@ -12,15 +12,18 @@ import com.example.offlinemusicplayer.data.repository.PlaylistRepositoryImpl
 import com.example.offlinemusicplayer.data.repository.SongsRepository
 import com.example.offlinemusicplayer.data.repository.SongsRepositoryImpl
 import com.example.offlinemusicplayer.domain.usecase.CreatePlaylist
+import com.example.offlinemusicplayer.domain.usecase.DeleteSongById
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongsPaginated
 import com.example.offlinemusicplayer.domain.usecase.GetPlaylistById
 import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
 import com.example.offlinemusicplayer.domain.usecase.GetSongsByIds
 import com.example.offlinemusicplayer.domain.usecase.GetSongsByIdsPaginated
+import com.example.offlinemusicplayer.domain.usecase.RemoveSongFromPlaylist
 import com.example.offlinemusicplayer.domain.usecase.SearchSongs
 import com.example.offlinemusicplayer.domain.usecase.SearchSongsPaginated
-import com.example.offlinemusicplayer.player.AudioFilesFetcher
+import com.example.offlinemusicplayer.domain.usecase.UpdatePlaylist
+import com.example.offlinemusicplayer.player.AudioFilesManager
 import com.example.offlinemusicplayer.player.MusicService
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import com.example.offlinemusicplayer.player.PlayerServiceRepositoryImpl
@@ -48,11 +51,15 @@ object AppModule {
     @Provides
     fun provideSongsRepository(
         songsDao: SongsDao,
-        audioFilesFetcher: AudioFilesFetcher
+        getPlaylists: GetPlaylists,
+        updatePlaylist: UpdatePlaylist,
+        audioFilesManager: AudioFilesManager
     ): SongsRepository =
         SongsRepositoryImpl(
             songsDao = songsDao,
-            audioFilesFetcher = audioFilesFetcher
+            getPlaylists = getPlaylists,
+            updatePlaylist = updatePlaylist,
+            audioFilesManager = audioFilesManager
         )
 
     @Provides
@@ -79,16 +86,25 @@ object AppModule {
     fun provideGetSongsById(repo: SongsRepository) = GetSongsByIds(repo)
 
     @Provides
+    fun provideDeleteSongById(repo: SongsRepository) = DeleteSongById(repo)
+
+    @Provides
     fun provideGetPlaylists(repo: PlaylistRepository) = GetPlaylists(repo)
 
     @Provides
     fun provideCreatePlaylist(repo: PlaylistRepository) = CreatePlaylist(repo)
 
     @Provides
+    fun provideUpdatePlaylist(repo: PlaylistRepository) = UpdatePlaylist(repo)
+
+    @Provides
     fun provideGetPlaylistById(repo: PlaylistRepository) = GetPlaylistById(repo)
 
     @Provides
-    fun provideAudioFileFetcher(app: Application, songsDao: SongsDao) = AudioFilesFetcher(app, songsDao)
+    fun provideRemoveSongFromPlaylist(repo: PlaylistRepository) = RemoveSongFromPlaylist(repo)
+
+    @Provides
+    fun provideAudioFileFetcher(app: Application, songsDao: SongsDao) = AudioFilesManager(app, songsDao)
 
     @Provides
     fun providePreferenceManager(app: Application) = PreferencesManager(app)

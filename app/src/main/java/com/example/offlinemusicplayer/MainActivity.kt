@@ -6,11 +6,13 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +34,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -70,9 +74,30 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
         setContent {
             OfflineMusicPlayerTheme {
+
+                val isDarkTheme = isSystemInDarkTheme()
+                val primaryArgb = MaterialTheme.colorScheme.primary.toArgb()
+                val backgroundArgb = MaterialTheme.colorScheme.background.toArgb()
+
+                SideEffect {
+                    enableEdgeToEdge(
+                        statusBarStyle = SystemBarStyle.auto(
+                            primaryArgb,
+                            primaryArgb,
+                        ) {
+                            // This lambda determines whether to use dark icons based on the background luminance
+                            // Return true for dark icons on a light background, false for light icons on a dark background
+                            !isDarkTheme
+                        },
+                        navigationBarStyle = SystemBarStyle.auto(
+                            backgroundArgb,
+                            backgroundArgb,
+                        )
+                    )
+                }
 
                 isPermissionGranted = checkIfPermissionGranted()
                 if (!isPermissionGranted) {
@@ -91,7 +116,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun MainBody() {
-        val navController = rememberNavController()
+        val rootNavController = rememberNavController()
         val mainNavController = rememberNavController()
 
         val viewModel = hiltViewModel<MainVM>()
@@ -101,9 +126,9 @@ class MainActivity : ComponentActivity() {
         var isSheetVisible by remember { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
 
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute: Screens? = remember(navBackStackEntry) {
-            Screens.fromRoute(navBackStackEntry?.destination?.route)
+        val rootNavBackStackEntry by rootNavController.currentBackStackEntryAsState()
+        val rootCurrentRoute: Screens? = remember(rootNavBackStackEntry) {
+            Screens.fromRoute(rootNavBackStackEntry?.destination?.route)
         }
         val mainNavBackStackEntry by mainNavController.currentBackStackEntryAsState()
         val mainCurrentRoute: Screens? = remember(mainNavBackStackEntry) {
@@ -111,7 +136,7 @@ class MainActivity : ComponentActivity() {
         }
 
 //        val showBackButton = currentRoute !is Screens.Home
-        val showTopBar = mainCurrentRoute !is Screens.PlaylistDetail && currentRoute !is Screens.NowPlayingQueue
+        val showTopBar = mainCurrentRoute !is Screens.PlaylistDetail && rootCurrentRoute !is Screens.NowPlayingQueue
         val topBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
 
@@ -157,14 +182,14 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     onNavigate = {
-                        navController.navigate(it)
+                        rootNavController.navigate(it)
                     }
                 )
             }
         }
 
         BackHandler {
-            navController.popBackStack()
+            rootNavController.popBackStack()
         }
 
         Scaffold(
@@ -200,7 +225,8 @@ class MainActivity : ComponentActivity() {
                         },
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = MaterialTheme.colorScheme.primary,
-                            titleContentColor = MaterialTheme.colorScheme.onPrimary
+                            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                            scrolledContainerColor = MaterialTheme.colorScheme.primary
                         ),
                     )
                 }
@@ -224,11 +250,11 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Screens.bottomMenuItems.forEach { item ->
                             NavigationBarItem(
-                                selected = mainCurrentRoute == item.screen,
+                                selected = rootCurrentRoute == item.screen,
                                 onClick = {
-                                    navController.navigate(item.screen) {
+                                    rootNavController.navigate(item.screen) {
                                         // This is the key to independent back stacks
-                                        popUpTo(navController.graph.findStartDestination().id) {
+                                        popUpTo(rootNavController.graph.findStartDestination().id) {
                                             saveState = true
                                         }
                                         launchSingleTop = true
@@ -266,7 +292,7 @@ class MainActivity : ComponentActivity() {
                 LocalBottomScrollBehavior provides bottomBarScrollBehavior,
             ) {
                 RootNavHost(
-                    navController = navController,
+                    navController = rootNavController,
                     mainNavController = mainNavController,
                     modifier = Modifier.padding(innerPadding)
                 )

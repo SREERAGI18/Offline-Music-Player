@@ -7,13 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.History
@@ -23,16 +21,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,11 +32,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.offlinemusicplayer.R
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
-import com.example.offlinemusicplayer.domain.model.Song
-import com.example.offlinemusicplayer.presentation.components.SongsList
+import com.example.offlinemusicplayer.domain.enum_classes.PlaylistSongOptions
+import com.example.offlinemusicplayer.presentation.components.PlaylistSongList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,21 +44,7 @@ fun PlaylistDetailScreen(
 ) {
     val viewModel: PlaylistDetailVM = hiltViewModel()
     val playlist by viewModel.playlist.collectAsStateWithLifecycle()
-    val songs = viewModel.songs.collectAsLazyPagingItems()
-    val currentMedia by viewModel.currentMedia.collectAsStateWithLifecycle()
-
-    val songListState = rememberLazyListState()
-
-    var currentPlayingIndex by remember {
-        mutableIntStateOf(0)
-    }
-
-    LaunchedEffect(currentMedia, songs) {
-        currentPlayingIndex = songs
-            .itemSnapshotList
-            .items
-            .indexOfFirst { currentMedia?.id == it.id }
-    }
+    val songs = viewModel.songs
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -152,20 +128,34 @@ fun PlaylistDetailScreen(
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Text(
-                    text = "${songs.itemCount} Songs",
+                    text = "${songs.size} Songs",
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }
 
-        if(songs.itemCount != 0) {
-            SongsList(
+        if(songs.isNotEmpty()) {
+            PlaylistSongList(
                 songs = songs,
-                scrollState = songListState,
                 onSongClick = { song, index ->
                     viewModel.playSong(index)
                 },
-                currentPlayingIndex = currentPlayingIndex,
+                onSongMoved = { from, to ->
+                    viewModel.moveSong(from, to)
+                },
+                onOptionSelected = { song, option ->
+                    when(option) {
+                        PlaylistSongOptions.PlayNext -> {
+                            viewModel.playNext(song)
+                        }
+                        PlaylistSongOptions.AddToQueue -> {
+                            viewModel.addToQueue(song)
+                        }
+                        PlaylistSongOptions.RemoveFromPlaylist -> {
+                            viewModel.removeSongFromPlaylist(song)
+                        }
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)

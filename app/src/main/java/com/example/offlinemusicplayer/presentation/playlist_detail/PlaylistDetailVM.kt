@@ -1,27 +1,23 @@
 package com.example.offlinemusicplayer.presentation.playlist_detail
 
-import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.example.offlinemusicplayer.domain.model.Playlist
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.GetPlaylistById
 import com.example.offlinemusicplayer.domain.usecase.GetSongsByIds
 import com.example.offlinemusicplayer.domain.usecase.GetSongsByIdsPaginated
+import com.example.offlinemusicplayer.domain.usecase.RemoveSongFromPlaylist
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import com.example.offlinemusicplayer.presentation.navigation.Screens
 import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,6 +29,7 @@ class PlaylistDetailVM @Inject constructor(
     getPlaylistById: GetPlaylistById,
     private val getSongsByIdsPaginated: GetSongsByIdsPaginated,
     private val getSongsByIds: GetSongsByIds,
+    private val removeSongFromPlaylist: RemoveSongFromPlaylist,
     private val playerRepository: PlayerServiceRepository,
 ): ViewModel() {
     private val playlistId: Long = savedStateHandle[Screens.PLAYLIST_ID_KEY] ?: 0L
@@ -46,23 +43,27 @@ class PlaylistDetailVM @Inject constructor(
             initialValue = null
         )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val songs: Flow<PagingData<Song>> = playlist.flatMapLatest { currentPlaylist ->
-        if (currentPlaylist != null && currentPlaylist.songIds.isNotEmpty()) {
-            getSongsByIdsPaginated(currentPlaylist.songIds)
-        } else {
-            emptyFlow()
+    val songs = mutableStateListOf<Song>()
+
+    init {
+        getSongs()
+    }
+
+    fun getSongs() {
+        viewModelScope.launch {
+            playlist.collectLatest { currentPlayList ->
+                if(currentPlayList != null) {
+                    songs.addAll(getSongsByIds(currentPlayList.songIds))
+                }
+            }
         }
-    }.cachedIn(viewModelScope)
+    }
 
     fun setMediaList(initialSongPosition:Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            playlist.value?.let { currentPlayList ->
-                val songs = getSongsByIds(currentPlayList.songIds)
-                Logger.logError("PlaylistDetailVM", "songs: $songs")
-                withContext(Dispatchers.Main) {
-                    playerRepository.setMediaList(mediaList = songs, index = initialSongPosition)
-                }
+            Logger.logError("PlaylistDetailVM", "songs: $songs")
+            withContext(Dispatchers.Main) {
+                playerRepository.setMediaList(mediaList = songs, index = initialSongPosition)
             }
         }
     }
@@ -71,5 +72,44 @@ class PlaylistDetailVM @Inject constructor(
         setMediaList(index)
         playerRepository.skipToMediaByIndex(index)
         playerRepository.play()
+    }
+
+    fun removeSongFromPlaylist(song: Song) {
+        viewModelScope.launch {
+            removeSongFromPlaylist(playlistId = playlistId, songId =  song.id)
+            songs.remove(song)
+        }
+    }
+
+    fun moveSong(from: Int, to: Int) {
+        songs.add(to, songs.removeAt(from))
+        playerRepository.moveMedia(from, to)
+    }
+
+    fun playNext(song: Song) {
+        viewModelScope.launch {
+            // Find if the song already exists in the playlist
+            val existingIndex = playerRepository.findIndexOfSongInPlaylist(song.id)
+            val currentIndex = playerRepository.getCurrentMediaIndex()
+            val nextIndex = currentIndex + 1
+
+            if (existingIndex != null) {
+                // Song exists, move it
+                playerRepository.moveMedia(existingIndex, nextIndex)
+            } else {
+                // Song doesn't exist, add it
+                playerRepository.addMedia(nextIndex, song)
+            }
+        }
+    }
+
+    fun addToQueue(song: Song) {
+        viewModelScope.launch {
+            val existingIndex = playerRepository.findIndexOfSongInPlaylist(song.id)
+            if (existingIndex == null) {
+                // Only add the song if it's not already in the queue
+                playerRepository.addMedia(song)
+            }
+        }
     }
 }

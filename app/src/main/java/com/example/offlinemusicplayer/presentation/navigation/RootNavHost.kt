@@ -15,7 +15,7 @@ import com.example.offlinemusicplayer.presentation.search.SearchScreen
 fun RootNavHost(
     navController: NavHostController,
     mainNavController: NavHostController,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,

@@ -433,7 +433,6 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         val player = this.player.value ?: return emptyList()
 
         return List(player.mediaItemCount) { index ->
-            Logger.logError(TAG, "getCurrentMediaList: $index ${player.getMediaItemAt(index)}")
             mediaMapper.mapToSong(player.getMediaItemAt(index))
         }
     }
@@ -534,6 +533,16 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     override fun getCurrentMediaIndex(): Int {
         checkNotClosed()
         return player.value?.currentMediaItemIndex ?: 0
+    }
+
+    override fun findIndexOfSongInPlaylist(songId: Long?): Int? {
+        checkNotClosed()
+
+        val songs = getMediaList()
+
+        val songIndex = songs.indexOfFirst { it.id == songId }
+
+        return if(songIndex != -1) songIndex else null
     }
 
     override fun release() {
