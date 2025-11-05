@@ -12,6 +12,7 @@ import android.os.Looper
 import android.provider.BaseColumns
 import android.provider.MediaStore
 import android.provider.MediaStore.Audio.AudioColumns
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -31,6 +32,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.abs
 
 class AudioFilesManager(
     private val context: Context,
@@ -38,22 +40,14 @@ class AudioFilesManager(
 ) {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private var contentObserver: ContentObserver? = null
-    private val CACHE_VALIDITY_MS = 60 * 60 * 1000L
 
     init {
-        registerContentObserver()
         // Initial scan if needed
         scope.launch {
-            if (!isCacheValid() || songsDao.getCount() == 0) {
+            if (needsRefresh()) {
                 scanAndCacheSongs()
             }
         }
-    }
-
-    private suspend fun isCacheValid(): Boolean {
-        val lastScan = songsDao.getLastScanTime() ?: return false
-        return (System.currentTimeMillis() - lastScan) < CACHE_VALIDITY_MS
     }
 
     suspend fun deleteSongFile(song: Song) {
@@ -151,6 +145,8 @@ class AudioFilesManager(
             sortOrder
         )
 
+//        val songsChangeCount = getSongsChangeCount()
+
         query?.use { cursor ->
             val batch = mutableListOf<SongsEntity>()
 
@@ -201,11 +197,15 @@ class AudioFilesManager(
                 }
             }
 
-            if (batch.isNotEmpty()) {
-                songsDao.insertAll(batch)
-                totalProcessed += batch.size
-                onProgress?.invoke(totalProcessed, estimatedTotal)
-            }
+//            if(songsChangeCount > 0) {
+//                Toast.makeText(context, "$songsChangeCount songs added", Toast.LENGTH_SHORT).show()
+//            }
+
+//            if (batch.isNotEmpty()) {
+//                songsDao.insertAll(batch)
+//                totalProcessed += batch.size
+//                onProgress?.invoke(totalProcessed, estimatedTotal)
+//            }
         }
 
         return audioFiles
@@ -217,22 +217,6 @@ class AudioFilesManager(
             return setOf(MediaStore.VOLUME_EXTERNAL)
         }
         return MediaStore.getExternalVolumeNames(context)
-    }
-
-    private fun registerContentObserver() {
-        contentObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
-            override fun onChange(selfChange: Boolean) {
-                scope.launch {
-                    scanAndCacheSongs()
-                }
-            }
-        }
-
-        context.contentResolver.registerContentObserver(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            true,
-            contentObserver!!
-        )
     }
 
     fun getAllSongsPaged(): Flow<PagingData<SongsEntity>> {
@@ -274,10 +258,30 @@ class AudioFilesManager(
         scanAndCacheSongs()
     }
 
+    private suspend fun needsRefresh(): Boolean {
+        val dbCount = songsDao.getCount()
+        val mediaCount = getMediaStoreAudioCount()
+        return dbCount != mediaCount
+    }
+
+    private suspend fun getSongsChangeCount(): Int {
+        val dbCount = songsDao.getCount()
+        val mediaCount = getMediaStoreAudioCount()
+        return mediaCount-dbCount
+    }
+
+    private suspend fun getMediaStoreAudioCount(): Int = withContext(Dispatchers.IO) {
+        val projection = arrayOf(BaseColumns._ID)
+        context.contentResolver.query(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            projection,
+            "${MediaStore.Audio.Media.IS_MUSIC} != 0",
+            null,
+            null
+        )?.use { it.count } ?: 0
+    }
+
     fun cleanup() {
-        contentObserver?.let {
-            context.contentResolver.unregisterContentObserver(it)
-        }
         scope.cancel()
     }
 }
