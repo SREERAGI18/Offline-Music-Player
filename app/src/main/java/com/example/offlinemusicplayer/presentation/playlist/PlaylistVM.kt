@@ -3,9 +3,9 @@ package com.example.offlinemusicplayer.presentation.playlist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.offlinemusicplayer.domain.model.Song
-import com.example.offlinemusicplayer.domain.usecase.CreatePlaylist
-import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
-import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
+import com.example.offlinemusicplayer.domain.usecase.playlist.CreatePlaylist
+import com.example.offlinemusicplayer.domain.usecase.songs.GetAllSongs
+import com.example.offlinemusicplayer.domain.usecase.playlist.GetPlaylists
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

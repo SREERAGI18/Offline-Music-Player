@@ -6,10 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.offlinemusicplayer.domain.model.Playlist
 import com.example.offlinemusicplayer.domain.model.Song
-import com.example.offlinemusicplayer.domain.usecase.GetPlaylistById
-import com.example.offlinemusicplayer.domain.usecase.GetSongsByIds
-import com.example.offlinemusicplayer.domain.usecase.GetSongsByIdsPaginated
-import com.example.offlinemusicplayer.domain.usecase.RemoveSongFromPlaylist
+import com.example.offlinemusicplayer.domain.usecase.playlist.PlaylistUseCases
+import com.example.offlinemusicplayer.domain.usecase.songs.SongsUseCases
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import com.example.offlinemusicplayer.presentation.navigation.Screens
 import com.example.offlinemusicplayer.util.Logger
@@ -26,17 +24,15 @@ import javax.inject.Inject
 @HiltViewModel
 class PlaylistDetailVM @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    getPlaylistById: GetPlaylistById,
-    private val getSongsByIdsPaginated: GetSongsByIdsPaginated,
-    private val getSongsByIds: GetSongsByIds,
-    private val removeSongFromPlaylist: RemoveSongFromPlaylist,
+    private val playlistUseCases: PlaylistUseCases,
+    private val songsUseCases: SongsUseCases,
     private val playerRepository: PlayerServiceRepository,
 ): ViewModel() {
     private val playlistId: Long = savedStateHandle[Screens.PLAYLIST_ID_KEY] ?: 0L
 
     val currentMedia = playerRepository.currentMedia
 
-    val playlist: StateFlow<Playlist?> = getPlaylistById(playlistId)
+    val playlist: StateFlow<Playlist?> = playlistUseCases.getPlaylistById(playlistId)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -53,7 +49,7 @@ class PlaylistDetailVM @Inject constructor(
         viewModelScope.launch {
             playlist.collectLatest { currentPlayList ->
                 if(currentPlayList != null) {
-                    songs.addAll(getSongsByIds(currentPlayList.songIds))
+                    songs.addAll(songsUseCases.getSongsByIds(currentPlayList.songIds))
                 }
             }
         }
@@ -76,7 +72,7 @@ class PlaylistDetailVM @Inject constructor(
 
     fun removeSongFromPlaylist(song: Song) {
         viewModelScope.launch {
-            removeSongFromPlaylist(playlistId = playlistId, songId =  song.id)
+            playlistUseCases.removeSongFromPlaylist(playlistId = playlistId, songId =  song.id)
             songs.remove(song)
         }
     }

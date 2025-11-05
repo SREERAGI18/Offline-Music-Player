@@ -14,10 +14,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.offlinemusicplayer.MainActivity
 import com.example.offlinemusicplayer.domain.model.Playlist
 import com.example.offlinemusicplayer.domain.model.Song
-import com.example.offlinemusicplayer.domain.usecase.DeleteSongById
-import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
-import com.example.offlinemusicplayer.domain.usecase.GetRecentSongs
-import com.example.offlinemusicplayer.domain.usecase.UpdatePlaylist
+import com.example.offlinemusicplayer.domain.usecase.playlist.PlaylistUseCases
+import com.example.offlinemusicplayer.domain.usecase.songs.SongsUseCases
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,10 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RecentSongsVM @Inject constructor(
     private val playerRepository: PlayerServiceRepository,
-    private val getRecentSongs: GetRecentSongs,
-    private val getPlaylists: GetPlaylists,
-    private val updatePlaylist: UpdatePlaylist,
-    private val deleteSongById: DeleteSongById,
+    private val playlistUseCases: PlaylistUseCases,
+    private val songsUseCases: SongsUseCases,
 ): ViewModel() {
     val songs = mutableStateListOf<Song>()
     val currentMedia = playerRepository.currentMedia
@@ -48,7 +44,7 @@ class RecentSongsVM @Inject constructor(
 
     init {
         viewModelScope.launch {
-            songs.addAll(getRecentSongs())
+            songs.addAll(songsUseCases.getRecentSongs())
         }
         getPlaylist()
     }
@@ -95,7 +91,7 @@ class RecentSongsVM @Inject constructor(
     fun deleteSongFile(song: Song) {
         viewModelScope.launch {
             _deleteProgress.value = true
-            deleteSongById(song)
+            songsUseCases.deleteSongById(song)
             songs.remove(song)
             _deleteProgress.value = false
         }
@@ -133,7 +129,7 @@ class RecentSongsVM @Inject constructor(
 
     fun getPlaylist() {
         viewModelScope.launch {
-            getPlaylists().collectLatest {
+            playlistUseCases.getPlaylists().collectLatest {
                 playlists.clear()
                 playlists.addAll(it)
                 Log.d("SongListVM", "playlists: $playlists")
@@ -144,7 +140,7 @@ class RecentSongsVM @Inject constructor(
     fun addToPlaylist(song: Song, playlist: Playlist) {
         viewModelScope.launch {
             val updatedSongIds = playlist.songIds + song.id
-            updatePlaylist(songIds = updatedSongIds, playlist = playlist)
+            playlistUseCases.updatePlaylist(songIds = updatedSongIds, playlist = playlist)
         }
     }
 

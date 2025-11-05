@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.domain.usecase
+package com.example.offlinemusicplayer.domain.usecase.songs
 
 import com.example.offlinemusicplayer.data.repository.SongsRepository
 import com.example.offlinemusicplayer.domain.model.Song

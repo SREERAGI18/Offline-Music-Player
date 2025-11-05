@@ -11,19 +11,21 @@ import com.example.offlinemusicplayer.data.repository.PlaylistRepository
 import com.example.offlinemusicplayer.data.repository.PlaylistRepositoryImpl
 import com.example.offlinemusicplayer.data.repository.SongsRepository
 import com.example.offlinemusicplayer.data.repository.SongsRepositoryImpl
-import com.example.offlinemusicplayer.domain.usecase.CreatePlaylist
-import com.example.offlinemusicplayer.domain.usecase.DeleteSongById
-import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
-import com.example.offlinemusicplayer.domain.usecase.GetAllSongsPaginated
-import com.example.offlinemusicplayer.domain.usecase.GetPlaylistById
-import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
-import com.example.offlinemusicplayer.domain.usecase.GetRecentSongs
-import com.example.offlinemusicplayer.domain.usecase.GetSongsByIds
-import com.example.offlinemusicplayer.domain.usecase.GetSongsByIdsPaginated
-import com.example.offlinemusicplayer.domain.usecase.RemoveSongFromPlaylist
-import com.example.offlinemusicplayer.domain.usecase.SearchSongs
-import com.example.offlinemusicplayer.domain.usecase.SearchSongsPaginated
-import com.example.offlinemusicplayer.domain.usecase.UpdatePlaylist
+import com.example.offlinemusicplayer.domain.usecase.playlist.CreatePlaylist
+import com.example.offlinemusicplayer.domain.usecase.songs.DeleteSongById
+import com.example.offlinemusicplayer.domain.usecase.songs.GetAllSongs
+import com.example.offlinemusicplayer.domain.usecase.songs.GetAllSongsPaginated
+import com.example.offlinemusicplayer.domain.usecase.playlist.GetPlaylistById
+import com.example.offlinemusicplayer.domain.usecase.playlist.GetPlaylists
+import com.example.offlinemusicplayer.domain.usecase.playlist.PlaylistUseCases
+import com.example.offlinemusicplayer.domain.usecase.songs.GetRecentSongs
+import com.example.offlinemusicplayer.domain.usecase.songs.GetSongsByIds
+import com.example.offlinemusicplayer.domain.usecase.songs.GetSongsByIdsPaginated
+import com.example.offlinemusicplayer.domain.usecase.playlist.RemoveSongFromPlaylist
+import com.example.offlinemusicplayer.domain.usecase.songs.SearchSongs
+import com.example.offlinemusicplayer.domain.usecase.songs.SearchSongsPaginated
+import com.example.offlinemusicplayer.domain.usecase.playlist.UpdatePlaylist
+import com.example.offlinemusicplayer.domain.usecase.songs.SongsUseCases
 import com.example.offlinemusicplayer.player.AudioFilesManager
 import com.example.offlinemusicplayer.player.MusicService
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
@@ -48,64 +50,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
-    @Provides
-    fun provideSongsRepository(
-        songsDao: SongsDao,
-        getPlaylists: GetPlaylists,
-        updatePlaylist: UpdatePlaylist,
-        audioFilesManager: AudioFilesManager
-    ): SongsRepository =
-        SongsRepositoryImpl(
-            songsDao = songsDao,
-            getPlaylists = getPlaylists,
-            updatePlaylist = updatePlaylist,
-            audioFilesManager = audioFilesManager
-        )
-
-    @Provides
-    fun providePlaylistRepository(
-        playlistDao: PlaylistDao,
-    ): PlaylistRepository = PlaylistRepositoryImpl(playlistDao = playlistDao)
-
-    @Provides
-    fun provideGetAllSongsPaginated(repo: SongsRepository) = GetAllSongsPaginated(repo)
-
-    @Provides
-    fun provideGetAllSongs(repo: SongsRepository) = GetAllSongs(repo)
-
-    @Provides
-    fun provideSearchSongsPaginated(repo: SongsRepository) = SearchSongsPaginated(repo)
-
-    @Provides
-    fun provideSearchSongs(repo: SongsRepository) = SearchSongs(repo)
-
-    @Provides
-    fun provideGetSongsByIdPaginated(repo: SongsRepository) = GetSongsByIdsPaginated(repo)
-
-    @Provides
-    fun provideGetSongsById(repo: SongsRepository) = GetSongsByIds(repo)
-
-    @Provides
-    fun provideGetRecentSongs(repo: SongsRepository) = GetRecentSongs(repo)
-
-    @Provides
-    fun provideDeleteSongById(repo: SongsRepository) = DeleteSongById(repo)
-
-    @Provides
-    fun provideGetPlaylists(repo: PlaylistRepository) = GetPlaylists(repo)
-
-    @Provides
-    fun provideCreatePlaylist(repo: PlaylistRepository) = CreatePlaylist(repo)
-
-    @Provides
-    fun provideUpdatePlaylist(repo: PlaylistRepository) = UpdatePlaylist(repo)
-
-    @Provides
-    fun provideGetPlaylistById(repo: PlaylistRepository) = GetPlaylistById(repo)
-
-    @Provides
-    fun provideRemoveSongFromPlaylist(repo: PlaylistRepository) = RemoveSongFromPlaylist(repo)
 
     @Provides
     fun provideAudioFileFetcher(app: Application, songsDao: SongsDao) = AudioFilesManager(app, songsDao)

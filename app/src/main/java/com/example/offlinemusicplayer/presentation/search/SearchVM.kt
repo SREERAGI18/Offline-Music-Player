@@ -15,17 +15,12 @@ import androidx.paging.PagingData
 import com.example.offlinemusicplayer.MainActivity
 import com.example.offlinemusicplayer.domain.model.Playlist
 import com.example.offlinemusicplayer.domain.model.Song
-import com.example.offlinemusicplayer.domain.usecase.DeleteSongById
-import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
-import com.example.offlinemusicplayer.domain.usecase.SearchSongs
-import com.example.offlinemusicplayer.domain.usecase.SearchSongsPaginated
-import com.example.offlinemusicplayer.domain.usecase.UpdatePlaylist
+import com.example.offlinemusicplayer.domain.usecase.playlist.PlaylistUseCases
+import com.example.offlinemusicplayer.domain.usecase.songs.SongsUseCases
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -33,6 +28,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -40,11 +37,8 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SearchVM @Inject constructor(
-    private val searchSongsPaginated: SearchSongsPaginated,
-    private val searchSongs: SearchSongs,
-    private val deleteSongById: DeleteSongById,
-    private val getPlaylists: GetPlaylists,
-    private val updatePlaylist: UpdatePlaylist,
+    private val playlistUseCases: PlaylistUseCases,
+    private val songsUseCases: SongsUseCases,
     private val playerRepository: PlayerServiceRepository,
 ): ViewModel() {
     var contentUriToDelete: Uri? = null
@@ -63,7 +57,7 @@ class SearchVM @Inject constructor(
     val songs: Flow<PagingData<Song>> = searchQuery
         .debounce(300L)
         .flatMapLatest { query ->
-            searchSongsPaginated(query)
+            songsUseCases.searchSongsPaginated(query)
         }
 
     init {
@@ -76,7 +70,7 @@ class SearchVM @Inject constructor(
 
     fun setMediaList(mediaIndex: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            val songs = searchSongs(searchQuery.value)
+            val songs = songsUseCases.searchSongs(searchQuery.value)
             Logger.logError("SearchVM", "songs: $songs")
             withContext(Dispatchers.Main) {
                 playerRepository.setMediaList(mediaList = songs, index = mediaIndex)
@@ -120,7 +114,7 @@ class SearchVM @Inject constructor(
     fun deleteSongFile(song: Song) {
         viewModelScope.launch {
             _deleteProgress.value = true
-            deleteSongById(song)
+            songsUseCases.deleteSongById(song)
             _deleteProgress.value = false
         }
     }
@@ -157,7 +151,7 @@ class SearchVM @Inject constructor(
 
     fun getPlaylist() {
         viewModelScope.launch {
-            getPlaylists().collectLatest {
+            playlistUseCases.getPlaylists().collectLatest {
                 playlists.clear()
                 playlists.addAll(it)
                 Log.d("SongListVM", "playlists: $playlists")
@@ -168,7 +162,7 @@ class SearchVM @Inject constructor(
     fun addToPlaylist(song: Song, playlist: Playlist) {
         viewModelScope.launch {
             val updatedSongIds = playlist.songIds + song.id
-            updatePlaylist(songIds = updatedSongIds, playlist = playlist)
+            playlistUseCases.updatePlaylist(songIds = updatedSongIds, playlist = playlist)
         }
     }
 

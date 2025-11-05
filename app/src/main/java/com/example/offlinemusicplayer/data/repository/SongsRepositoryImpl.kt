@@ -6,8 +6,8 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import com.example.offlinemusicplayer.data.local.dao.SongsDao
 import com.example.offlinemusicplayer.domain.model.Song
-import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
-import com.example.offlinemusicplayer.domain.usecase.UpdatePlaylist
+import com.example.offlinemusicplayer.domain.usecase.playlist.GetPlaylists
+import com.example.offlinemusicplayer.domain.usecase.playlist.UpdatePlaylist
 import com.example.offlinemusicplayer.player.AudioFilesManager
 import com.example.offlinemusicplayer.util.Logger
 import kotlinx.coroutines.flow.Flow
