@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.offlinemusicplayer.MainActivity
+import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
 import com.example.offlinemusicplayer.domain.model.Playlist
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.playlist.CreatePlaylist
@@ -154,6 +155,8 @@ class SongListVM @Inject constructor(
     fun getPlaylist() {
         viewModelScope.launch {
             playlistUseCases.getPlaylists().collectLatest {
+                if(it.isEmpty()) createRecentlyPlayedPlaylist()
+
                 playlists.clear()
                 playlists.addAll(it)
                 Log.d("SongListVM", "playlists: $playlists")
@@ -167,6 +170,17 @@ class SongListVM @Inject constructor(
             playlistUseCases.updatePlaylist(songIds = updatedSongIds, playlist = playlist)
         }
     }
+
+    fun createRecentlyPlayedPlaylist() {
+        viewModelScope.launch {
+            playlistUseCases.createPlaylist(
+                id = PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_ID,
+                name = "Recently Played",
+                songIds = emptyList()
+            )
+        }
+    }
+
 
     fun resetIntentSenderRequest() {
         _intentSenderRequest.value = null
