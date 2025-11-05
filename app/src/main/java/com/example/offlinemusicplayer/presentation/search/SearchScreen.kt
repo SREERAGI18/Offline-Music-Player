@@ -28,26 +28,32 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.offlinemusicplayer.MainActivity
 import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.dialogs.DeleteConfirmDialog
-import com.example.offlinemusicplayer.presentation.dialogs.ProgressDialog
 import com.example.offlinemusicplayer.presentation.dialogs.SongDetailDialog
 import com.example.offlinemusicplayer.presentation.components.SongsList
 import com.example.offlinemusicplayer.presentation.dialogs.AddToPlaylistDialog
 
 @Composable
 fun SearchScreen() {
+    val context = LocalContext.current
+    val mainActivity = context as? MainActivity
+
     val viewModel: SearchVM = hiltViewModel()
     val songs = viewModel.songs.collectAsLazyPagingItems()
     val deleteProgress by viewModel.deleteProgress.collectAsStateWithLifecycle()
+    val intentSenderRequest by viewModel.intentSenderRequest.collectAsStateWithLifecycle()
     val playlists = viewModel.playlists
+    val contentUriToDelete = viewModel.contentUriToDelete
 
     val focusRequester = remember { FocusRequester() }
 
@@ -64,9 +70,22 @@ fun SearchScreen() {
     var showAddToPlaylistDialog by remember { mutableStateOf(false) }
     var songForPlaylist by remember { mutableStateOf<Song?>(null) }
 
-    if(deleteProgress) {
-        ProgressDialog(title = "Deleting...")
+    LaunchedEffect(intentSenderRequest) {
+        intentSenderRequest?.let { request ->
+            if(contentUriToDelete == null) return@let
+            mainActivity?.launchRecoverableSecurityPermission(
+                intentSenderRequest = request,
+                onPermissionGranted = {
+                    showDeleteDialog = true
+                    viewModel.resetIntentSenderRequest()
+                }
+            )
+        }
     }
+
+//    if(deleteProgress) {
+//        ProgressDialog(title = "Deleting...")
+//    }
 
     if (showAddToPlaylistDialog) {
         songForPlaylist?.let { song ->
@@ -162,7 +181,7 @@ fun SearchScreen() {
                     }
                     SongOptions.AddToPlaylist -> {
                         songForPlaylist = song
-                        showAddToPlaylistDialog = true
+                        viewModel.checkIfSongCanBeDeleted(song, context)
                     }
 //                    SongOptions.EditSongInfo -> {
 //

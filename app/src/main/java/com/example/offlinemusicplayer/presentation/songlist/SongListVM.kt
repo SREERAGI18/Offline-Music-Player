@@ -1,10 +1,18 @@
 package com.example.offlinemusicplayer.presentation.songlist
 
+import android.app.RecoverableSecurityException
+import android.content.ContentUris
+import android.content.Context
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
+import androidx.activity.result.IntentSenderRequest
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import com.example.offlinemusicplayer.MainActivity
 import com.example.offlinemusicplayer.domain.model.Playlist
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.DeleteSongById
@@ -36,11 +44,15 @@ class SongListVM @Inject constructor(
 
     val songs = mutableStateListOf<Song>()
     val currentMedia = playerRepository.currentMedia
+    var contentUriToDelete: Uri? = null
 
     val playlists = mutableStateListOf<Playlist>()
 
     private val _deleteProgress: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val deleteProgress = _deleteProgress.asStateFlow()
+
+    private val _intentSenderRequest: MutableStateFlow<IntentSenderRequest?> = MutableStateFlow(null)
+    val intentSenderRequest = _intentSenderRequest.asStateFlow()
 
     init {
         setMediaList(0)
@@ -111,6 +123,36 @@ class SongListVM @Inject constructor(
         }
     }
 
+    fun checkIfSongCanBeDeleted(song: Song, context: Context) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val contentUri = ContentUris.withAppendedId(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                song.id
+            )
+            contentUriToDelete = contentUri
+            try {
+                context.contentResolver.delete(contentUri, null, null)
+            } catch (e: SecurityException) {
+                // We caught the exception! Return the IntentSender to the caller.
+                if(e is RecoverableSecurityException) {
+                    _intentSenderRequest.value = IntentSenderRequest
+                        .Builder(e.userAction.actionIntent.intentSender)
+                        .build()
+                }
+            } catch (e: Exception) {
+
+            }
+        } else {
+            (context as? MainActivity)?.apply {
+                if(!checkIfWriteAccessGranted()) {
+                    requestStoragePermission()
+                } else {
+                    deleteSongFile(song)
+                }
+            }
+        }
+    }
+
     fun getPlaylist() {
         viewModelScope.launch {
             getPlaylists().collectLatest {
@@ -126,6 +168,10 @@ class SongListVM @Inject constructor(
             val updatedSongIds = playlist.songIds + song.id
             updatePlaylist(songIds = updatedSongIds, playlist = playlist)
         }
+    }
+
+    fun resetIntentSenderRequest() {
+        _intentSenderRequest.value = null
     }
 
 }

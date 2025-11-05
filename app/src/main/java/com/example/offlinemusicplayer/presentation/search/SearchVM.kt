@@ -1,10 +1,18 @@
 package com.example.offlinemusicplayer.presentation.search
 
+import android.app.RecoverableSecurityException
+import android.content.ContentUris
+import android.content.Context
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
+import androidx.activity.result.IntentSenderRequest
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import com.example.offlinemusicplayer.MainActivity
 import com.example.offlinemusicplayer.domain.model.Playlist
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.DeleteSongById
@@ -39,11 +47,16 @@ class SearchVM @Inject constructor(
     private val updatePlaylist: UpdatePlaylist,
     private val playerRepository: PlayerServiceRepository,
 ): ViewModel() {
+    var contentUriToDelete: Uri? = null
+
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     private val _deleteProgress: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val deleteProgress = _deleteProgress.asStateFlow()
+
+    private val _intentSenderRequest: MutableStateFlow<IntentSenderRequest?> = MutableStateFlow(null)
+    val intentSenderRequest = _intentSenderRequest.asStateFlow()
 
     val playlists = mutableStateListOf<Playlist>()
 
@@ -112,6 +125,36 @@ class SearchVM @Inject constructor(
         }
     }
 
+    fun checkIfSongCanBeDeleted(song: Song, context: Context) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val contentUri = ContentUris.withAppendedId(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                song.id
+            )
+            contentUriToDelete = contentUri
+            try {
+                context.contentResolver.delete(contentUri, null, null)
+            } catch (e: SecurityException) {
+                // We caught the exception! Return the IntentSender to the caller.
+                if(e is RecoverableSecurityException) {
+                    _intentSenderRequest.value = IntentSenderRequest
+                        .Builder(e.userAction.actionIntent.intentSender)
+                        .build()
+                }
+            } catch (e: Exception) {
+
+            }
+        } else {
+            (context as? MainActivity)?.apply {
+                if(!checkIfWriteAccessGranted()) {
+                    requestStoragePermission()
+                } else {
+                    deleteSongFile(song)
+                }
+            }
+        }
+    }
+
     fun getPlaylist() {
         viewModelScope.launch {
             getPlaylists().collectLatest {
@@ -127,5 +170,9 @@ class SearchVM @Inject constructor(
             val updatedSongIds = playlist.songIds + song.id
             updatePlaylist(songIds = updatedSongIds, playlist = playlist)
         }
+    }
+
+    fun resetIntentSenderRequest() {
+        _intentSenderRequest.value = null
     }
 }

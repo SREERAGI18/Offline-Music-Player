@@ -10,6 +10,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -326,19 +327,39 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun requestStoragePermission() {
-
-        val permissions = if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+    fun requestStoragePermission() {
+        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13+
+            arrayOf(Manifest.permission.READ_MEDIA_AUDIO)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Android 10, 11, 12
+            // WRITE permission is not needed here, it's handled via RecoverableSecurityException
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        } else {
+            // Android 9 (Pie) and below
             arrayOf(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
-            )
-        } else {
-            arrayOf(
-                Manifest.permission.READ_MEDIA_AUDIO,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
         }
-
         requestMultiplePermissions.launch(permissions)
+    }
+
+    private var onDeletePermissionGranted: (() -> Unit)? = null
+
+    private val recoverableSecurityPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            onDeletePermissionGranted?.invoke()
+        } else {
+            Toast.makeText(this, "File cannot be deleted. Permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun launchRecoverableSecurityPermission(intentSenderRequest: IntentSenderRequest, onPermissionGranted: () -> Unit) {
+        onDeletePermissionGranted = onPermissionGranted
+        recoverableSecurityPermissionLauncher.launch(intentSenderRequest)
     }
 
     private val requestMultiplePermissions = registerForActivityResult(
@@ -377,5 +398,10 @@ class MainActivity : ComponentActivity() {
         val checkVal1 = ContextCompat.checkSelfPermission(this, requiredPermission1)
 
         return checkVal1 == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun checkIfWriteAccessGranted(): Boolean {
+        val checkVal2 = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        return checkVal2 == PackageManager.PERMISSION_GRANTED
     }
 }

@@ -106,7 +106,7 @@ fun VerticalAlphabetScroller(
             Text(
                 text = letter,
                 color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.weight(1f)
             )
         }
