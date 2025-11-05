@@ -17,6 +17,7 @@ import com.example.offlinemusicplayer.domain.usecase.GetAllSongs
 import com.example.offlinemusicplayer.domain.usecase.GetAllSongsPaginated
 import com.example.offlinemusicplayer.domain.usecase.GetPlaylistById
 import com.example.offlinemusicplayer.domain.usecase.GetPlaylists
+import com.example.offlinemusicplayer.domain.usecase.GetRecentSongs
 import com.example.offlinemusicplayer.domain.usecase.GetSongsByIds
 import com.example.offlinemusicplayer.domain.usecase.GetSongsByIdsPaginated
 import com.example.offlinemusicplayer.domain.usecase.RemoveSongFromPlaylist
@@ -84,6 +85,9 @@ object AppModule {
 
     @Provides
     fun provideGetSongsById(repo: SongsRepository) = GetSongsByIds(repo)
+
+    @Provides
+    fun provideGetRecentSongs(repo: SongsRepository) = GetRecentSongs(repo)
 
     @Provides
     fun provideDeleteSongById(repo: SongsRepository) = DeleteSongById(repo)

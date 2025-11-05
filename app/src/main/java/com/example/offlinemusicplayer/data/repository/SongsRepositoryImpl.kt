@@ -91,4 +91,10 @@ class SongsRepositoryImpl(
         }
         audioFilesManager.deleteSongFile(song)
     }
+
+    override suspend fun recentSongs(size: Int): List<Song> {
+        return songsDao.getRecentSongs(size = size).map {
+            it.toSong()
+        }
+    }
 }

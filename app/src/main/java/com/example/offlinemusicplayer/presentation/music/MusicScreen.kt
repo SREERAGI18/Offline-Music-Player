@@ -18,8 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.example.offlinemusicplayer.domain.enum_classes.MusicScreenTabs
 import com.example.offlinemusicplayer.presentation.navigation.Screens
 import com.example.offlinemusicplayer.presentation.playlist.PlaylistScreen
+import com.example.offlinemusicplayer.presentation.recent.RecentSongsScreen
 import com.example.offlinemusicplayer.presentation.songlist.SongListScreen
 import kotlinx.coroutines.launch
 
@@ -29,8 +31,7 @@ fun MusicScreen(
     navController: NavController
 ) {
 
-    val tabs = remember { listOf("Songs", "Playlists") }
-    val pagerState = rememberPagerState { tabs.size }
+    val pagerState = rememberPagerState { MusicScreenTabs.entries.size }
     val scope = rememberCoroutineScope()
 
     Column(
@@ -49,7 +50,7 @@ fun MusicScreen(
                 )
             }
         ) {
-            tabs.forEachIndexed { index, title ->
+            MusicScreenTabs.entries.forEachIndexed { index, tab ->
                 Tab(
                     selected = pagerState.currentPage == index,
                     onClick = {
@@ -59,7 +60,7 @@ fun MusicScreen(
                     },
                     text = {
                         Text(
-                            text = title,
+                            text = tab.displayName,
                             style = MaterialTheme.typography.titleSmall
                         )
                     },
@@ -80,6 +81,7 @@ fun MusicScreen(
                         navController.navigate(Screens.PlaylistDetail(playlist.id))
                     }
                 )
+                2 -> RecentSongsScreen()
             }
         }
     }

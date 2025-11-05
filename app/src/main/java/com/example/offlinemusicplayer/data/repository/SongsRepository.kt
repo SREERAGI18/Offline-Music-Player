@@ -12,4 +12,5 @@ interface SongsRepository {
     suspend fun getSongsByIds(songIds: List<Long>): List<Song>
     suspend fun getAllSongs(): List<Song>
     suspend fun deleteSongFileById(song: Song)
+    suspend fun recentSongs(size: Int): List<Song>
 }

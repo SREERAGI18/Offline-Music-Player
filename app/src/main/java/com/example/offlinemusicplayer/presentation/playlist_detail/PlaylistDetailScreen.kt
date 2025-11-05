@@ -98,14 +98,6 @@ fun PlaylistDetailScreen(
                             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
                         )
                     }
-                    PlaylistEntity.RECENTLY_ADDED_PLAYLIST_NAME -> {
-                        Image(
-                            imageVector = Icons.Filled.History,
-                            contentDescription = "${playlist?.name} playlist icon",
-                            modifier = Modifier.fillMaxSize(),
-                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
-                        )
-                    }
                     else -> {
                         Image(
                             imageVector = Icons.Filled.MusicNote,
