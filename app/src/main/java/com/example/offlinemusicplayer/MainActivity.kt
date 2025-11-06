@@ -1,6 +1,7 @@
 package com.example.offlinemusicplayer
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -23,6 +24,7 @@ import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBarItem
@@ -55,6 +57,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.offlinemusicplayer.presentation.activities.ProfileActivity
+import com.example.offlinemusicplayer.presentation.activities.SettingsActivity
 import com.example.offlinemusicplayer.presentation.main.MainVM
 import com.example.offlinemusicplayer.presentation.mini_player_bar.MiniPlayerBar
 import com.example.offlinemusicplayer.presentation.navigation.RootNavHost
@@ -200,21 +204,6 @@ class MainActivity : ComponentActivity() {
             topBar = {
                 if(showTopBar) {
                     TopAppBar(
-//                        navigationIcon = {
-//                            if (showBackButton) {
-//                                IconButton(
-//                                    onClick = {
-//                                        navController.popBackStack()
-//                                    }
-//                                ) {
-//                                    Icon(
-//                                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
-//                                        contentDescription = "Back",
-//                                        tint = MaterialTheme.colorScheme.onPrimary
-//                                    )
-//                                }
-//                            }
-//                        },
                         scrollBehavior = topBarScrollBehavior,
                         title = {
                             Text(
@@ -229,6 +218,39 @@ class MainActivity : ComponentActivity() {
                             titleContentColor = MaterialTheme.colorScheme.onPrimary,
                             scrolledContainerColor = MaterialTheme.colorScheme.primary
                         ),
+                        actions = {
+                            Screens.drawerMenuItems.forEach { item ->
+                                IconButton(
+                                    onClick = {
+                                        when (item.screen) {
+                                            Screens.Profile -> {
+                                                startActivity(
+                                                    Intent(
+                                                        this@MainActivity,
+                                                        ProfileActivity::class.java
+                                                    )
+                                                )
+                                            }
+                                            Screens.Settings -> {
+                                                startActivity(
+                                                    Intent(
+                                                        this@MainActivity,
+                                                        SettingsActivity::class.java
+                                                    )
+                                                )
+                                            }
+                                            else -> rootNavController.navigate(item.screen)
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = item.imageVector,
+                                        contentDescription = item.label,
+                                        tint = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
+                            }
+                        }
                     )
                 }
             },

@@ -1,9 +1,10 @@
 package com.example.offlinemusicplayer.presentation.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.LibraryMusic
-import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.serialization.Serializable
 
@@ -13,6 +14,12 @@ sealed class Screens {
     data object SongList : Screens()
     @Serializable
     data object Search : Screens()
+
+    @Serializable
+    data object Profile : Screens()
+
+    @Serializable
+    data object Settings : Screens()
 
     @Serializable
     data object Playlist : Screens()
@@ -29,7 +36,7 @@ sealed class Screens {
     @Serializable
     data object NowPlayingQueue : Screens()
 
-    data class BottomMenuItem(
+    data class MenuItem(
         val screen: Screens,
         val label: String,
         val imageVector: ImageVector
@@ -53,26 +60,36 @@ sealed class Screens {
                 formattedRoute == "Main" -> Main
                 formattedRoute == "Shazam" -> Shazam
                 formattedRoute == "NowPlayingQueue" -> NowPlayingQueue
+                formattedRoute == "Profile" -> Profile
+                formattedRoute == "Settings" -> Settings
                 else -> null
             }
         }
 
         val bottomMenuItems = listOf(
-            BottomMenuItem(
+            MenuItem(
                 screen = Main,
                 label = "Music",
                 imageVector = Icons.Default.LibraryMusic
             ),
-            BottomMenuItem(
-                screen = Shazam,
-                label = "Shazam",
-                imageVector = Icons.Default.Mic
-            ),
-            BottomMenuItem(
+            MenuItem(
                 screen = Search,
                 label = "Search",
                 imageVector = Icons.Default.Search
             )
+        )
+
+        val drawerMenuItems = listOf(
+            MenuItem(
+                screen = Settings,
+                label = "Settings",
+                imageVector = Icons.Default.Settings
+            ),
+            MenuItem(
+                screen = Profile,
+                label = "Profile",
+                imageVector = Icons.Default.AccountCircle
+            ),
         )
 
     }
