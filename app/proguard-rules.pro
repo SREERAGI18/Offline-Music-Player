@@ -20,11 +20,11 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep public class com.example.offlinemusicplayer.data.local.** {
+-keep public class com.lyrisync.data.local.** {
     public protected private *;
 }
 
--keep public class com.example.offlinemusicplayer.domain.** {
+-keep public class com.lyrisync.domain.** {
     public protected private *;
 }
 

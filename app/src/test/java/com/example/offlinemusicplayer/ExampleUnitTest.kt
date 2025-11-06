@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer
+package com.lyrisync
 
 import org.junit.Test
 

@@ -34,7 +34,7 @@ The app uses **Media3**, **Room**, **Hilt**, and **Navigation-Compose** to provi
 This project follows **Clean Architecture** with three layers:
 
 ```plaintext
-com.example.offlinemusicplayer
+com.lyrisync
 ├── domain
 │ ├── model # Core entities (Song, Playlist)
 │ ├── repository # Repository interfaces

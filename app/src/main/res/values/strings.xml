@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Offline Music Player</string>
+    <string name="app_name">Music Lyrisync</string>
     <string name="select_songs">Select songs</string>
     <string name="submit">Submit</string>
     <string name="cancel">Cancel</string>

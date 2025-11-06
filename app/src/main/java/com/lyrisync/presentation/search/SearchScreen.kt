@@ -1,0 +1,204 @@
+package com.lyrisync.presentation.search
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.lyrisync.MainActivity
+import com.lyrisync.domain.enum_classes.SongOptions
+import com.lyrisync.domain.model.Song
+import com.lyrisync.presentation.dialogs.DeleteConfirmDialog
+import com.lyrisync.presentation.dialogs.SongDetailDialog
+import com.lyrisync.presentation.components.SongsList
+import com.lyrisync.presentation.dialogs.AddToPlaylistDialog
+
+@Composable
+fun SearchScreen() {
+    val context = LocalContext.current
+    val mainActivity = context as? MainActivity
+
+    val viewModel: SearchVM = hiltViewModel()
+    val songs = viewModel.songs.collectAsLazyPagingItems()
+    val deleteProgress by viewModel.deleteProgress.collectAsStateWithLifecycle()
+    val intentSenderRequest by viewModel.intentSenderRequest.collectAsStateWithLifecycle()
+    val playlists = viewModel.playlists
+    val contentUriToDelete = viewModel.contentUriToDelete
+
+    val focusRequester = remember { FocusRequester() }
+
+    var query by rememberSaveable { mutableStateOf("") }
+
+    val songListState = rememberLazyListState()
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var songToDelete by remember { mutableStateOf<Song?>(null) }
+
+    var showDetailsDialog by remember { mutableStateOf(false) }
+    var songForDetails by remember { mutableStateOf<Song?>(null) }
+
+    var showAddToPlaylistDialog by remember { mutableStateOf(false) }
+    var songForPlaylist by remember { mutableStateOf<Song?>(null) }
+
+    LaunchedEffect(intentSenderRequest) {
+        intentSenderRequest?.let { request ->
+            if(contentUriToDelete == null) return@let
+            mainActivity?.launchRecoverableSecurityPermission(
+                intentSenderRequest = request,
+                onPermissionGranted = {
+                    showDeleteDialog = true
+                    viewModel.resetIntentSenderRequest()
+                }
+            )
+        }
+    }
+
+//    if(deleteProgress) {
+//        ProgressDialog(title = "Deleting...")
+//    }
+
+    if (showAddToPlaylistDialog) {
+        songForPlaylist?.let { song ->
+            AddToPlaylistDialog(
+                playlists = playlists.filter { !it.songIds.contains(song.id) },
+                onPlaylistSelected = { playlist ->
+                    viewModel.addToPlaylist(song, playlist)
+                    showAddToPlaylistDialog = false
+                },
+                onDismiss = { showAddToPlaylistDialog = false }
+            )
+        }
+    }
+
+    if(showDeleteDialog) {
+        DeleteConfirmDialog(
+            onDismiss = { showDeleteDialog = false },
+            onConfirm = {
+                songToDelete?.let { song ->
+                    viewModel.deleteSongFile(song)
+                }
+                showDeleteDialog = false
+            },
+            description = "\"${songToDelete?.title}\" will be permanently deleted from storage."
+        )
+    }
+
+    if(showDetailsDialog) {
+        songForDetails?.let { song ->
+            SongDetailDialog(
+                song = song,
+                onDismiss = {
+                    showDetailsDialog = false
+                }
+            )
+        }
+    }
+
+    LaunchedEffect(query) {
+        viewModel.updateSearchQuery(query)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 16.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .clip(RoundedCornerShape(8.dp))
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            if (query.isEmpty()) {
+                Text(
+                    text = "Search songs...",
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+            }
+            BasicTextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { /* a soft keyboard might be hidden here */ }),
+                textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        SongsList(
+            onSongClick = { song, index ->
+                viewModel.playSong(index)
+            },
+            onOptionSelected = { song, option ->
+                when(option) {
+                    SongOptions.PlayNext -> {
+                        viewModel.playNext(song)
+                    }
+                    SongOptions.AddToQueue -> {
+                        viewModel.addToQueue(song)
+                    }
+                    SongOptions.AddToPlaylist -> {
+                        songForPlaylist = song
+                        viewModel.checkIfSongCanBeDeleted(song, context)
+                    }
+//                    SongOptions.EditSongInfo -> {
+//
+//                    }
+                    SongOptions.Delete -> {
+                        songToDelete = song
+                        showDeleteDialog = true
+                    }
+                    SongOptions.Details -> {
+                        songForDetails = song
+                        showDetailsDialog = true
+                    }
+                }
+            },
+            songs = songs,
+            scrollState = songListState,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+    }
+}
