@@ -24,10 +24,24 @@ import com.example.offlinemusicplayer.R
 @Composable
 fun CreatePlaylistDialog(
     onDismiss: () -> Unit,
-    onCreate: (String) -> Unit
+    onCreate: (String) -> Unit,
+    initialName: String,
+    isCreatePlaylist: Boolean
 ) {
     var playlistName by remember {
-        mutableStateOf("")
+        mutableStateOf(initialName)
+    }
+
+    val title = if(isCreatePlaylist) {
+        R.string.create_playlist
+    } else {
+        R.string.edit_playlist
+    }
+
+    val confirmButtonText = if(isCreatePlaylist) {
+        R.string.create
+    } else {
+        R.string.save
     }
 
     AlertDialog(
@@ -39,7 +53,7 @@ fun CreatePlaylistDialog(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = stringResource(R.string.create_playlist),
+                    text = stringResource(title),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(20.dp))
@@ -58,7 +72,7 @@ fun CreatePlaylistDialog(
                 },
             ) {
                 Text(
-                    text = stringResource(id = R.string.create),
+                    text = stringResource(id = confirmButtonText),
                     style = MaterialTheme.typography.titleMedium
                 )
             }

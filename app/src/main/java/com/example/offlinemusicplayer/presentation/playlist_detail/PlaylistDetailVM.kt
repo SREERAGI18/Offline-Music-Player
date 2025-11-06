@@ -31,6 +31,7 @@ class PlaylistDetailVM @Inject constructor(
     private val playlistId: Long = savedStateHandle[Screens.PLAYLIST_ID_KEY] ?: 0L
 
     val currentMedia = playerRepository.currentMedia
+    var playlistToUpdate: Playlist? = null
 
     val playlist: StateFlow<Playlist?> = playlistUseCases.getPlaylistById(playlistId)
         .stateIn(
@@ -49,6 +50,7 @@ class PlaylistDetailVM @Inject constructor(
         viewModelScope.launch {
             playlist.collectLatest { currentPlayList ->
                 if(currentPlayList != null) {
+                    songs.clear()
                     songs.addAll(songsUseCases.getSongsByIds(currentPlayList.songIds))
                 }
             }
@@ -105,6 +107,29 @@ class PlaylistDetailVM @Inject constructor(
             if (existingIndex == null) {
                 // Only add the song if it's not already in the queue
                 playerRepository.addMedia(song)
+            }
+        }
+    }
+
+    fun updatePlaylistName(playlistName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistToUpdate?.let { playlist ->
+                playlistUseCases.updatePlaylist(
+                    playlist.copy(name = playlistName)
+                )
+                playlistToUpdate = null
+            }
+        }
+    }
+
+    fun updatePlaylistContent(songs: List<Song>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistToUpdate?.let { playlist ->
+                val songIds = songs.map { it.id }
+                playlistUseCases.updatePlaylist(
+                    playlist.copy(songIds = songIds)
+                )
+                playlistToUpdate = null
             }
         }
     }

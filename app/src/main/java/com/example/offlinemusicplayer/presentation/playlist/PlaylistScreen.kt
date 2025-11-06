@@ -4,9 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
@@ -22,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.offlinemusicplayer.domain.enum_classes.PlaylistOptions
 import com.example.offlinemusicplayer.domain.model.Playlist
 import com.example.offlinemusicplayer.presentation.components.PlaylistItem
 import com.example.offlinemusicplayer.presentation.dialogs.CreatePlaylistDialog
@@ -47,12 +47,21 @@ fun PlaylistScreen(
         mutableStateOf("")
     }
 
+    var isCreatePlaylist by remember {
+        mutableStateOf(false)
+    }
+
     if(showSongSelection) {
         SongSelectionDialog(
             songs = viewModel.songs,
             title = playlistTitle,
+            selectedSongIds = viewModel.playlistToUpdate?.songIds,
             onSubmit = { selectedSongs ->
-                viewModel.addPlaylist(playlistTitle, selectedSongs)
+                if(viewModel.playlistToUpdate != null) {
+                    viewModel.updatePlaylistContent(selectedSongs)
+                } else {
+                    viewModel.addPlaylist(playlistTitle, selectedSongs)
+                }
                 showSongSelection = false
             },
             onCancel = {
@@ -66,26 +75,64 @@ fun PlaylistScreen(
             onDismiss = {
                 showCreatePlaylistDialog = false
             },
+            initialName = playlistTitle,
+            isCreatePlaylist = isCreatePlaylist,
             onCreate = {
-                playlistTitle = it
-                showCreatePlaylistDialog = false
-                showSongSelection = true
+                if(isCreatePlaylist) {
+                    playlistTitle = it
+                    showCreatePlaylistDialog = false
+                    showSongSelection = true
+                } else {
+                    viewModel.updatePlaylistName(it)
+                    showCreatePlaylistDialog = false
+                }
             }
         )
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 140.dp),
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(playlists, key = { it.id }) { playlist ->
+            items(
+                items = playlists,
+                key = { it.id }
+            ) { playlist ->
                 PlaylistItem(
                     playlist = playlist,
                     onClick = {
                         onPlaylistClicked(playlist)
+                    },
+                    onOptionSelected = { option ->
+                        when(option) {
+                            PlaylistOptions.Play -> {
+
+                            }
+                            PlaylistOptions.PlayNext -> {
+
+                            }
+                            PlaylistOptions.AddToQueue -> {
+
+                            }
+                            PlaylistOptions.EditName -> {
+                                viewModel.playlistToUpdate = playlist
+                                playlistTitle = playlist.name
+                                isCreatePlaylist = false
+                                showCreatePlaylistDialog = true
+                            }
+                            PlaylistOptions.EditContent -> {
+                                viewModel.playlistToUpdate = playlist
+                                showSongSelection = true
+                            }
+                            PlaylistOptions.Delete -> {
+
+                            }
+                        }
                     }
                 )
             }
@@ -93,12 +140,11 @@ fun PlaylistScreen(
 
         FloatingActionButton(
             onClick = {
+                playlistTitle = ""
+                isCreatePlaylist = true
                 showCreatePlaylistDialog = true
             },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp)
-                .padding(bottom = 16.dp),
+            modifier = Modifier.align(Alignment.BottomEnd),
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary
         ) {

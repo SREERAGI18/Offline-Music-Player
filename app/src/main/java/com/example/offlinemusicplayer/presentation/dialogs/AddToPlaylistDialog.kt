@@ -96,7 +96,7 @@ private fun PlaylistSelectionList(
                     when (playlist.name) {
                         PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> {
                             Image(
-                                painter = painterResource(id = R.drawable.recently_played),
+                                imageVector = Icons.Filled.History,
                                 contentDescription = "${playlist.name} playlist icon",
                                 modifier = Modifier.fillMaxSize(),
                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)

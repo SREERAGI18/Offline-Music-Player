@@ -26,5 +26,9 @@ data class PlaylistEntity(
     companion object {
         const val RECENTLY_PLAYED_PLAYLIST_NAME = "Recently Played"
         const val RECENTLY_PLAYED_PLAYLIST_ID = 1L
+
+        val DEFAULT_PLAYLIST_IDS = arrayOf(
+            RECENTLY_PLAYED_PLAYLIST_ID
+        )
     }
 }

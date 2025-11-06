@@ -39,6 +39,10 @@ class PlaylistRepositoryImpl(
         )
     }
 
+    override suspend fun updatePlaylist(playlist: Playlist) {
+        playlistDao.updatePlaylist(playlist.toPlaylistEntity())
+    }
+
     override suspend fun removeSongFromPlaylist(songId: Long, playlistId: Long) {
         // 1. Get the current playlist
         val currentPlaylist = getPlaylistById(playlistId).first()
