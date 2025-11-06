@@ -175,6 +175,11 @@ interface PlayerServiceRepository {
     fun addMedia(media: Song)
 
     /**
+     * Adds a list of [Song] to the end of the playlist.
+     */
+    fun addMedia(mediaList: List<Song>)
+
+    /**
      * Adds a [Song] at the given index of the playlist.
      *
      * @param index The index at which to add the [Song]. If the index is larger than the size

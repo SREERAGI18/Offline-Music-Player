@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -50,6 +51,7 @@ import com.example.offlinemusicplayer.presentation.dialogs.SongSelectionDialog
 fun PlaylistDetailScreen(
     onBackPress: () -> Unit
 ) {
+    val context = LocalContext.current
     val viewModel: PlaylistDetailVM = hiltViewModel()
     val playlist by viewModel.playlist.collectAsStateWithLifecycle()
     val songs = viewModel.songs
@@ -82,7 +84,7 @@ fun PlaylistDetailScreen(
                 showDeleteDialog = false
                 onBackPress()
             },
-            description = "\"${viewModel.playlistToModify?.name}\" will be permanently deleted."
+            description = "\"${playlist?.name}\" will be permanently deleted."
         )
     }
 
@@ -90,9 +92,9 @@ fun PlaylistDetailScreen(
         SongSelectionDialog(
             songs = viewModel.songs,
             title = playlistTitle,
-            selectedSongIds = viewModel.playlistToModify?.songIds,
+            selectedSongIds = playlist?.songIds,
             onSubmit = { selectedSongs ->
-                if(viewModel.playlistToModify != null) {
+                if(playlist != null) {
                     viewModel.updatePlaylistContent(selectedSongs)
                 }
                 showSongSelection = false
@@ -163,25 +165,19 @@ fun PlaylistDetailScreen(
                     onOptionSelected = { option  ->
                         when(option) {
                             PlaylistOptions.Play -> {
-
-                            }
-                            PlaylistOptions.PlayNext -> {
-
+                                viewModel.playAllSongsOfPlaylist()
                             }
                             PlaylistOptions.AddToQueue -> {
-
+                                viewModel.addAllSongsToQueue(context = context)
                             }
                             PlaylistOptions.EditName -> {
-                                viewModel.playlistToModify = playlist
                                 playlistTitle = playlist?.name ?: ""
                                 showCreatePlaylistDialog = true
                             }
                             PlaylistOptions.EditContent -> {
-                                viewModel.playlistToModify = playlist
                                 showSongSelection = true
                             }
                             PlaylistOptions.Delete -> {
-                                viewModel.playlistToModify = playlist
                                 showDeleteDialog = true
                             }
                         }

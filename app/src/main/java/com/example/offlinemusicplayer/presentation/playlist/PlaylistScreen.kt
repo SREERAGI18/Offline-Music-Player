@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,6 +33,7 @@ import com.example.offlinemusicplayer.presentation.dialogs.SongSelectionDialog
 fun PlaylistScreen(
     onPlaylistClicked: (Playlist) -> Unit
 ) {
+    val context = LocalContext.current
     val viewModel = hiltViewModel<PlaylistVM>()
     val playlists by viewModel.playlists.collectAsStateWithLifecycle()
     val currentMedia by viewModel.currentMedia.collectAsStateWithLifecycle()
@@ -127,13 +129,13 @@ fun PlaylistScreen(
                     onOptionSelected = { option ->
                         when(option) {
                             PlaylistOptions.Play -> {
-
-                            }
-                            PlaylistOptions.PlayNext -> {
-
+                                viewModel.playAllSongsOfPlaylist(playlist)
                             }
                             PlaylistOptions.AddToQueue -> {
-
+                                viewModel.addAllSongsToQueue(
+                                    context = context,
+                                    playlist = playlist
+                                )
                             }
                             PlaylistOptions.EditName -> {
                                 viewModel.playlistToModify = playlist

@@ -492,6 +492,14 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         player.value?.addMediaItem(mediaMapper.mapToMediaItem(media))
     }
 
+    override fun addMedia(mediaList: List<Song>) {
+        player.value?.addMediaItems(
+            mediaList.map {
+                mediaMapper.mapToMediaItem(it)
+            }
+        )
+    }
+
     override fun addMedia(index: Int, media: Song) {
         checkNotClosed()
 
