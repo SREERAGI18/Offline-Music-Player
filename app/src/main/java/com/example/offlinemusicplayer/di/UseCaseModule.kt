@@ -7,6 +7,7 @@ import com.example.offlinemusicplayer.data.repository.PlaylistRepositoryImpl
 import com.example.offlinemusicplayer.data.repository.SongsRepository
 import com.example.offlinemusicplayer.data.repository.SongsRepositoryImpl
 import com.example.offlinemusicplayer.domain.usecase.playlist.CreatePlaylist
+import com.example.offlinemusicplayer.domain.usecase.playlist.DeletePlaylist
 import com.example.offlinemusicplayer.domain.usecase.playlist.GetPlaylistById
 import com.example.offlinemusicplayer.domain.usecase.playlist.GetPlaylists
 import com.example.offlinemusicplayer.domain.usecase.playlist.PlaylistUseCases
@@ -56,13 +57,15 @@ object UseCaseModule {
         updatePlaylist: UpdatePlaylist,
         createPlaylist: CreatePlaylist,
         getPlaylistById: GetPlaylistById,
-        removeSongFromPlaylist: RemoveSongFromPlaylist
+        removeSongFromPlaylist: RemoveSongFromPlaylist,
+        deletePlaylist: DeletePlaylist
     ) = PlaylistUseCases(
         getPlaylists = getPlaylists,
         updatePlaylist = updatePlaylist,
         createPlaylist = createPlaylist,
         getPlaylistById = getPlaylistById,
-        removeSongFromPlaylist = removeSongFromPlaylist
+        removeSongFromPlaylist = removeSongFromPlaylist,
+        deletePlaylist = deletePlaylist
     )
 
     @Provides
@@ -124,4 +127,7 @@ object UseCaseModule {
 
     @Provides
     fun provideRemoveSongFromPlaylist(repo: PlaylistRepository) = RemoveSongFromPlaylist(repo)
+
+    @Provides
+    fun provideDeletePlaylist(repo: PlaylistRepository) = DeletePlaylist(repo)
 }

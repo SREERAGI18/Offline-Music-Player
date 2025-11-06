@@ -32,11 +32,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.offlinemusicplayer.R
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity.Companion.DEFAULT_PLAYLIST_IDS
 import com.example.offlinemusicplayer.domain.enum_classes.PlaylistOptions
@@ -44,6 +42,7 @@ import com.example.offlinemusicplayer.domain.enum_classes.PlaylistSongOptions
 import com.example.offlinemusicplayer.presentation.components.PlaylistOptionsDropDown
 import com.example.offlinemusicplayer.presentation.components.PlaylistSongList
 import com.example.offlinemusicplayer.presentation.dialogs.CreatePlaylistDialog
+import com.example.offlinemusicplayer.presentation.dialogs.DeleteConfirmDialog
 import com.example.offlinemusicplayer.presentation.dialogs.SongSelectionDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,13 +70,29 @@ fun PlaylistDetailScreen(
         mutableStateOf("")
     }
 
+    var showDeleteDialog by remember {
+        mutableStateOf(false)
+    }
+
+    if(showDeleteDialog) {
+        DeleteConfirmDialog(
+            onDismiss = { showDeleteDialog = false },
+            onConfirm = {
+                viewModel.deletePlaylist()
+                showDeleteDialog = false
+                onBackPress()
+            },
+            description = "\"${viewModel.playlistToModify?.name}\" will be permanently deleted."
+        )
+    }
+
     if(showSongSelection) {
         SongSelectionDialog(
             songs = viewModel.songs,
             title = playlistTitle,
-            selectedSongIds = viewModel.playlistToUpdate?.songIds,
+            selectedSongIds = viewModel.playlistToModify?.songIds,
             onSubmit = { selectedSongs ->
-                if(viewModel.playlistToUpdate != null) {
+                if(viewModel.playlistToModify != null) {
                     viewModel.updatePlaylistContent(selectedSongs)
                 }
                 showSongSelection = false
@@ -157,16 +172,17 @@ fun PlaylistDetailScreen(
 
                             }
                             PlaylistOptions.EditName -> {
-                                viewModel.playlistToUpdate = playlist
+                                viewModel.playlistToModify = playlist
                                 playlistTitle = playlist?.name ?: ""
                                 showCreatePlaylistDialog = true
                             }
                             PlaylistOptions.EditContent -> {
-                                viewModel.playlistToUpdate = playlist
+                                viewModel.playlistToModify = playlist
                                 showSongSelection = true
                             }
                             PlaylistOptions.Delete -> {
-
+                                viewModel.playlistToModify = playlist
+                                showDeleteDialog = true
                             }
                         }
                     },

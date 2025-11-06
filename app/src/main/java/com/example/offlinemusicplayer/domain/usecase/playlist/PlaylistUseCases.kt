@@ -5,5 +5,6 @@ data class PlaylistUseCases(
     val updatePlaylist: UpdatePlaylist,
     val createPlaylist: CreatePlaylist,
     val getPlaylistById: GetPlaylistById,
-    val removeSongFromPlaylist: RemoveSongFromPlaylist
+    val removeSongFromPlaylist: RemoveSongFromPlaylist,
+    val deletePlaylist: DeletePlaylist
 )

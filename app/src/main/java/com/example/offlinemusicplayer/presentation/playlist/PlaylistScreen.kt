@@ -25,6 +25,7 @@ import com.example.offlinemusicplayer.domain.enum_classes.PlaylistOptions
 import com.example.offlinemusicplayer.domain.model.Playlist
 import com.example.offlinemusicplayer.presentation.components.PlaylistItem
 import com.example.offlinemusicplayer.presentation.dialogs.CreatePlaylistDialog
+import com.example.offlinemusicplayer.presentation.dialogs.DeleteConfirmDialog
 import com.example.offlinemusicplayer.presentation.dialogs.SongSelectionDialog
 
 @Composable
@@ -51,13 +52,28 @@ fun PlaylistScreen(
         mutableStateOf(false)
     }
 
+    var showDeleteDialog by remember {
+        mutableStateOf(false)
+    }
+
+    if(showDeleteDialog) {
+        DeleteConfirmDialog(
+            onDismiss = { showDeleteDialog = false },
+            onConfirm = {
+                viewModel.deletePlaylist()
+                showDeleteDialog = false
+            },
+            description = "\"${viewModel.playlistToModify?.name}\" will be permanently deleted."
+        )
+    }
+
     if(showSongSelection) {
         SongSelectionDialog(
             songs = viewModel.songs,
             title = playlistTitle,
-            selectedSongIds = viewModel.playlistToUpdate?.songIds,
+            selectedSongIds = viewModel.playlistToModify?.songIds,
             onSubmit = { selectedSongs ->
-                if(viewModel.playlistToUpdate != null) {
+                if(viewModel.playlistToModify != null) {
                     viewModel.updatePlaylistContent(selectedSongs)
                 } else {
                     viewModel.addPlaylist(playlistTitle, selectedSongs)
@@ -120,17 +136,18 @@ fun PlaylistScreen(
 
                             }
                             PlaylistOptions.EditName -> {
-                                viewModel.playlistToUpdate = playlist
+                                viewModel.playlistToModify = playlist
                                 playlistTitle = playlist.name
                                 isCreatePlaylist = false
                                 showCreatePlaylistDialog = true
                             }
                             PlaylistOptions.EditContent -> {
-                                viewModel.playlistToUpdate = playlist
+                                viewModel.playlistToModify = playlist
                                 showSongSelection = true
                             }
                             PlaylistOptions.Delete -> {
-
+                                viewModel.playlistToModify = playlist
+                                showDeleteDialog = true
                             }
                         }
                     }

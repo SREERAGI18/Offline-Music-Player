@@ -1,12 +1,12 @@
 package com.example.offlinemusicplayer.data.local.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
-import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -22,4 +22,7 @@ interface PlaylistDao {
 
     @Query("SELECT * FROM playlists WHERE id = :playlistId")
     fun getPlaylistById(playlistId: Long): Flow<PlaylistEntity?>
+
+    @Delete
+    fun deletePlaylist(playlist: PlaylistEntity)
 }

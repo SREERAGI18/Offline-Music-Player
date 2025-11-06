@@ -31,7 +31,7 @@ class PlaylistDetailVM @Inject constructor(
     private val playlistId: Long = savedStateHandle[Screens.PLAYLIST_ID_KEY] ?: 0L
 
     val currentMedia = playerRepository.currentMedia
-    var playlistToUpdate: Playlist? = null
+    var playlistToModify: Playlist? = null
 
     val playlist: StateFlow<Playlist?> = playlistUseCases.getPlaylistById(playlistId)
         .stateIn(
@@ -113,23 +113,31 @@ class PlaylistDetailVM @Inject constructor(
 
     fun updatePlaylistName(playlistName: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            playlistToUpdate?.let { playlist ->
+            playlistToModify?.let { playlist ->
                 playlistUseCases.updatePlaylist(
                     playlist.copy(name = playlistName)
                 )
-                playlistToUpdate = null
+                playlistToModify = null
             }
         }
     }
 
     fun updatePlaylistContent(songs: List<Song>) {
         viewModelScope.launch(Dispatchers.IO) {
-            playlistToUpdate?.let { playlist ->
+            playlistToModify?.let { playlist ->
                 val songIds = songs.map { it.id }
                 playlistUseCases.updatePlaylist(
                     playlist.copy(songIds = songIds)
                 )
-                playlistToUpdate = null
+                playlistToModify = null
+            }
+        }
+    }
+
+    fun deletePlaylist() {
+        viewModelScope.launch(Dispatchers.IO) {
+            playlistToModify?.let { playlist ->
+                playlistUseCases.deletePlaylist(playlist)
             }
         }
     }

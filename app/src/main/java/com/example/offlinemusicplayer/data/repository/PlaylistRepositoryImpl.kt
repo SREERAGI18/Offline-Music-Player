@@ -57,4 +57,8 @@ class PlaylistRepositoryImpl(
             updatePlaylist(updatedSongIds, currentPlaylist)
         }
     }
+
+    override suspend fun deletePlaylist(playlist: Playlist) {
+        playlistDao.deletePlaylist(playlist.toPlaylistEntity())
+    }
 }
