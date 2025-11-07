@@ -3,8 +3,10 @@ package com.example.offlinemusicplayer
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -51,6 +53,8 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.semantics.dismiss
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -59,6 +63,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.offlinemusicplayer.presentation.activities.ProfileActivity
 import com.example.offlinemusicplayer.presentation.activities.SettingsActivity
+import com.example.offlinemusicplayer.presentation.dialogs.CommonDialog
 import com.example.offlinemusicplayer.presentation.main.MainVM
 import com.example.offlinemusicplayer.presentation.mini_player_bar.MiniPlayerBar
 import com.example.offlinemusicplayer.presentation.navigation.RootNavHost
@@ -70,11 +75,28 @@ import com.example.offlinemusicplayer.ui.theme.OfflineMusicPlayerTheme
 import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.security.Permissions
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    var isPermissionGranted by mutableStateOf(false)
+    var isPermissionGranted by mutableStateOf<Boolean>(false)
+    var showSettings by mutableStateOf<Boolean?>(null)
+
+    val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        // Android 13+
+        arrayOf(Manifest.permission.READ_MEDIA_AUDIO)
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        // Android 10, 11, 12
+        // WRITE permission is not needed here, it's handled via RecoverableSecurityException
+        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+    } else {
+        // Android 9 (Pie) and below
+        arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,6 +129,12 @@ class MainActivity : ComponentActivity() {
                 isPermissionGranted = checkIfPermissionGranted()
                 if (!isPermissionGranted) {
                     requestStoragePermission()
+                }
+
+                if(showSettings == true) {
+                    SettingsDialog()
+                } else if(showSettings == false) {
+                    PermissionRationaleDialog(permissions)
                 }
 
                 if(isPermissionGranted) {
@@ -333,9 +361,6 @@ class MainActivity : ComponentActivity() {
                 onClick = {
                     requestStoragePermission()
                 },
-                modifier = Modifier.clickable {
-                    requestStoragePermission()
-                },
                 colors = ButtonDefaults.textButtonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
@@ -343,28 +368,57 @@ class MainActivity : ComponentActivity() {
             ) {
                 Text(
                     text = "Grant Storage permission",
-                    style = MaterialTheme.typography.displayMedium
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
     }
 
-    fun requestStoragePermission() {
-        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Android 13+
-            arrayOf(Manifest.permission.READ_MEDIA_AUDIO)
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // Android 10, 11, 12
-            // WRITE permission is not needed here, it's handled via RecoverableSecurityException
-            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+    fun requestStoragePermission(permissions: Array<String> = this.permissions) {
+
+        val permissionToRationale = permissions.first()
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissionToRationale)) {
+            // The user has denied the permission before, but not "Don't ask again".
+            // Show a rationale dialog.
+            showSettings = false
         } else {
-            // Android 9 (Pie) and below
-            arrayOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )
+            // This is the first time, or the user has selected "Don't ask again".
+            // The launcher will handle the "Don't ask again" case in its result.
+            requestMultiplePermissions.launch(permissions)
         }
-        requestMultiplePermissions.launch(permissions)
+    }
+
+    @Composable
+    fun PermissionRationaleDialog(permissions: Array<String>) {
+        CommonDialog(
+            title = "Permission Required",
+            description = "This app needs access to your storage to find and play music files.",
+            positiveText = "Grant",
+            onPositiveClick = {
+                requestMultiplePermissions.launch(permissions)
+            },
+            onDismiss = {},
+            negativeText = "Cancel",
+            dismissable = false
+        )
+    }
+
+    @Composable
+    fun SettingsDialog() {
+        CommonDialog(
+            title = "Permission Denied",
+            description = "You have permanently denied the storage permission. To fetch the music file, please enable it from the settings.",
+            positiveText = "Settings",
+            onPositiveClick = {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                val uri = Uri.fromParts("package", packageName, null)
+                intent.data = uri
+                startActivity(intent)
+            },
+            onDismiss = {},
+            dismissable = false
+        )
     }
 
     private var onDeletePermissionGranted: (() -> Unit)? = null
@@ -388,24 +442,26 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
 
-        var permissionGranted = true
+        val isGranted = permissions.entries.all { it.value }
 
-        permissions.entries.forEach {
-            Logger.logDebug("DEBUG", "${it.key} = ${it.value}")
-            if(!it.value) {
-                permissionGranted = false
-            }
-        }
-
-        if (permissionGranted) {
+        if (isGranted) {
             isPermissionGranted = true
         } else {
             isPermissionGranted = false
-            Toast.makeText(
-                this,
-                "Storage permission is required to play music.",
-                Toast.LENGTH_SHORT
-            ).show()
+            // Check if any permission was permanently denied.
+            val permanentlyDenied = permissions.entries.any {
+                !it.value && !ActivityCompat.shouldShowRequestPermissionRationale(this, it.key)
+            }
+
+            if (permanentlyDenied) {
+                showSettings = true
+            } else {
+                Toast.makeText(
+                    this,
+                    "Storage permission is required to play music.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
     }
