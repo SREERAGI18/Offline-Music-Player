@@ -13,4 +13,8 @@ interface SongsRepository {
     suspend fun getAllSongs(): List<Song>
     suspend fun deleteSongFileById(song: Song)
     suspend fun recentSongs(size: Int): List<Song>
+
+    suspend fun incrementPlayCount(songId: Long)
+
+    suspend fun getMostPlayedSongs(limit: Int): List<Song>
 }

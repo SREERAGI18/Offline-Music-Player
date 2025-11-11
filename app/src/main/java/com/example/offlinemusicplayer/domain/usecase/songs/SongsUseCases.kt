@@ -8,5 +8,7 @@ data class SongsUseCases(
     val getSongsByIdsPaginated: GetSongsByIdsPaginated,
     val searchSongs: SearchSongs,
     val searchSongsPaginated: SearchSongsPaginated,
-    val getRecentSongs: GetRecentSongs
+    val getRecentSongs: GetRecentSongs,
+    val incrementPlayCount: IncrementPlayCount,
+    val getMostPlayedSongs: GetMostPlayedSongs,
 )

@@ -97,4 +97,14 @@ class SongsRepositoryImpl(
             it.toSong()
         }
     }
+
+    override suspend fun incrementPlayCount(songId: Long) {
+        songsDao.incrementPlayCount(songId)
+    }
+
+    override suspend fun getMostPlayedSongs(limit: Int): List<Song> {
+        return songsDao.getMostPlayedSongs(limit).map {
+            it.toSong()
+        }
+    }
 }

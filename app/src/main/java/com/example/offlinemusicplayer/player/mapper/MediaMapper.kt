@@ -31,6 +31,7 @@ class MediaMapper {
             artistId = extras.getLong("artistId", 0L),
             composer = extras.getString("composer"),
             albumArtist = extras.getString("albumArtist"),
+            playCount = extras.getInt("playCount"),
         )
     }
 
@@ -52,6 +53,7 @@ class MediaMapper {
                 putLong("artistId", song.artistId)
                 putString("composer", song.composer)
                 putString("albumArtist", song.albumArtist)
+                putInt("playCount", song.playCount)
             })
             .build()
 

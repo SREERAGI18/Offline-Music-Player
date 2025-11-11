@@ -29,7 +29,8 @@ data class SongsEntity(
     val artistId: Long,
     val composer: String?,
     val albumArtist: String?,
-    val lastScanned: Long = System.currentTimeMillis()
+    val lastScanned: Long = System.currentTimeMillis(),
+    val playCount: Int = 0,
 ) {
 
     fun toSong(): Song {
@@ -48,7 +49,8 @@ data class SongsEntity(
             dateModified = dateModified,
             artistId = artistId,
             composer = composer,
-            albumArtist = albumArtist
+            albumArtist = albumArtist,
+            playCount = playCount
         )
     }
     fun getContentUri(): Uri {

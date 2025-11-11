@@ -5,27 +5,8 @@ import android.content.ComponentName
 import android.content.Context
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import com.example.offlinemusicplayer.data.local.dao.PlaylistDao
 import com.example.offlinemusicplayer.data.local.dao.SongsDao
-import com.example.offlinemusicplayer.data.repository.PlaylistRepository
-import com.example.offlinemusicplayer.data.repository.PlaylistRepositoryImpl
-import com.example.offlinemusicplayer.data.repository.SongsRepository
-import com.example.offlinemusicplayer.data.repository.SongsRepositoryImpl
-import com.example.offlinemusicplayer.domain.usecase.playlist.CreatePlaylist
-import com.example.offlinemusicplayer.domain.usecase.songs.DeleteSongById
-import com.example.offlinemusicplayer.domain.usecase.songs.GetAllSongs
-import com.example.offlinemusicplayer.domain.usecase.songs.GetAllSongsPaginated
-import com.example.offlinemusicplayer.domain.usecase.playlist.GetPlaylistById
-import com.example.offlinemusicplayer.domain.usecase.playlist.GetPlaylists
-import com.example.offlinemusicplayer.domain.usecase.playlist.PlaylistUseCases
-import com.example.offlinemusicplayer.domain.usecase.songs.GetRecentSongs
-import com.example.offlinemusicplayer.domain.usecase.songs.GetSongsByIds
-import com.example.offlinemusicplayer.domain.usecase.songs.GetSongsByIdsPaginated
-import com.example.offlinemusicplayer.domain.usecase.playlist.RemoveSongFromPlaylist
-import com.example.offlinemusicplayer.domain.usecase.songs.SearchSongs
-import com.example.offlinemusicplayer.domain.usecase.songs.SearchSongsPaginated
-import com.example.offlinemusicplayer.domain.usecase.playlist.UpdatePlaylist
-import com.example.offlinemusicplayer.domain.usecase.songs.SongsUseCases
+import com.example.offlinemusicplayer.domain.usecase.songs.IncrementPlayCount
 import com.example.offlinemusicplayer.player.AudioFilesManager
 import com.example.offlinemusicplayer.player.MusicService
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
@@ -67,10 +48,12 @@ object AppModule {
         coroutineScope: CoroutineScope,
         preferencesManager: PreferencesManager,
         controller: Deferred<@JvmSuppressWildcards MediaController>,
+        incrementPlayCount: IncrementPlayCount
     ): PlayerServiceRepository = PlayerServiceRepositoryImpl(
         mediaMapper = mediaMapper,
         coroutineScope = coroutineScope,
-        preferencesManager = preferencesManager
+        preferencesManager = preferencesManager,
+        incrementPlayCount = incrementPlayCount
     ).also { playerRepository ->
         coroutineScope.launch(Dispatchers.Main) {
             val player = controller.await()

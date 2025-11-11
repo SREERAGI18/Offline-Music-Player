@@ -145,7 +145,7 @@ class AudioFilesManager(
             sortOrder
         )
 
-//        val songsChangeCount = getSongsChangeCount()
+        val songsChangeCount = getSongsChangeCount()
 
         query?.use { cursor ->
             val batch = mutableListOf<SongsEntity>()
@@ -197,15 +197,22 @@ class AudioFilesManager(
                 }
             }
 
-//            if(songsChangeCount > 0) {
-//                Toast.makeText(context, "$songsChangeCount songs added", Toast.LENGTH_SHORT).show()
-//            }
+            if(songsChangeCount > 0) {
+                withContext(Dispatchers.Main){
+                    val message = "$songsChangeCount" + if(songsChangeCount == 1) {
+                        " song added"
+                    } else {
+                        " songs added"
+                    }
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                }
+            }
 
-//            if (batch.isNotEmpty()) {
-//                songsDao.insertAll(batch)
-//                totalProcessed += batch.size
-//                onProgress?.invoke(totalProcessed, estimatedTotal)
-//            }
+            if (batch.isNotEmpty()) {
+                songsDao.insertAll(batch)
+                totalProcessed += batch.size
+                onProgress?.invoke(totalProcessed, estimatedTotal)
+            }
         }
 
         return audioFiles

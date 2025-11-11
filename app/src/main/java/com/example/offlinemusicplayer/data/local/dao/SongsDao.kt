@@ -58,4 +58,10 @@ interface SongsDao {
 
     @Query("SELECT DISTINCT artist FROM songs WHERE artist IS NOT NULL ORDER BY artist ASC")
     suspend fun getAllArtists(): List<String>
+
+    @Query("UPDATE songs SET playCount = playCount + 1 WHERE id = :songId")
+    suspend fun incrementPlayCount(songId: Long)
+
+    @Query("SELECT * FROM songs WHERE (playCount >= 1) ORDER BY playCount DESC LIMIT :limit")
+    suspend fun getMostPlayedSongs(limit: Int): List<SongsEntity>
 }

@@ -10,6 +10,7 @@ import com.example.offlinemusicplayer.domain.enum_classes.Command
 import com.example.offlinemusicplayer.domain.enum_classes.PlayerState
 import com.example.offlinemusicplayer.domain.enum_classes.RepeatMode
 import com.example.offlinemusicplayer.domain.model.Song
+import com.example.offlinemusicplayer.domain.usecase.songs.IncrementPlayCount
 import com.example.offlinemusicplayer.player.mapper.MediaMapper
 import com.example.offlinemusicplayer.player.mapper.PlayerStateMapper
 import com.example.offlinemusicplayer.player.mapper.RepeatModeMapper
@@ -32,7 +33,8 @@ import kotlin.time.toDuration
 class PlayerServiceRepositoryImpl @Inject constructor(
     private val mediaMapper: MediaMapper,
     private val coroutineScope: CoroutineScope,
-    private val preferencesManager: PreferencesManager
+    private val preferencesManager: PreferencesManager,
+    private val incrementPlayCount: IncrementPlayCount
 ): PlayerServiceRepository, Closeable {
 
     private companion object {
@@ -87,6 +89,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     override val seekForwardIncrement: StateFlow<Duration?> get() = _seekForwardIncrement
 
     private var mediaIndexToSeekTo: Int? = null
+    private var pendingLastPlayedSongIncrementId: Long? = null
 
     private var isLastPlayedInitialised = false
 
@@ -135,6 +138,17 @@ class PlayerServiceRepositoryImpl @Inject constructor(
             updateTimeline(player.value!!)
         }
 
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            super.onMediaItemTransition(mediaItem, reason)
+            Logger.logInfo(TAG, "onMediaItemTransition, Reason: $reason")
+            if(reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED || mediaItem == null) return
+
+            coroutineScope.launch {
+                val songId = mediaItem.mediaId.toLong()
+                incrementPlayCount(songId)
+            }
+        }
+
         override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
             super.onMediaMetadataChanged(mediaMetadata)
             Logger.logInfo(TAG, "onMediaMetadataChanged")
@@ -171,6 +185,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
             val mediaList = getMediaList()
             val lastPlayedMediaIndex = mediaList.indexOfFirst { it.id == lastPlayedSongId }
             mediaIndexToSeekTo = lastPlayedMediaIndex
+            pendingLastPlayedSongIncrementId = lastPlayedSongId
             setRepeatMode(repeatMode)
             setShuffleModeEnabled(shuffleModeEnabled)
 //            seekToPosition(lastPlayedPosition)
@@ -206,7 +221,17 @@ class PlayerServiceRepositoryImpl @Inject constructor(
      * [Player.getPlaybackState] and [Player.getPlayWhenReady] properties.
      */
     private fun updateState(player: Player) {
-        _currentState.value = PlayerStateMapper.map(player)
+        val playerState = PlayerStateMapper.map(player)
+        _currentState.value = playerState
+
+        pendingLastPlayedSongIncrementId?.let { songId ->
+            if(songId.toString() == player.currentMediaItem?.mediaId && playerState == PlayerState.Playing) {
+                coroutineScope.launch {
+                    incrementPlayCount(songId)
+                }
+                pendingLastPlayedSongIncrementId = null
+            }
+        }
 
         Logger.logError(TAG, "Player state changed to ${_currentState.value}")
     }
