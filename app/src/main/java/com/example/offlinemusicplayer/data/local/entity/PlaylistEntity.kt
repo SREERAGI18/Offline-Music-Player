@@ -26,9 +26,12 @@ data class PlaylistEntity(
     companion object {
         const val RECENTLY_PLAYED_PLAYLIST_NAME = "Recently Played"
         const val RECENTLY_PLAYED_PLAYLIST_ID = 1L
+        const val MOST_PLAYED_PLAYLIST_NAME = "Most Played"
+        const val MOST_PLAYED_PLAYLIST_ID = 2L
 
-        val DEFAULT_PLAYLIST_IDS = arrayOf(
-            RECENTLY_PLAYED_PLAYLIST_ID
+        val DEFAULT_PLAYLIST_MAP = mapOf<Long, String>(
+            RECENTLY_PLAYED_PLAYLIST_ID to RECENTLY_PLAYED_PLAYLIST_NAME,
+            MOST_PLAYED_PLAYLIST_ID to MOST_PLAYED_PLAYLIST_NAME
         )
     }
 }

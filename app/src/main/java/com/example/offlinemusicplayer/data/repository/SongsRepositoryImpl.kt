@@ -5,26 +5,63 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.example.offlinemusicplayer.data.local.dao.SongsDao
+import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.model.Song
-import com.example.offlinemusicplayer.domain.usecase.playlist.GetPlaylists
-import com.example.offlinemusicplayer.domain.usecase.playlist.UpdatePlaylist
 import com.example.offlinemusicplayer.player.AudioFilesManager
 import com.example.offlinemusicplayer.util.Logger
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class SongsRepositoryImpl(
     private val songsDao: SongsDao,
-    private val updatePlaylist: UpdatePlaylist,
-    private val getPlaylists: GetPlaylists,
     private val audioFilesManager: AudioFilesManager,
 ) : SongsRepository {
+
+    override suspend fun syncSongsWithDevice(): Int {
+        val songsChangeCount = getSongsChangeCount()
+
+        if(songsChangeCount > 0) {
+            val songs  = audioFilesManager.fetchAllSongsFromDevice()
+            songsDao.insertAll(songs.map { it.toSongsEntity() })
+        }
+
+        return songsChangeCount
+    }
+
+    private suspend fun getSongsChangeCount(): Int {
+        val dbCount = songsDao.getCount()
+        val mediaCount = audioFilesManager.getMediaStoreAudioCount()
+        return mediaCount-dbCount
+    }
+
+    fun searchSongsPaged(query: String): Flow<PagingData<SongsEntity>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { songsDao.searchSongsPaged(query) }
+        ).flow
+    }
+
+    fun getSongsByArtistPaged(artist: String): Flow<PagingData<SongsEntity>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20),
+            pagingSourceFactory = { songsDao.getSongsByArtistPaged(artist) }
+        ).flow
+    }
 
     override fun getAllSongsPaginated(): Flow<PagingData<Song>> {
         Logger.logError("MusicRepositoryImpl", "getAllSongs")
 
-        return audioFilesManager.getAllSongsPaged().map { pagingData ->
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false,
+                prefetchDistance = 20
+            ),
+            pagingSourceFactory = { songsDao.getAllSongsPaged() }
+        ).flow.map { pagingData ->
             pagingData.map {
                 it.toSong()
             }
@@ -78,18 +115,9 @@ class SongsRepositoryImpl(
     }
 
     override suspend fun deleteSongFileById(song: Song) {
-        songsDao.deleteSongById(song.id)
-        val allPlaylists = getPlaylists().first()
-        for (playlistEntity in allPlaylists) {
-            val playlist = playlistEntity
-            if (playlist.songIds.contains(song.id)) {
-                val updatedSongIds = playlist.songIds.toMutableList().apply {
-                    remove(song.id)
-                }
-                updatePlaylist(updatedSongIds, playlist)
-            }
+        if(audioFilesManager.deleteSongFile(song)) {
+            songsDao.deleteSongById(song.id)
         }
-        audioFilesManager.deleteSongFile(song)
     }
 
     override suspend fun recentSongs(size: Int): List<Song> {

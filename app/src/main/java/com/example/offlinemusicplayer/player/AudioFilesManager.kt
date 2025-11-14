@@ -4,54 +4,33 @@ import android.Manifest
 import android.content.ContentUris
 import android.content.Context
 import android.content.pm.PackageManager
-import android.database.ContentObserver
 import android.database.Cursor
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.provider.BaseColumns
 import android.provider.MediaStore
 import android.provider.MediaStore.Audio.AudioColumns
-import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import com.example.offlinemusicplayer.data.local.dao.SongsDao
-import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.util.Logger
 import com.example.offlinemusicplayer.util.getIntFromCol
 import com.example.offlinemusicplayer.util.getLongFromCol
 import com.example.offlinemusicplayer.util.getStringFromCol
 import com.example.offlinemusicplayer.util.getStringOrNullFromCol
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.math.abs
 
 class AudioFilesManager(
     private val context: Context,
-    private val songsDao: SongsDao
 ) {
 
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
-    init {
-        // Initial scan if needed
-        scope.launch {
-            if (needsRefresh()) {
-                scanAndCacheSongs()
-            }
-        }
-    }
-
-    suspend fun deleteSongFile(song: Song) {
-        withContext(Dispatchers.IO) {
+    /**
+     * Deletes a song file from the device.
+     *
+     * @param song The [Song] to delete.
+     * @return `true` if the file was successfully deleted, `false` otherwise.
+     */
+    suspend fun deleteSongFile(song: Song): Boolean {
+        return withContext(Dispatchers.IO) {
             try {
                 // 1. Get the content URI for the song
                 val contentUri = ContentUris.withAppendedId(
@@ -64,22 +43,24 @@ class AudioFilesManager(
 
                 if (deletedRows > 0) {
                     // 3. If file deletion was successful, remove from the local database
-                    songsDao.deleteSongById(song.id)
+                    true
                 } else {
                     // Handle the case where the file couldn't be deleted
                     Logger.logError("AudioFilesFetcher", "Failed to delete file for song ID: ${song.id}")
+                    false
                 }
             } catch (e: SecurityException) {
                 // This can happen if you don't have the correct permissions,
                 // especially on Android 10+ for files you don't own.
                 Logger.logError("AudioFilesFetcher", "SecurityException on deleting song: ${e.message}")
+                false
             } catch (e: Exception) {
                 Logger.logError("AudioFilesFetcher", "Error deleting song: ${e.message}")
+                false
             }
         }
     }
 
-    // Check if permissions are granted
     fun hasPermissions(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(
@@ -95,7 +76,7 @@ class AudioFilesManager(
     }
 
     // Fetch all audio files from all storage locations
-    suspend fun scanAndCacheSongs(
+    fun fetchAllSongsFromDevice(
         batchSize: Int = 100,
         onProgress: ((Int, Int) -> Unit)? = null
     ): List<Song> {
@@ -145,10 +126,8 @@ class AudioFilesManager(
             sortOrder
         )
 
-        val songsChangeCount = getSongsChangeCount()
-
         query?.use { cursor ->
-            val batch = mutableListOf<SongsEntity>()
+            val batch = mutableListOf<Song>()
 
             while (cursor.moveToNext()) {
                 val id = cursor.getLongFromCol(AudioColumns._ID)
@@ -169,7 +148,7 @@ class AudioFilesManager(
 
                 Logger.logError("AudioFilesFetcher", "Song ID: $id, Name: $title, Artist: $artistName, Album: $albumName")
 
-                val entity = SongsEntity(
+                val entity = Song(
                     id = id,
                     title = title,
                     artist = artistName,
@@ -190,26 +169,15 @@ class AudioFilesManager(
                 batch.add(entity)
 
                 if (batch.size >= batchSize) {
-                    songsDao.insertAll(batch)
+                    audioFiles.addAll(batch)
                     totalProcessed += batch.size
                     onProgress?.invoke(totalProcessed, estimatedTotal)
                     batch.clear()
                 }
             }
 
-            if(songsChangeCount > 0) {
-                withContext(Dispatchers.Main){
-                    val message = "$songsChangeCount" + if(songsChangeCount == 1) {
-                        " song added"
-                    } else {
-                        " songs added"
-                    }
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                }
-            }
-
             if (batch.isNotEmpty()) {
-                songsDao.insertAll(batch)
+                audioFiles.addAll(batch)
                 totalProcessed += batch.size
                 onProgress?.invoke(totalProcessed, estimatedTotal)
             }
@@ -220,64 +188,14 @@ class AudioFilesManager(
 
     // Get all available storage volumes
     fun getAllStorageVolumes(): Set<String> {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return setOf(MediaStore.VOLUME_EXTERNAL)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//            return setOf(MediaStore.VOLUME_EXTERNAL)
+            return MediaStore.getExternalVolumeNames(context)
         }
-        return MediaStore.getExternalVolumeNames(context)
+        return setOf()
     }
 
-    fun getAllSongsPaged(): Flow<PagingData<SongsEntity>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = false,
-                prefetchDistance = 20
-            ),
-            pagingSourceFactory = { songsDao.getAllSongsPaged() }
-        ).flow
-    }
-
-    fun searchSongsPaged(query: String): Flow<PagingData<SongsEntity>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = { songsDao.searchSongsPaged(query) }
-        ).flow
-    }
-
-//    fun getSongsByVolumePaged(volume: String): Flow<PagingData<SongsEntity>> {
-//        return Pager(
-//            config = PagingConfig(pageSize = 20),
-//            pagingSourceFactory = { songsDao.getSongsByVolumePaged(volume) }
-//        ).flow
-//    }
-
-    fun getSongsByArtistPaged(artist: String): Flow<PagingData<SongsEntity>> {
-        return Pager(
-            config = PagingConfig(pageSize = 20),
-            pagingSourceFactory = { songsDao.getSongsByArtistPaged(artist) }
-        ).flow
-    }
-
-    suspend fun forceRefresh() {
-        scanAndCacheSongs()
-    }
-
-    private suspend fun needsRefresh(): Boolean {
-        val dbCount = songsDao.getCount()
-        val mediaCount = getMediaStoreAudioCount()
-        return dbCount != mediaCount
-    }
-
-    private suspend fun getSongsChangeCount(): Int {
-        val dbCount = songsDao.getCount()
-        val mediaCount = getMediaStoreAudioCount()
-        return mediaCount-dbCount
-    }
-
-    private suspend fun getMediaStoreAudioCount(): Int = withContext(Dispatchers.IO) {
+    suspend fun getMediaStoreAudioCount(): Int = withContext(Dispatchers.IO) {
         val projection = arrayOf(BaseColumns._ID)
         context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -286,9 +204,5 @@ class AudioFilesManager(
             null,
             null
         )?.use { it.count } ?: 0
-    }
-
-    fun cleanup() {
-        scope.cancel()
     }
 }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.MusicNote
@@ -34,7 +35,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
-import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity.Companion.DEFAULT_PLAYLIST_IDS
+import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity.Companion.DEFAULT_PLAYLIST_MAP
 import com.example.offlinemusicplayer.domain.enum_classes.OptionType
 import com.example.offlinemusicplayer.domain.enum_classes.PlaylistOptions
 import com.example.offlinemusicplayer.domain.model.Playlist
@@ -48,6 +49,20 @@ fun PlaylistItem(
 ) {
     var menuExpanded by remember {
         mutableStateOf(false)
+    }
+
+    val icon by remember(playlist) {
+        when(playlist.name) {
+            PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> {
+                mutableStateOf(Icons.Filled.History)
+            }
+            PlaylistEntity.MOST_PLAYED_PLAYLIST_NAME -> {
+                mutableStateOf(Icons.AutoMirrored.Default.TrendingUp)
+            }
+            else -> {
+                mutableStateOf(Icons.Filled.MusicNote)
+            }
+        }
     }
 
     Row(
@@ -64,25 +79,12 @@ fun PlaylistItem(
                 .padding(8.dp),
             contentAlignment = Alignment.Center
         ) {
-            // Determine which icon to show for default playlists
-            when (playlist.name) {
-                PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> {
-                    Image(
-                        imageVector = Icons.Filled.History,
-                        contentDescription = "${playlist.name} playlist icon",
-                        modifier = Modifier.fillMaxSize(),
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
-                    )
-                }
-                else -> { // Default for user-created playlists
-                    Image(
-                        imageVector = Icons.Filled.MusicNote,
-                        contentDescription = "${playlist.name} playlist icon",
-                        modifier = Modifier.fillMaxSize(),
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
-                    )
-                }
-            }
+            Image(
+                imageVector = icon,
+                contentDescription = "${playlist.name} playlist icon",
+                modifier = Modifier.fillMaxSize(),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+            )
         }
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -124,7 +126,7 @@ fun PlaylistItem(
                     menuExpanded = false
                 },
                 onOptionSelected = onOptionSelected,
-                isDefaultPlaylist = playlist.id in DEFAULT_PLAYLIST_IDS
+                isDefaultPlaylist = playlist.id in DEFAULT_PLAYLIST_MAP
             )
         }
     }

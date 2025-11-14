@@ -1,14 +1,23 @@
 package com.example.offlinemusicplayer.presentation.main
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.offlinemusicplayer.domain.usecase.songs.SyncSongsWithDevice
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainVM @Inject constructor(
-    private val playerRepository: PlayerServiceRepository
-): ViewModel(){
+    private val playerRepository: PlayerServiceRepository,
+    private val syncSongsWithDevice: SyncSongsWithDevice,
+): ViewModel() {
+
+    private val _newlyAddedSongCount = MutableStateFlow(0)
+    val newlyAddedSongCount = _newlyAddedSongCount.asStateFlow()
 
     val currentMedia = playerRepository.currentMedia
 
@@ -19,6 +28,12 @@ class MainVM @Inject constructor(
     val shuffleModeEnabled = playerRepository.shuffleModeEnabled
 
     val repeatMode = playerRepository.repeatMode
+
+    init {
+        viewModelScope.launch {
+            _newlyAddedSongCount.value = syncSongsWithDevice()
+        }
+    }
 
     fun play() {
         playerRepository.play()

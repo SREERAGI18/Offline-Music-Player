@@ -12,6 +12,7 @@ import com.example.offlinemusicplayer.domain.usecase.playlist.GetPlaylistById
 import com.example.offlinemusicplayer.domain.usecase.playlist.GetPlaylists
 import com.example.offlinemusicplayer.domain.usecase.playlist.PlaylistUseCases
 import com.example.offlinemusicplayer.domain.usecase.playlist.RemoveSongFromPlaylist
+import com.example.offlinemusicplayer.domain.usecase.playlist.UpdateMostPlayedPlaylist
 import com.example.offlinemusicplayer.domain.usecase.playlist.UpdatePlaylist
 import com.example.offlinemusicplayer.domain.usecase.songs.DeleteSongById
 import com.example.offlinemusicplayer.domain.usecase.songs.GetAllSongs
@@ -24,6 +25,7 @@ import com.example.offlinemusicplayer.domain.usecase.songs.IncrementPlayCount
 import com.example.offlinemusicplayer.domain.usecase.songs.SearchSongs
 import com.example.offlinemusicplayer.domain.usecase.songs.SearchSongsPaginated
 import com.example.offlinemusicplayer.domain.usecase.songs.SongsUseCases
+import com.example.offlinemusicplayer.domain.usecase.songs.SyncSongsWithDevice
 import com.example.offlinemusicplayer.player.AudioFilesManager
 import dagger.Module
 import dagger.Provides
@@ -37,14 +39,10 @@ object UseCaseModule {
     @Provides
     fun provideSongsRepository(
         songsDao: SongsDao,
-        getPlaylists: GetPlaylists,
-        updatePlaylist: UpdatePlaylist,
         audioFilesManager: AudioFilesManager
     ): SongsRepository =
         SongsRepositoryImpl(
             songsDao = songsDao,
-            getPlaylists = getPlaylists,
-            updatePlaylist = updatePlaylist,
             audioFilesManager = audioFilesManager
         )
 
@@ -57,6 +55,7 @@ object UseCaseModule {
     fun providePlaylistUsesCases(
         getPlaylists: GetPlaylists,
         updatePlaylist: UpdatePlaylist,
+        updateMostPlayedPlaylist: UpdateMostPlayedPlaylist,
         createPlaylist: CreatePlaylist,
         getPlaylistById: GetPlaylistById,
         removeSongFromPlaylist: RemoveSongFromPlaylist,
@@ -64,6 +63,7 @@ object UseCaseModule {
     ) = PlaylistUseCases(
         getPlaylists = getPlaylists,
         updatePlaylist = updatePlaylist,
+        updateMostPlayedPlaylist = updateMostPlayedPlaylist,
         createPlaylist = createPlaylist,
         getPlaylistById = getPlaylistById,
         removeSongFromPlaylist = removeSongFromPlaylist,
@@ -99,6 +99,9 @@ object UseCaseModule {
     fun provideGetAllSongsPaginated(repo: SongsRepository) = GetAllSongsPaginated(repo)
 
     @Provides
+    fun provideSyncSongsWithDevice(repo: SongsRepository) = SyncSongsWithDevice(repo)
+
+    @Provides
     fun provideGetAllSongs(repo: SongsRepository) = GetAllSongs(repo)
 
     @Provides
@@ -117,10 +120,22 @@ object UseCaseModule {
     fun provideGetRecentSongs(repo: SongsRepository) = GetRecentSongs(repo)
 
     @Provides
-    fun provideDeleteSongById(repo: SongsRepository) = DeleteSongById(repo)
+    fun provideDeleteSongById(
+        songsRepository: SongsRepository,
+        playlistRepository: PlaylistRepository
+    ) = DeleteSongById(
+        songsRepository = songsRepository,
+        playlistRepository = playlistRepository
+    )
 
     @Provides
-    fun provideIncrementPlayCount(repo: SongsRepository) = IncrementPlayCount(repo)
+    fun provideIncrementPlayCount(
+        repo: SongsRepository,
+        updateMostPlayedPlaylist: UpdateMostPlayedPlaylist
+    ) = IncrementPlayCount(
+        repo = repo,
+        updateMostPlayedPlaylist = updateMostPlayedPlaylist
+    )
 
     @Provides
     fun provideGetMostPlayedSongs(repo: SongsRepository) = GetMostPlayedSongs(repo)
@@ -133,6 +148,15 @@ object UseCaseModule {
 
     @Provides
     fun provideUpdatePlaylist(repo: PlaylistRepository) = UpdatePlaylist(repo)
+
+    @Provides
+    fun provideUpdateMostPlayedPlaylist(
+        repo: PlaylistRepository,
+        getMostPlayedSongs: GetMostPlayedSongs
+    ) = UpdateMostPlayedPlaylist(
+        playlistRepository = repo,
+        getMostPlayedSongs = getMostPlayedSongs
+    )
 
     @Provides
     fun provideGetPlaylistById(repo: PlaylistRepository) = GetPlaylistById(repo)

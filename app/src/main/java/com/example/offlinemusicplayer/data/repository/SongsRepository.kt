@@ -5,6 +5,7 @@ import com.example.offlinemusicplayer.domain.model.Song
 import kotlinx.coroutines.flow.Flow
 
 interface SongsRepository {
+    suspend fun syncSongsWithDevice(): Int
     fun getAllSongsPaginated(): Flow<PagingData<Song>>
     fun searchSongsPaginated(query: String): Flow<PagingData<Song>>
     fun searchSongs(query: String): List<Song>

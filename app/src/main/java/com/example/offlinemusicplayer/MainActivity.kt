@@ -15,7 +15,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +38,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +53,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.semantics.dismiss
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -72,10 +72,10 @@ import com.example.offlinemusicplayer.presentation.now_playing_detail.NowPlaying
 import com.example.offlinemusicplayer.presentation.providers.LocalBottomScrollBehavior
 import com.example.offlinemusicplayer.presentation.providers.LocalScrollBehavior
 import com.example.offlinemusicplayer.ui.theme.OfflineMusicPlayerTheme
-import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.security.Permissions
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -149,11 +149,13 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun MainBody() {
+        val context = LocalContext.current
         val rootNavController = rememberNavController()
         val mainNavController = rememberNavController()
 
         val viewModel = hiltViewModel<MainVM>()
         val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()
+        val newlyAddedSongCount by viewModel.newlyAddedSongCount.collectAsStateWithLifecycle()
 
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         var isSheetVisible by remember { mutableStateOf(false) }
@@ -223,6 +225,19 @@ class MainActivity : ComponentActivity() {
 
         BackHandler {
             rootNavController.popBackStack()
+        }
+
+        LaunchedEffect(newlyAddedSongCount) {
+            if(newlyAddedSongCount > 0) {
+                withContext(Dispatchers.Main){
+                    val message = "$newlyAddedSongCount" + if(newlyAddedSongCount == 1) {
+                        " song added"
+                    } else {
+                        " songs added"
+                    }
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         Scaffold(

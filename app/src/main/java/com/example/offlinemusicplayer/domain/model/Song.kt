@@ -25,7 +25,7 @@ data class Song(
     val artistId: Long,
     val composer: String?,
     val albumArtist: String?,
-    val playCount: Int,
+    val playCount: Int = 0,
     var selected: Boolean = false,
     var isPlaying: Boolean = false,
 ) {

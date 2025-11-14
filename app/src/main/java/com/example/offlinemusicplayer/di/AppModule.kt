@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Context
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import com.example.offlinemusicplayer.data.local.dao.SongsDao
 import com.example.offlinemusicplayer.domain.usecase.songs.IncrementPlayCount
 import com.example.offlinemusicplayer.player.AudioFilesManager
 import com.example.offlinemusicplayer.player.MusicService
@@ -33,7 +32,7 @@ import javax.inject.Singleton
 object AppModule {
 
     @Provides
-    fun provideAudioFileFetcher(app: Application, songsDao: SongsDao) = AudioFilesManager(app, songsDao)
+    fun provideAudioFileFetcher(app: Application,) = AudioFilesManager(app,)
 
     @Provides
     fun providePreferenceManager(app: Application) = PreferencesManager(app)

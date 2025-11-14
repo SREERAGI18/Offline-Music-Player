@@ -15,13 +15,7 @@ import com.example.offlinemusicplayer.MainActivity
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
 import com.example.offlinemusicplayer.domain.model.Playlist
 import com.example.offlinemusicplayer.domain.model.Song
-import com.example.offlinemusicplayer.domain.usecase.playlist.CreatePlaylist
-import com.example.offlinemusicplayer.domain.usecase.songs.DeleteSongById
-import com.example.offlinemusicplayer.domain.usecase.songs.GetAllSongs
-import com.example.offlinemusicplayer.domain.usecase.songs.GetAllSongsPaginated
-import com.example.offlinemusicplayer.domain.usecase.playlist.GetPlaylists
 import com.example.offlinemusicplayer.domain.usecase.playlist.PlaylistUseCases
-import com.example.offlinemusicplayer.domain.usecase.playlist.UpdatePlaylist
 import com.example.offlinemusicplayer.domain.usecase.songs.SongsUseCases
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import com.example.offlinemusicplayer.util.Logger
@@ -155,7 +149,7 @@ class SongListVM @Inject constructor(
     fun getPlaylist() {
         viewModelScope.launch {
             playlistUseCases.getPlaylists().collectLatest {
-                if(it.isEmpty()) createRecentlyPlayedPlaylist()
+                if(it.isEmpty()) createDefaultPlaylists()
 
                 playlists.clear()
                 playlists.addAll(it)
@@ -171,13 +165,15 @@ class SongListVM @Inject constructor(
         }
     }
 
-    fun createRecentlyPlayedPlaylist() {
+    fun createDefaultPlaylists() {
         viewModelScope.launch {
-            playlistUseCases.createPlaylist(
-                id = PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_ID,
-                name = "Recently Played",
-                songIds = emptyList()
-            )
+            PlaylistEntity.DEFAULT_PLAYLIST_MAP.map {
+                playlistUseCases.createPlaylist(
+                    id = it.key,
+                    name = it.value,
+                    songIds = emptyList()
+                )
+            }
         }
     }
 

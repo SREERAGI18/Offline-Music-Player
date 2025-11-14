@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
-import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity.Companion.DEFAULT_PLAYLIST_IDS
+import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity.Companion.DEFAULT_PLAYLIST_MAP
 import com.example.offlinemusicplayer.domain.enum_classes.PlaylistOptions
 import com.example.offlinemusicplayer.domain.enum_classes.PlaylistSongOptions
 import com.example.offlinemusicplayer.presentation.components.PlaylistOptionsDropDown
@@ -182,7 +182,7 @@ fun PlaylistDetailScreen(
                             }
                         }
                     },
-                    isDefaultPlaylist = playlist?.id in DEFAULT_PLAYLIST_IDS
+                    isDefaultPlaylist = playlist?.id in DEFAULT_PLAYLIST_MAP
                 )
             }
         }
