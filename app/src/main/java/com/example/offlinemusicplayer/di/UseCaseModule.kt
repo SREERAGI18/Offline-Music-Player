@@ -17,8 +17,10 @@ import com.example.offlinemusicplayer.domain.usecase.playlist.UpdatePlaylist
 import com.example.offlinemusicplayer.domain.usecase.songs.DeleteSongById
 import com.example.offlinemusicplayer.domain.usecase.songs.GetAllSongs
 import com.example.offlinemusicplayer.domain.usecase.songs.GetAllSongsPaginated
+import com.example.offlinemusicplayer.domain.usecase.songs.GetFirstSongIndexByLetter
 import com.example.offlinemusicplayer.domain.usecase.songs.GetMostPlayedSongs
 import com.example.offlinemusicplayer.domain.usecase.songs.GetRecentSongs
+import com.example.offlinemusicplayer.domain.usecase.songs.GetSongIndexById
 import com.example.offlinemusicplayer.domain.usecase.songs.GetSongsByIds
 import com.example.offlinemusicplayer.domain.usecase.songs.GetSongsByIdsPaginated
 import com.example.offlinemusicplayer.domain.usecase.songs.IncrementPlayCount
@@ -81,7 +83,9 @@ object UseCaseModule {
         searchSongsPaginated: SearchSongsPaginated,
         getRecentSongs: GetRecentSongs,
         incrementPlayCount: IncrementPlayCount,
-        getMostPlayedSongs: GetMostPlayedSongs
+        getMostPlayedSongs: GetMostPlayedSongs,
+        getFirstSongIndexByLetter: GetFirstSongIndexByLetter,
+        getSongIndexById: GetSongIndexById
     ) = SongsUseCases(
         getAllSongs = getAllSongs,
         getAllSongsPaginated = getAllSongsPaginated,
@@ -92,7 +96,9 @@ object UseCaseModule {
         searchSongsPaginated = searchSongsPaginated,
         getRecentSongs = getRecentSongs,
         incrementPlayCount = incrementPlayCount,
-        getMostPlayedSongs = getMostPlayedSongs
+        getMostPlayedSongs = getMostPlayedSongs,
+        getFirstSongIndexByLetter = getFirstSongIndexByLetter,
+        getSongIndexById = getSongIndexById
     )
 
     @Provides
@@ -118,6 +124,12 @@ object UseCaseModule {
 
     @Provides
     fun provideGetRecentSongs(repo: SongsRepository) = GetRecentSongs(repo)
+
+    @Provides
+    fun provideGetFirstSongIndexByLetter(repo: SongsRepository) = GetFirstSongIndexByLetter(repo)
+
+    @Provides
+    fun provideGetSongIndexById(repo: SongsRepository) = GetSongIndexById(repo)
 
     @Provides
     fun provideDeleteSongById(

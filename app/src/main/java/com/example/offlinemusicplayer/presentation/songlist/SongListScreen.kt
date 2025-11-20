@@ -27,7 +27,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.offlinemusicplayer.MainActivity
+import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
 import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.SongsList
@@ -43,7 +45,7 @@ fun SongListScreen() {
     val mainActivity = context as? MainActivity
 
     val viewModel: SongListVM = hiltViewModel()
-    val songs = viewModel.songs
+    val songs = viewModel.songs.collectAsLazyPagingItems()
 
     val currentMedia by viewModel.currentMedia.collectAsStateWithLifecycle()
     var currentMediaIndex by remember {
@@ -91,7 +93,7 @@ fun SongListScreen() {
     if (showAddToPlaylistDialog) {
         songForPlaylist?.let { song ->
             AddToPlaylistDialog(
-                playlists = playlists.filter { !it.songIds.contains(song.id) },
+                playlists = playlists.filter { !it.songIds.contains(song.id) && !PlaylistEntity.DEFAULT_PLAYLIST_MAP.containsKey(it.id)  },
                 onPlaylistSelected = { playlist ->
                     viewModel.addToPlaylist(song, playlist)
                     showAddToPlaylistDialog = false
@@ -169,17 +171,11 @@ fun SongListScreen() {
 
             VerticalAlphabetScroller(
                 onLetterSelected = { letter ->
-                    val index = (0 until songs.size).find { i ->
-                        val songTitle = songs[i].title
-                        val firstChar = songTitle.firstOrNull()?.uppercaseChar()
-                        if (letter == "#") {
-                            firstChar !in 'A'..'Z'
-                        } else {
-                            firstChar == letter.first()
-                        }
-                    }
-                    if (index != null) {
-                        scope.launch {
+                    scope.launch {
+                        // Ask the ViewModel for the index from the database
+                        val index = viewModel.getSongIndexForLetter(letter)
+                        if (index != -1) {
+                            // Scroll the lazy list to the correct global index
                             songListState.scrollToItem(index)
                         }
                     }

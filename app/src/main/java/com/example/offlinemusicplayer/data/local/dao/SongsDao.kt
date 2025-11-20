@@ -64,4 +64,16 @@ interface SongsDao {
 
     @Query("SELECT * FROM songs WHERE (playCount >= 1) ORDER BY playCount DESC LIMIT :limit")
     suspend fun getMostPlayedSongs(limit: Int): List<SongsEntity>
+
+    @Query("SELECT id FROM songs")
+    suspend fun getAllSongIds(): List<Long>
+
+    @Query("DELETE FROM songs WHERE id IN (:songIds)")
+    suspend fun deleteSongsByIds(songIds: List<Long>)
+
+    @Query("SELECT COUNT(*) FROM songs WHERE title < (SELECT title FROM songs WHERE id = :songId)")
+    suspend fun getSongIndexById(songId: Long): Int
+
+    @Query("SELECT COUNT(*) FROM songs WHERE title < (SELECT title FROM songs WHERE title LIKE :letter || '%' ORDER BY title ASC LIMIT 1)")
+    suspend fun getFirstSongIndexByLetter(letter: String): Int
 }

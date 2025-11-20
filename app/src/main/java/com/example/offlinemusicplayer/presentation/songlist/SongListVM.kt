@@ -11,6 +11,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import com.example.offlinemusicplayer.MainActivity
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
 import com.example.offlinemusicplayer.domain.model.Playlist
@@ -21,6 +22,7 @@ import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -35,7 +37,7 @@ class SongListVM @Inject constructor(
     private val playerRepository: PlayerServiceRepository,
 ) : ViewModel() {
 
-    val songs = mutableStateListOf<Song>()
+    val songs: Flow<PagingData<Song>> = songsUseCases.getAllSongsPaginated()
     val currentMedia = playerRepository.currentMedia
     var contentUriToDelete: Uri? = null
 
@@ -49,9 +51,6 @@ class SongListVM @Inject constructor(
 
     init {
         setMediaList(0)
-        viewModelScope.launch {
-            songs.addAll(songsUseCases.getAllSongs())
-        }
         getPlaylist()
     }
 
@@ -75,10 +74,15 @@ class SongListVM @Inject constructor(
         playerRepository.play()
     }
 
-    fun getMediaIndex(currentMedia: Song?): Int {
-        val index = songs.indexOfFirst { it.id == currentMedia?.id }
+    suspend fun getMediaIndex(currentMedia: Song?) = songsUseCases.getSongIndexById(currentMedia?.id ?: -1)
 
-        return index
+    suspend fun getSongIndexForLetter(letter: String): Int {
+        if (letter == "#") {
+            // The query for '#' is more complex. For now, we can default to the top.
+            // A more advanced solution would involve a specific query for non-alphabetic titles.
+            return 0
+        }
+        return songsUseCases.getFirstSongIndexByLetter(letter)
     }
 
     fun playNext(song: Song) {

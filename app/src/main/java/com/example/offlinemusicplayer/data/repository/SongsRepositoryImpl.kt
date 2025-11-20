@@ -20,7 +20,8 @@ class SongsRepositoryImpl(
     override suspend fun syncSongsWithDevice(): Int {
         val songsChangeCount = getSongsChangeCount()
 
-        if(songsChangeCount > 0) {
+        if(songsChangeCount != 0) {
+            songsDao.deleteAll()
             val songs  = audioFilesManager.fetchAllSongsFromDevice()
             songsDao.insertAll(songs.map { it.toSongsEntity() })
         }
@@ -58,7 +59,7 @@ class SongsRepositoryImpl(
             config = PagingConfig(
                 pageSize = 20,
                 enablePlaceholders = false,
-                prefetchDistance = 20
+                prefetchDistance = Int.MAX_VALUE,
             ),
             pagingSourceFactory = { songsDao.getAllSongsPaged() }
         ).flow.map { pagingData ->
@@ -135,4 +136,8 @@ class SongsRepositoryImpl(
             it.toSong()
         }
     }
+
+    override suspend fun getFirstSongIndexByLetter(letter: String) = songsDao.getFirstSongIndexByLetter(letter)
+
+    override suspend fun getSongIndexById(songId: Long) = songsDao.getSongIndexById(songId)
 }

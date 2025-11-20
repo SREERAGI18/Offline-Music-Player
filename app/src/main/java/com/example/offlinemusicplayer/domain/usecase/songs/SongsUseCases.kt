@@ -11,4 +11,6 @@ data class SongsUseCases(
     val getRecentSongs: GetRecentSongs,
     val incrementPlayCount: IncrementPlayCount,
     val getMostPlayedSongs: GetMostPlayedSongs,
+    val getFirstSongIndexByLetter: GetFirstSongIndexByLetter,
+    val getSongIndexById: GetSongIndexById,
 )
