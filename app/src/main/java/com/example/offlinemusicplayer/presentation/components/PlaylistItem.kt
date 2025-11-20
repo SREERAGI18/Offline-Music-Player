@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.MusicNote
@@ -58,6 +59,9 @@ fun PlaylistItem(
             }
             PlaylistEntity.MOST_PLAYED_PLAYLIST_NAME -> {
                 mutableStateOf(Icons.AutoMirrored.Default.TrendingUp)
+            }
+            PlaylistEntity.FAVORITES_NAME -> {
+                mutableStateOf(Icons.Filled.Favorite)
             }
             else -> {
                 mutableStateOf(Icons.Filled.MusicNote)

@@ -26,6 +26,9 @@ interface PlaylistDao {
     @Query("SELECT * FROM playlists WHERE id = :playlistId")
     suspend fun getMostPlayedPlaylist(playlistId: Long = PlaylistEntity.MOST_PLAYED_PLAYLIST_ID): PlaylistEntity?
 
+    @Query("SELECT * FROM playlists WHERE id = :playlistId")
+    suspend fun getFavoritesPlaylist(playlistId: Long = PlaylistEntity.FAVORITES_ID): PlaylistEntity?
+
     @Delete
     fun deletePlaylist(playlist: PlaylistEntity)
 }

@@ -48,6 +48,11 @@ class PlaylistRepositoryImpl(
         return mostPlayedPlaylistEntity?.toPlaylist()
     }
 
+    override suspend fun getFavoritesPlaylist(): Playlist? {
+        val favoritesPlaylistEntity = playlistDao.getFavoritesPlaylist()
+        return favoritesPlaylistEntity?.toPlaylist()
+    }
+
     override suspend fun removeSongFromPlaylist(songId: Long, playlistId: Long) {
         // 1. Get the current playlist
         val currentPlaylist = getPlaylistById(playlistId).first()

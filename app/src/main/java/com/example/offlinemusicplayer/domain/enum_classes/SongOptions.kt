@@ -6,5 +6,6 @@ enum class SongOptions(val displayName: String) {
     AddToPlaylist("Add to playlist"),
 //    EditSongInfo("Edit song info"),
     Delete("Delete"),
-    Details("Details")
+    Details("Details"),
+    UpdateFavorite("Update favorite"),
 }

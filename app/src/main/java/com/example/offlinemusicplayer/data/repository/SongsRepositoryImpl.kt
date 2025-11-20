@@ -137,6 +137,16 @@ class SongsRepositoryImpl(
         }
     }
 
+    override suspend fun getFavoriteSongs(): List<Song> {
+        return songsDao.getFavoriteSongs().map {
+            it.toSong()
+        }
+    }
+
+    override suspend fun updateFavoriteSong(songId: Long, isFav: Boolean) {
+        songsDao.updateFavoriteSong(songId, isFav)
+    }
+
     override suspend fun getFirstSongIndexByLetter(letter: String) = songsDao.getFirstSongIndexByLetter(letter)
 
     override suspend fun getSongIndexById(songId: Long) = songsDao.getSongIndexById(songId)

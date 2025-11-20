@@ -17,6 +17,7 @@ import com.example.offlinemusicplayer.domain.usecase.playlist.UpdatePlaylist
 import com.example.offlinemusicplayer.domain.usecase.songs.DeleteSongById
 import com.example.offlinemusicplayer.domain.usecase.songs.GetAllSongs
 import com.example.offlinemusicplayer.domain.usecase.songs.GetAllSongsPaginated
+import com.example.offlinemusicplayer.domain.usecase.songs.GetFavoriteSongs
 import com.example.offlinemusicplayer.domain.usecase.songs.GetFirstSongIndexByLetter
 import com.example.offlinemusicplayer.domain.usecase.songs.GetMostPlayedSongs
 import com.example.offlinemusicplayer.domain.usecase.songs.GetRecentSongs
@@ -28,6 +29,7 @@ import com.example.offlinemusicplayer.domain.usecase.songs.SearchSongs
 import com.example.offlinemusicplayer.domain.usecase.songs.SearchSongsPaginated
 import com.example.offlinemusicplayer.domain.usecase.songs.SongsUseCases
 import com.example.offlinemusicplayer.domain.usecase.songs.SyncSongsWithDevice
+import com.example.offlinemusicplayer.domain.usecase.songs.UpdateFavoriteSong
 import com.example.offlinemusicplayer.player.AudioFilesManager
 import dagger.Module
 import dagger.Provides
@@ -85,7 +87,8 @@ object UseCaseModule {
         incrementPlayCount: IncrementPlayCount,
         getMostPlayedSongs: GetMostPlayedSongs,
         getFirstSongIndexByLetter: GetFirstSongIndexByLetter,
-        getSongIndexById: GetSongIndexById
+        getSongIndexById: GetSongIndexById,
+        updateFavoriteSong: UpdateFavoriteSong
     ) = SongsUseCases(
         getAllSongs = getAllSongs,
         getAllSongsPaginated = getAllSongsPaginated,
@@ -98,7 +101,8 @@ object UseCaseModule {
         incrementPlayCount = incrementPlayCount,
         getMostPlayedSongs = getMostPlayedSongs,
         getFirstSongIndexByLetter = getFirstSongIndexByLetter,
-        getSongIndexById = getSongIndexById
+        getSongIndexById = getSongIndexById,
+        updateFavoriteSong = updateFavoriteSong
     )
 
     @Provides
@@ -130,6 +134,20 @@ object UseCaseModule {
 
     @Provides
     fun provideGetSongIndexById(repo: SongsRepository) = GetSongIndexById(repo)
+
+    @Provides
+    fun provideGetFavoriteSongs(repo: SongsRepository) = GetFavoriteSongs(repo)
+
+    @Provides
+    fun provideUpdateFavoriteSong(
+        songsRepository: SongsRepository,
+        playlistRepository: PlaylistRepository,
+        getFavoriteSongs: GetFavoriteSongs
+    ) = UpdateFavoriteSong(
+        playlistRepository = playlistRepository,
+        songsRepository = songsRepository,
+        getFavoriteSongs = getFavoriteSongs
+    )
 
     @Provides
     fun provideDeleteSongById(

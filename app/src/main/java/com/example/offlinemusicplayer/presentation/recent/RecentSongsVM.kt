@@ -43,10 +43,15 @@ class RecentSongsVM @Inject constructor(
     val intentSenderRequest = _intentSenderRequest.asStateFlow()
 
     init {
+        fetchRecentSongs()
+        getPlaylist()
+    }
+
+    private fun fetchRecentSongs() {
         viewModelScope.launch {
+            songs.clear()
             songs.addAll(songsUseCases.getRecentSongs())
         }
-        getPlaylist()
     }
 
     fun playSong(index: Int) {
@@ -141,6 +146,13 @@ class RecentSongsVM @Inject constructor(
         viewModelScope.launch {
             val updatedSongIds = playlist.songIds + song.id
             playlistUseCases.updatePlaylist(songIds = updatedSongIds, playlist = playlist)
+        }
+    }
+
+    fun updateFavorite(song: Song) {
+        viewModelScope.launch {
+            songsUseCases.updateFavoriteSong(songId = song.id, isFav = !song.isFav)
+            fetchRecentSongs()
         }
     }
 

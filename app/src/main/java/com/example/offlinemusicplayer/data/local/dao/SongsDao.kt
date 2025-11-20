@@ -68,6 +68,12 @@ interface SongsDao {
     @Query("SELECT id FROM songs")
     suspend fun getAllSongIds(): List<Long>
 
+    @Query("SELECT * FROM songs WHERE isFav = :isFav")
+    suspend fun getFavoriteSongs(isFav: Boolean = true): List<SongsEntity>
+
+    @Query("UPDATE songs SET isFav = :isFav WHERE id = :songId")
+    suspend fun updateFavoriteSong(songId: Long, isFav: Boolean)
+
     @Query("DELETE FROM songs WHERE id IN (:songIds)")
     suspend fun deleteSongsByIds(songIds: List<Long>)
 

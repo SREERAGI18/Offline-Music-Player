@@ -139,6 +139,9 @@ fun RecentSongsScreen() {
                     songForDetails = song
                     showDetailsDialog = true
                 }
+                SongOptions.UpdateFavorite -> {
+                    viewModel.updateFavorite(song)
+                }
             }
         },
         scrollState = songListState,

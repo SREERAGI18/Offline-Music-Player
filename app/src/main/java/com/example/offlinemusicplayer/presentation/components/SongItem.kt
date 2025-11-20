@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -91,6 +93,21 @@ fun SongItem(
             )
         }
         Spacer(modifier = Modifier.width(16.dp))
+        IconButton(
+            onClick = {
+                onOptionSelected?.invoke(SongOptions.UpdateFavorite)
+            }
+        ) {
+            val icon = if(song.isFav) {
+                Icons.Default.Favorite
+            } else {
+                Icons.Default.FavoriteBorder
+            }
+            Icon(
+                imageVector = icon,
+                contentDescription = "Favorite Icon",
+            )
+        }
 
         if(onOptionSelected != null) {
             Box {

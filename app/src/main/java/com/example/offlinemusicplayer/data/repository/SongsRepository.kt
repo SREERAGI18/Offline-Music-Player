@@ -16,6 +16,8 @@ interface SongsRepository {
     suspend fun recentSongs(size: Int): List<Song>
     suspend fun incrementPlayCount(songId: Long)
     suspend fun getMostPlayedSongs(limit: Int): List<Song>
+    suspend fun getFavoriteSongs(): List<Song>
+    suspend fun updateFavoriteSong(songId: Long, isFav: Boolean)
     suspend fun getFirstSongIndexByLetter(letter: String): Int
     suspend fun getSongIndexById(songId: Long): Int
 }

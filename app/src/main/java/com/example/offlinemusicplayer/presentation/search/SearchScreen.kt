@@ -194,6 +194,9 @@ fun SearchScreen() {
                         songForDetails = song
                         showDetailsDialog = true
                     }
+                    SongOptions.UpdateFavorite -> {
+                        viewModel.updateFavorite(song)
+                    }
                 }
             },
             songs = songs,

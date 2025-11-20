@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.MusicNote
@@ -74,6 +76,23 @@ fun PlaylistDetailScreen(
 
     var showDeleteDialog by remember {
         mutableStateOf(false)
+    }
+
+    val icon by remember(playlist) {
+        when(playlist?.name) {
+            PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> {
+                mutableStateOf(Icons.Filled.History)
+            }
+            PlaylistEntity.MOST_PLAYED_PLAYLIST_NAME -> {
+                mutableStateOf(Icons.AutoMirrored.Default.TrendingUp)
+            }
+            PlaylistEntity.FAVORITES_NAME -> {
+                mutableStateOf(Icons.Filled.Favorite)
+            }
+            else -> {
+                mutableStateOf(Icons.Filled.MusicNote)
+            }
+        }
     }
 
     if(showDeleteDialog) {
@@ -201,24 +220,12 @@ fun PlaylistDetailScreen(
                     .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
-                when (playlist?.name) {
-                    PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> {
-                        Image(
-                            imageVector = Icons.Filled.History,
-                            contentDescription = "${playlist?.name} playlist icon",
-                            modifier = Modifier.fillMaxSize(),
-                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
-                        )
-                    }
-                    else -> {
-                        Image(
-                            imageVector = Icons.Filled.MusicNote,
-                            contentDescription = "${playlist?.name} playlist icon",
-                            modifier = Modifier.fillMaxSize(),
-                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
-                        )
-                    }
-                }
+                Image(
+                    imageVector = icon,
+                    contentDescription = "${playlist?.name} playlist icon",
+                    modifier = Modifier.fillMaxSize(),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+                )
             }
 
             Spacer(modifier = Modifier.width(20.dp))

@@ -28,6 +28,7 @@ data class Song(
     val playCount: Int = 0,
     var selected: Boolean = false,
     var isPlaying: Boolean = false,
+    var isFav: Boolean = false,
 ) {
     fun toSongsEntity(): SongsEntity {
         return SongsEntity(
@@ -46,7 +47,8 @@ data class Song(
             artistId = artistId,
             composer = composer,
             albumArtist = albumArtist,
-            playCount = playCount
+            playCount = playCount,
+            isFav = isFav
         )
     }
 

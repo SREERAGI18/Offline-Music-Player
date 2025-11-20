@@ -166,6 +166,12 @@ class SearchVM @Inject constructor(
         }
     }
 
+    fun updateFavorite(song: Song) {
+        viewModelScope.launch {
+            songsUseCases.updateFavoriteSong(songId = song.id, isFav = !song.isFav)
+        }
+    }
+
     fun resetIntentSenderRequest() {
         _intentSenderRequest.value = null
     }
