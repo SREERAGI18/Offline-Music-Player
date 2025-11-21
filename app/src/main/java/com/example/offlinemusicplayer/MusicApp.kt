@@ -3,6 +3,7 @@ package com.example.offlinemusicplayer
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.os.StrictMode
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -24,6 +25,9 @@ class MusicApp: Application(), SingletonImageLoader.Factory {
         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
             .createNotificationChannel(channel)
 
+        if (BuildConfig.DEBUG) {
+            enableStrictMode()
+        }
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader {
@@ -42,5 +46,26 @@ class MusicApp: Application(), SingletonImageLoader.Factory {
             .logger(DebugLogger())
 //            .respectCacheHeaders(false)
             .build()
+    }
+
+    private fun enableStrictMode() {
+        StrictMode.setThreadPolicy(
+            StrictMode.ThreadPolicy.Builder()
+                .detectDiskReads()
+                .detectDiskWrites()
+                .detectNetwork()
+                // .detectAll() // For all detectable thread policy violations
+                .penaltyLog() // Log violations to Logcat
+                // .penaltyDeath() // Crash the app on violation
+                .build()
+        )
+
+        StrictMode.setVmPolicy(
+            StrictMode.VmPolicy.Builder()
+                .detectLeakedSqlLiteObjects()
+                .detectLeakedClosableObjects()
+                .penaltyLog()
+                .build()
+        )
     }
 }
