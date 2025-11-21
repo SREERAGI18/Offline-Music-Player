@@ -1,6 +1,6 @@
 package com.example.offlinemusicplayer.domain.enum_classes
 
-enum class SongOptions(val displayName: String) {
+enum class SongOptions(override val displayName: String): Options {
     PlayNext("Play next"),
     AddToQueue("Add to queue"),
     AddToPlaylist("Add to playlist"),

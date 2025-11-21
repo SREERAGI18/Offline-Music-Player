@@ -22,7 +22,8 @@ fun PlaylistSongList(
     songs: List<Song>,
     onSongClick: (Song, Int) -> Unit,
     onSongMoved: (Int, Int) -> Unit,
-    onOptionSelected: (Song, PlaylistSongOptions) -> Unit
+    onOptionSelected: (Song, PlaylistSongOptions) -> Unit,
+    isDefaultPlaylist: Boolean
 ) {
     var songList by remember { mutableStateOf(songs) }
     var draggedItemIndex by remember { mutableStateOf<Int?>(null) }
@@ -85,6 +86,7 @@ fun PlaylistSongList(
                 onOptionSelected = { option ->
                     onOptionSelected(song, option)
                 },
+                isDefaultPlaylist = isDefaultPlaylist,
                 modifier = Modifier.graphicsLayer {
                     // Apply visual effect to the item being dragged
                     translationY = if (isBeingDragged) dragOffsetY else 0f

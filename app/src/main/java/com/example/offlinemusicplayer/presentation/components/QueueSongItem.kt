@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.offlinemusicplayer.domain.enum_classes.PlaylistSongOptions
 import com.example.offlinemusicplayer.domain.enum_classes.QueueSongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 
@@ -135,25 +136,14 @@ private fun QueueOptionsDropDown(
 ) {
     val options = QueueSongOptions.entries.toList()
 
-    DropdownMenu(
-        expanded = menuExpanded,
-        onDismissRequest = onDismiss
-    ) {
-        for (option in options) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = option.displayName,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                },
-                onClick = {
-                    onOptionSelected(option)
-                    onDismiss()
-                }
-            )
-        }
-    }
+    AppDropdown(
+        options = options,
+        onOptionSelected = {
+            onOptionSelected(it as QueueSongOptions)
+        },
+        onDismiss = onDismiss,
+        menuExpanded = menuExpanded
+    )
 }
 
 @Preview(showBackground = true)

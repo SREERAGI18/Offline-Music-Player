@@ -39,6 +39,7 @@ import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity.Companion.DEFAULT_PLAYLIST_MAP
 import com.example.offlinemusicplayer.domain.enum_classes.OptionType
 import com.example.offlinemusicplayer.domain.enum_classes.PlaylistOptions
+import com.example.offlinemusicplayer.domain.enum_classes.PlaylistSongOptions
 import com.example.offlinemusicplayer.domain.model.Playlist
 
 @Composable
@@ -154,23 +155,12 @@ fun PlaylistOptionsDropDown(
             }
         }
 
-    DropdownMenu(
-        expanded = menuExpanded,
-        onDismissRequest = onDismiss
-    ) {
-        for (option in options) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = option.displayName,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                },
-                onClick = {
-                    onOptionSelected(option)
-                    onDismiss()
-                }
-            )
-        }
-    }
+    AppDropdown(
+        options = options,
+        onOptionSelected = {
+            onOptionSelected(it as PlaylistOptions)
+        },
+        onDismiss = onDismiss,
+        menuExpanded = menuExpanded
+    )
 }

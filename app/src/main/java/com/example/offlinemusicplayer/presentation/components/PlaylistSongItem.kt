@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.MoreVert
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import com.example.offlinemusicplayer.domain.enum_classes.OptionType
 import com.example.offlinemusicplayer.domain.enum_classes.PlaylistSongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 
@@ -41,7 +43,8 @@ fun PlaylistSongItem(
     onOptionSelected: (PlaylistSongOptions) -> Unit,
     onDragStart: () -> Unit,
     onDragEnd: () -> Unit,
-    onDrag: (Float) -> Unit
+    onDrag: (Float) -> Unit,
+    isDefaultPlaylist: Boolean
 ) {
     var menuExpanded by remember {
         mutableStateOf(false)
@@ -120,7 +123,8 @@ fun PlaylistSongItem(
                 onDismiss = {
                     menuExpanded = false
                 },
-                onOptionSelected = onOptionSelected
+                onOptionSelected = onOptionSelected,
+                isDefaultPlaylist = isDefaultPlaylist
             )
         }
     }
@@ -131,26 +135,19 @@ private fun SongOptionsDropDown(
     menuExpanded: Boolean,
     onDismiss: () -> Unit,
     onOptionSelected: (PlaylistSongOptions) -> Unit,
+    isDefaultPlaylist: Boolean
 ) {
-    val options = PlaylistSongOptions.entries.toList()
+    val options = if(isDefaultPlaylist)
+        PlaylistSongOptions.entries.filter { it.type != OptionType.Modify }
+    else
+        PlaylistSongOptions.entries.toList()
 
-    DropdownMenu(
-        expanded = menuExpanded,
-        onDismissRequest = onDismiss
-    ) {
-        for (option in options) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = option.displayName,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                },
-                onClick = {
-                    onOptionSelected(option)
-                    onDismiss()
-                }
-            )
-        }
-    }
+    AppDropdown(
+        options = options,
+        onOptionSelected = {
+            onOptionSelected(it as PlaylistSongOptions)
+        },
+        onDismiss = onDismiss,
+        menuExpanded = menuExpanded
+    )
 }

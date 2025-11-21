@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.offlinemusicplayer.domain.enum_classes.QueueSongOptions
 import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 
@@ -141,23 +142,12 @@ private fun SongOptionsDropDown(
 ) {
     val options = SongOptions.entries.toList()
 
-    DropdownMenu(
-        expanded = menuExpanded,
-        onDismissRequest = onDismiss
-    ) {
-        for (option in options) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = option.displayName,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                },
-                onClick = {
-                    onOptionSelected?.invoke(option)
-                    onDismiss()
-                }
-            )
-        }
-    }
+    AppDropdown(
+        options = options,
+        onOptionSelected = {
+            onOptionSelected?.invoke(it as SongOptions)
+        },
+        onDismiss = onDismiss,
+        menuExpanded = menuExpanded
+    )
 }

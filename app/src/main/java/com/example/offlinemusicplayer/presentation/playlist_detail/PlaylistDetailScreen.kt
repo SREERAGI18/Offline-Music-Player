@@ -223,7 +223,9 @@ fun PlaylistDetailScreen(
                 Image(
                     imageVector = icon,
                     contentDescription = "${playlist?.name} playlist icon",
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(20.dp),
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
                 )
             }
@@ -267,6 +269,7 @@ fun PlaylistDetailScreen(
                         }
                     }
                 },
+                isDefaultPlaylist = playlist?.id in DEFAULT_PLAYLIST_MAP,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
