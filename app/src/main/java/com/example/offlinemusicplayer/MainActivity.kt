@@ -414,7 +414,6 @@ class MainActivity : ComponentActivity() {
                 requestMultiplePermissions.launch(permissions)
             },
             onDismiss = {},
-            negativeText = "Cancel",
             dismissable = false
         )
     }
@@ -461,6 +460,7 @@ class MainActivity : ComponentActivity() {
 
         if (isGranted) {
             isPermissionGranted = true
+            showSettings = null
         } else {
             isPermissionGranted = false
             // Check if any permission was permanently denied.
