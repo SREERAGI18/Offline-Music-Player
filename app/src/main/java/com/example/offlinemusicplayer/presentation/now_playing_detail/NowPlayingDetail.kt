@@ -134,6 +134,7 @@ fun NowPlayingDetail(
             },
             sheetShadowElevation = 0.dp,
             sheetContainerColor = Color.Transparent,
+            containerColor = Color.Transparent,
         ) {  paddingValues ->
             LyricsView()
         }

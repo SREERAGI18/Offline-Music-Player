@@ -54,6 +54,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -204,7 +205,8 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 sheetState = sheetState,
-                containerColor = MaterialTheme.colorScheme.surface,
+                containerColor = Color.Black.copy(alpha = 0.6f),
+                scrimColor = Color.Black.copy(alpha = 0.6f),
                 dragHandle = null,
                 modifier = Modifier.fillMaxSize()
             ) {
