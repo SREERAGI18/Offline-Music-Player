@@ -2,12 +2,14 @@ package com.example.offlinemusicplayer.presentation.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.songs.SyncSongsWithDevice
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.regex.Pattern
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,6 +30,9 @@ class MainVM @Inject constructor(
     val shuffleModeEnabled = playerRepository.shuffleModeEnabled
 
     val repeatMode = playerRepository.repeatMode
+
+    private val _lyrics = MutableStateFlow<Map<Long, String>>(emptyMap())
+    val lyrics = _lyrics.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -74,5 +79,50 @@ class MainVM @Inject constructor(
     fun toggleRepeatMode() {
         val nextRepeatMode = repeatMode.value.nextRepeatMode()
         playerRepository.setRepeatMode(nextRepeatMode)
+    }
+
+    /**
+     * Parses the content of an LRC file and updates the lyrics state.
+     *
+     * @param song The song associated with the lyrics.
+     * @param lrcContent The string content of the .lrc file.
+     */
+    fun addLrcFile(song: Song, lrcContent: String) {
+        viewModelScope.launch {
+            val parsedLyrics = parseLrc(lrcContent)
+            _lyrics.value = parsedLyrics
+            // TODO: Persist the lyrics or file path to your database
+            // so you don't have to manually select it every time.
+            // For example:
+            // songRepository.updateSongWithLyrics(song.id, lrcContent)
+        }
+    }
+
+    /**
+     * Parses a string containing LRC-formatted lyrics into a map of timestamps and text.
+     *
+     * @param lrcContent The raw string content of the LRC file.
+     * @return A map where the key is the timestamp in milliseconds and the value is the lyric line.
+     */
+    private fun parseLrc(lrcContent: String): Map<Long, String> {
+        val lyricsMap = mutableMapOf<Long, String>()
+        // Regex to find timestamps like [mm:ss.xx]
+        val pattern = Pattern.compile("\\[(\\d{2}):(\\d{2})\\.(\\d{2})\\](.*)")
+
+        lrcContent.lines().forEach { line ->
+            val matcher = pattern.matcher(line)
+            if (matcher.matches()) {
+                val minutes = matcher.group(1)?.toLong() ?: 0
+                val seconds = matcher.group(2)?.toLong() ?: 0
+                val hundredths = matcher.group(3)?.toLong() ?: 0
+                val text = matcher.group(4)?.trim() ?: ""
+
+                if (text.isNotEmpty()) {
+                    val timestamp = (minutes * 60 + seconds) * 1000 + hundredths * 10
+                    lyricsMap[timestamp] = text
+                }
+            }
+        }
+        return lyricsMap.toSortedMap()
     }
 }

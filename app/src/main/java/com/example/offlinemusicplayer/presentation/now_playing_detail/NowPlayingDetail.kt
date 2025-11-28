@@ -1,5 +1,9 @@
 package com.example.offlinemusicplayer.presentation.now_playing_detail
 
+import android.content.Context
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.filled.Forward10
+import androidx.compose.material.icons.filled.Lyrics
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Repeat
@@ -57,6 +62,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
@@ -71,7 +77,10 @@ import com.example.offlinemusicplayer.presentation.components.CachedAlbumArt
 import com.example.offlinemusicplayer.presentation.components.LyricsView
 import com.example.offlinemusicplayer.presentation.main.MainVM
 import com.example.offlinemusicplayer.presentation.navigation.Screens
+import com.example.offlinemusicplayer.util.Logger
 import com.example.offlinemusicplayer.util.toTimeMmSs
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,6 +91,8 @@ fun NowPlayingDetail(
 ) {
 
     val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()
+    val lyrics by viewModel.lyrics.collectAsStateWithLifecycle()
+    val currentMediaPosition by viewModel.currentMediaPosition.collectAsStateWithLifecycle()
 
     val sheetState = rememberStandardBottomSheetState(
         initialValue = SheetValue.Expanded,
@@ -134,8 +145,13 @@ fun NowPlayingDetail(
             },
             sheetShadowElevation = 0.dp,
             sheetContainerColor = Color.Transparent,
+            containerColor = Color.Transparent
         ) {  paddingValues ->
-            LyricsView()
+            LyricsView(
+                lyrics = lyrics,
+                currentPosition = currentMediaPosition,
+                modifier = Modifier.padding(paddingValues)
+            )
         }
     }
 }
@@ -147,6 +163,7 @@ private fun PlayerControls(
     onNavigate: (Screens) -> Unit
 ) {
 
+    val context = LocalContext.current
     val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()
     val currentPosition by viewModel.currentMediaPosition.collectAsStateWithLifecycle()
     val playerState by viewModel.playerState.collectAsStateWithLifecycle()
@@ -158,6 +175,19 @@ private fun PlayerControls(
     var progress by remember { mutableLongStateOf(0L) }
     var hasNext by remember { mutableStateOf(true) }
     var hasPrev by remember { mutableStateOf(true) }
+
+    val lrcFileLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            // TODO: Handle the selected .lrc file URI
+            currentSong?.let { song ->
+                val lrcContent = readLrcFile(context, it)
+                viewModel.addLrcFile(song, lrcContent)
+            }
+            Logger.logError("NowPlayingDetail", "LRC file selected: $uri")
+        }
+    }
 
     LaunchedEffect(currentPosition) {
         progress = currentPosition ?: 0L
@@ -215,7 +245,9 @@ private fun PlayerControls(
                         // Active track (the progress)
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth(sliderState.value / (currentSong?.duration?.toFloat() ?: 1f))
+                                .fillMaxWidth(
+                                    sliderState.value / (currentSong?.duration?.toFloat() ?: 1f)
+                                )
                                 .fillMaxHeight()
                                 .background(
                                     color = Color.White,
@@ -331,6 +363,17 @@ private fun PlayerControls(
             horizontalArrangement = Arrangement.Absolute.Center
         ) {
             IconButton(
+                onClick = { lrcFileLauncher.launch("*/*") },
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Lyrics,
+                    contentDescription = "Show lyrics"
+                )
+            }
+            IconButton(
                 onClick = {
                     onNavigate(Screens.NowPlayingQueue)
                 },
@@ -345,6 +388,20 @@ private fun PlayerControls(
             }
         }
     }
+}
+
+private fun readLrcFile(context: Context, uri: Uri): String {
+    val stringBuilder = StringBuilder()
+    context.contentResolver.openInputStream(uri)?.use { inputStream ->
+        BufferedReader(InputStreamReader(inputStream)).use { reader ->
+            var line: String? = reader.readLine()
+            while (line != null) {
+                stringBuilder.append(line).append("\n")
+                line = reader.readLine()
+            }
+        }
+    }
+    return stringBuilder.toString()
 }
 
 @Composable
