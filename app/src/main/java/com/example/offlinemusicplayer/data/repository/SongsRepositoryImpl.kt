@@ -150,4 +150,11 @@ class SongsRepositoryImpl(
     override suspend fun getFirstSongIndexByLetter(letter: String) = songsDao.getFirstSongIndexByLetter(letter)
 
     override suspend fun getSongIndexById(songId: Long) = songsDao.getSongIndexById(songId)
+
+    override suspend fun updateLyrics(
+        songId: Long,
+        lyrics: Map<Long, String>
+    ) {
+        songsDao.updateLyrics(songId, lyrics)
+    }
 }

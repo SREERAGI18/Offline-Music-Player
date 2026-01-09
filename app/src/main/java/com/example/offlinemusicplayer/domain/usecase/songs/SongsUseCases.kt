@@ -13,5 +13,6 @@ data class SongsUseCases(
     val getMostPlayedSongs: GetMostPlayedSongs,
     val getFirstSongIndexByLetter: GetFirstSongIndexByLetter,
     val getSongIndexById: GetSongIndexById,
-    val updateFavoriteSong: UpdateFavoriteSong
+    val updateFavoriteSong: UpdateFavoriteSong,
+    val updateLyrics: UpdateLyrics
 )

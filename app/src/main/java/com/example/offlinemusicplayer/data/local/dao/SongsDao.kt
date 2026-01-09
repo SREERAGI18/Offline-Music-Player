@@ -10,7 +10,6 @@ import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 @Dao
 interface SongsDao {
 
-    // Paging3 requires PagingSource
     @Query("SELECT * FROM songs ORDER BY title ASC")
     fun getAllSongsPaged(): PagingSource<Int, SongsEntity>
 
@@ -82,4 +81,7 @@ interface SongsDao {
 
     @Query("SELECT COUNT(*) FROM songs WHERE title < (SELECT title FROM songs WHERE title LIKE :letter || '%' ORDER BY title ASC LIMIT 1)")
     suspend fun getFirstSongIndexByLetter(letter: String): Int
+
+    @Query("UPDATE songs SET lyrics = :lyrics WHERE id = :songId")
+    suspend fun updateLyrics(songId: Long, lyrics: Map<Long, String>)
 }

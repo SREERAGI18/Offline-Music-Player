@@ -32,6 +32,7 @@ data class SongsEntity(
     val lastScanned: Long = System.currentTimeMillis(),
     val playCount: Int = 0,
     val isFav: Boolean = false,
+    val lyrics: Map<Long, String> = emptyMap()
 ) {
 
     fun toSong(): Song {
@@ -52,7 +53,8 @@ data class SongsEntity(
             composer = composer,
             albumArtist = albumArtist,
             playCount = playCount,
-            isFav = isFav
+            isFav = isFav,
+            lyrics = lyrics
         )
     }
     fun getContentUri(): Uri {

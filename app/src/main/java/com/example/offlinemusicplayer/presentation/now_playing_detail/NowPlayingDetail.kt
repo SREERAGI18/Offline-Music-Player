@@ -100,6 +100,11 @@ fun NowPlayingDetail(
     )
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
 
+    LaunchedEffect(currentSong) {
+        viewModel.clearLyrics()
+        viewModel.updateLyricsState(currentSong)
+    }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -180,7 +185,6 @@ private fun PlayerControls(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         uri?.let {
-            // TODO: Handle the selected .lrc file URI
             currentSong?.let { song ->
                 val lrcContent = readLrcFile(context, it)
                 viewModel.addLrcFile(song, lrcContent)

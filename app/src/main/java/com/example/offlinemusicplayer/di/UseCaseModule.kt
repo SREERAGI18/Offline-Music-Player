@@ -30,6 +30,7 @@ import com.example.offlinemusicplayer.domain.usecase.songs.SearchSongsPaginated
 import com.example.offlinemusicplayer.domain.usecase.songs.SongsUseCases
 import com.example.offlinemusicplayer.domain.usecase.songs.SyncSongsWithDevice
 import com.example.offlinemusicplayer.domain.usecase.songs.UpdateFavoriteSong
+import com.example.offlinemusicplayer.domain.usecase.songs.UpdateLyrics
 import com.example.offlinemusicplayer.player.AudioFilesManager
 import dagger.Module
 import dagger.Provides
@@ -88,7 +89,8 @@ object UseCaseModule {
         getMostPlayedSongs: GetMostPlayedSongs,
         getFirstSongIndexByLetter: GetFirstSongIndexByLetter,
         getSongIndexById: GetSongIndexById,
-        updateFavoriteSong: UpdateFavoriteSong
+        updateFavoriteSong: UpdateFavoriteSong,
+        updateLyrics: UpdateLyrics
     ) = SongsUseCases(
         getAllSongs = getAllSongs,
         getAllSongsPaginated = getAllSongsPaginated,
@@ -102,7 +104,8 @@ object UseCaseModule {
         getMostPlayedSongs = getMostPlayedSongs,
         getFirstSongIndexByLetter = getFirstSongIndexByLetter,
         getSongIndexById = getSongIndexById,
-        updateFavoriteSong = updateFavoriteSong
+        updateFavoriteSong = updateFavoriteSong,
+        updateLyrics = updateLyrics
     )
 
     @Provides
@@ -148,6 +151,11 @@ object UseCaseModule {
         songsRepository = songsRepository,
         getFavoriteSongs = getFavoriteSongs
     )
+
+    @Provides
+    fun provideUpdateLyrics(
+        songsRepository: SongsRepository,
+    ) = UpdateLyrics(repo = songsRepository,)
 
     @Provides
     fun provideDeleteSongById(

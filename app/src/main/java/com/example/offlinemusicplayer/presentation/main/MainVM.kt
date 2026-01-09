@@ -3,7 +3,9 @@ package com.example.offlinemusicplayer.presentation.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.offlinemusicplayer.domain.model.Song
+import com.example.offlinemusicplayer.domain.usecase.songs.GetSongsByIds
 import com.example.offlinemusicplayer.domain.usecase.songs.SyncSongsWithDevice
+import com.example.offlinemusicplayer.domain.usecase.songs.UpdateLyrics
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +19,8 @@ import javax.inject.Inject
 class MainVM @Inject constructor(
     private val playerRepository: PlayerServiceRepository,
     private val syncSongsWithDevice: SyncSongsWithDevice,
+    private val updateLyrics: UpdateLyrics,
+    private val getSongsByIds: GetSongsByIds
 ): ViewModel() {
 
     private val _newlyAddedSongCount = MutableStateFlow(0)
@@ -93,10 +97,23 @@ class MainVM @Inject constructor(
             val parsedLyrics = parseLrc(lrcContent)
             _lyrics.value = parsedLyrics
             Logger.logError("MainVM", "Lyrics added for song: ${song.title}\n${parsedLyrics}")
-            // TODO: Persist the lyrics or file path to your database
-            // so you don't have to manually select it every time.
-            // For example:
-            // songRepository.updateSongWithLyrics(song.id, lrcContent)
+
+            updateLyrics(songId = song.id, lyrics =  parsedLyrics)
+        }
+    }
+
+    fun clearLyrics() {
+        _lyrics.value = emptyMap()
+    }
+
+    fun updateLyricsState(song: Song?) {
+        viewModelScope.launch {
+            if(song == null) return@launch
+
+            val songById = getSongsByIds(listOf(song.id))
+            if(songById.isEmpty()) return@launch
+
+            _lyrics.value = songById.first().lyrics
         }
     }
 

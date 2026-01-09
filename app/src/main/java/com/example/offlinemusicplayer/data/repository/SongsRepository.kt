@@ -20,4 +20,5 @@ interface SongsRepository {
     suspend fun updateFavoriteSong(songId: Long, isFav: Boolean)
     suspend fun getFirstSongIndexByLetter(letter: String): Int
     suspend fun getSongIndexById(songId: Long): Int
+    suspend fun updateLyrics(songId: Long, lyrics: Map<Long, String>)
 }

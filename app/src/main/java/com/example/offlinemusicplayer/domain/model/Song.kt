@@ -29,6 +29,7 @@ data class Song(
     var selected: Boolean = false,
     var isPlaying: Boolean = false,
     var isFav: Boolean = false,
+    val lyrics: Map<Long, String> = emptyMap()
 ) {
     fun toSongsEntity(): SongsEntity {
         return SongsEntity(
@@ -48,7 +49,8 @@ data class Song(
             composer = composer,
             albumArtist = albumArtist,
             playCount = playCount,
-            isFav = isFav
+            isFav = isFav,
+            lyrics = lyrics
         )
     }
 
