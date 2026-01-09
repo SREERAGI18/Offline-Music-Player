@@ -44,7 +44,7 @@ fun LyricsView(
 
     // `derivedStateOf` is used to efficiently calculate the current line index
     // only when `currentPosition` or `lyrics` change.
-    val currentLineIndex by remember(lyrics) {
+    val currentLineIndex by remember(lyrics, currentPosition) {
         derivedStateOf {
             // Find the last lyric line whose timestamp is less than or equal to the current position.
             lyrics.keys.indexOfLast { it <= (currentPosition ?: 0) }.coerceAtLeast(0)

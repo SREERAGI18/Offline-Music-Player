@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.songs.SyncSongsWithDevice
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
+import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -91,6 +92,7 @@ class MainVM @Inject constructor(
         viewModelScope.launch {
             val parsedLyrics = parseLrc(lrcContent)
             _lyrics.value = parsedLyrics
+            Logger.logError("MainVM", "Lyrics added for song: ${song.title}\n${parsedLyrics}")
             // TODO: Persist the lyrics or file path to your database
             // so you don't have to manually select it every time.
             // For example:
@@ -107,7 +109,7 @@ class MainVM @Inject constructor(
     private fun parseLrc(lrcContent: String): Map<Long, String> {
         val lyricsMap = mutableMapOf<Long, String>()
         // Regex to find timestamps like [mm:ss.xx]
-        val pattern = Pattern.compile("\\[(\\d{2}):(\\d{2})\\.(\\d{2})\\](.*)")
+        val pattern = Pattern.compile("\\[(\\d{2}):(\\d{2})\\.(\\d{2})](.*)")
 
         lrcContent.lines().forEach { line ->
             val matcher = pattern.matcher(line)
