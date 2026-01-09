@@ -92,7 +92,7 @@ fun VerticalAlphabetScroller(
                 magnifierCenter = {
                     // Position the magnifier to the left of the scroller
                     with(density) {
-                        Offset((componentWidth / 4) - 40.dp.toPx(), dragPosition.y)
+                        Offset((componentWidth / 4) - 40.dp.toPx(), dragPosition.y - 80.dp.toPx())
                     }
                 },
                 size = DpSize(50.dp, 50.dp),
