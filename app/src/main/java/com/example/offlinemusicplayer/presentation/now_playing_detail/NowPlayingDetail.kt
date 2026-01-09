@@ -405,7 +405,7 @@ private fun readLrcFile(context: Context, uri: Uri): String {
 }
 
 @Composable
-private fun PlayerIconButton(
+fun PlayerIconButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     icon: ImageVector,

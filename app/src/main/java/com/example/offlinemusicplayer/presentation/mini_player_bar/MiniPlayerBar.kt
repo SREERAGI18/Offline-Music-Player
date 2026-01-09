@@ -14,13 +14,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.offlinemusicplayer.domain.enum_classes.PlayerState
 import com.example.offlinemusicplayer.presentation.components.CachedAlbumArt
 import com.example.offlinemusicplayer.presentation.main.MainVM
+import com.example.offlinemusicplayer.presentation.now_playing_detail.PlayerIconButton
 
 @Composable
 fun MiniPlayerBar(
@@ -41,6 +48,13 @@ fun MiniPlayerBar(
     val playerState by viewModel.playerState.collectAsStateWithLifecycle()
 
     val isPlaying = playerState == PlayerState.Playing
+    var hasNext by remember { mutableStateOf(true) }
+    var hasPrev by remember { mutableStateOf(true) }
+
+    LaunchedEffect(currentSong, playerState) {
+        hasNext = viewModel.hasNext()
+        hasPrev = viewModel.hasPrevious()
+    }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -83,22 +97,31 @@ fun MiniPlayerBar(
             )
         }
 
-        IconButton(
-            onClick = {
-                if (isPlaying) {
-                    viewModel.pause()
-                } else {
-                    viewModel.play()
-                }
-            },
-            colors = IconButtonDefaults.iconButtonColors(
-                contentColor = MaterialTheme.colorScheme.onSecondary
-            )
-        ) {
-            Icon(
-                imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                contentDescription = if (isPlaying) "Pause" else "Play",
-            )
-        }
+        PlayerIconButton(
+            onClick = { viewModel.skipToPrev() },
+            icon = Icons.Filled.SkipPrevious,
+            contentDescription = "Skip to previous",
+            modifier = Modifier.size(30.dp),
+            enabled = hasPrev
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        PlayerIconButton(
+            onClick = { if (isPlaying) viewModel.pause() else viewModel.play() },
+            icon = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+            contentDescription = if (isPlaying) "Pause" else "Play",
+            modifier = Modifier.size(30.dp)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        PlayerIconButton(
+            onClick = { viewModel.skipToNext() },
+            icon = Icons.Filled.SkipNext,
+            contentDescription = "Skip to next",
+            modifier = Modifier.size(30.dp),
+            enabled = hasNext
+        )
     }
 }
