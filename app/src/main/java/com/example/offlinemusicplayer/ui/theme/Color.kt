@@ -13,3 +13,6 @@ val DarkPrimaryVariant = Color(0xFF3700B3)
 val Purple40 = PrimaryBlue
 val PurpleGrey40 = DarkOnSurface
 val Pink40 = DarkPrimaryVariant
+
+val LightGrey = Color(0xFFF0F0F0)
+val DarkGrey = Color(0xFF2E2E2E)

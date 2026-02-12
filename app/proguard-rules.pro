@@ -19,3 +19,31 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep public class com.example.offlinemusicplayer.data.local.** {
+    public protected private *;
+}
+
+-keep public class com.example.offlinemusicplayer.domain.** {
+    public protected private *;
+}
+
+# Retrofit
+#-keep class com.google.gson.reflect.TypeToken
+#-keep class * extends com.google.gson.reflect.TypeToken
+#-keep public class * implements java.lang.reflect.Type
+
+# Firebase
+#-keepattributes *Annotation*
+#-keepattributes SourceFile,LineNumberTable
+#-keep public class * extends java.lang.Exception
+#-keep class com.crashlytics.** { *; }
+#-dontwarn com.crashlytics.**
+
+# for Unmarhsalling unknown type issue
+-keepclassmembers class * implements android.os.Parcelable {
+    static ** CREATOR;
+}
+# Keeping *SavedState and *SavedState#CREATOR
+-keep public final class * extends android.view.AbsSavedState
+-keepclassmembers public final class * extends android.view.AbsSavedState { *; }

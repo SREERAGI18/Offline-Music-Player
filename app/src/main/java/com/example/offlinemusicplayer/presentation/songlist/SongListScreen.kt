@@ -1,103 +1,214 @@
 package com.example.offlinemusicplayer.presentation.songlist
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.GpsFixed
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import com.example.offlinemusicplayer.R
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.offlinemusicplayer.MainActivity
+import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
+import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
+import com.example.offlinemusicplayer.presentation.components.SongsList
+import com.example.offlinemusicplayer.presentation.components.VerticalAlphabetScroller
+import com.example.offlinemusicplayer.presentation.dialogs.AddToPlaylistDialog
+import com.example.offlinemusicplayer.presentation.dialogs.DeleteConfirmDialog
+import com.example.offlinemusicplayer.presentation.dialogs.SongDetailDialog
+import kotlinx.coroutines.launch
 
 @Composable
-fun SongListScreen(
-    onSongClick: (Song) -> Unit,
-) {
-    val viewModel: SongListVM = hiltViewModel()
-    val songs by viewModel.songs.collectAsStateWithLifecycle()
+fun SongListScreen() {
+    val context = LocalContext.current
+    val mainActivity = context as? MainActivity
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(songs) { song ->
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                SongItem(song, onSongClick)
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
+    val viewModel: SongListVM = hiltViewModel()
+    val songs = viewModel.songs.collectAsLazyPagingItems()
+
+    val currentMedia by viewModel.currentMedia.collectAsStateWithLifecycle()
+    var currentMediaIndex by remember {
+        mutableIntStateOf(-1)
+    }
+
+    val songListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(currentMedia) {
+        currentMediaIndex = viewModel.getMediaIndex(currentMedia)
+    }
+
+    val deleteProgress by viewModel.deleteProgress.collectAsStateWithLifecycle()
+    val intentSenderRequest by viewModel.intentSenderRequest.collectAsStateWithLifecycle()
+    val playlists = viewModel.playlists
+    val contentUriToDelete = viewModel.contentUriToDelete
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var songToDelete by remember { mutableStateOf<Song?>(null) }
+
+    var showDetailsDialog by remember { mutableStateOf(false) }
+    var songForDetails by remember { mutableStateOf<Song?>(null) }
+
+    var showAddToPlaylistDialog by remember { mutableStateOf(false) }
+    var songForPlaylist by remember { mutableStateOf<Song?>(null) }
+
+    LaunchedEffect(intentSenderRequest) {
+        intentSenderRequest?.let { request ->
+            if(contentUriToDelete == null) return@let
+            mainActivity?.launchRecoverableSecurityPermission(
+                intentSenderRequest = request,
+                onPermissionGranted = {
+                    showDeleteDialog = true
+                    viewModel.resetIntentSenderRequest()
+                }
+            )
         }
     }
-}
 
-@Composable
-private fun SongItem(
-    song: Song,
-    onSongClick: (Song) -> Unit,
-) {
-    val context = LocalContext.current
+//    if(deleteProgress) {
+//        ProgressDialog(title = "Deleting...")
+//    }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-            .clickable {
-                onSongClick(song)
-            }
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        AsyncImage(
-            model = song.getAlbumArt(context),
-            contentDescription = "Album art for ${song.title}",
-            placeholder = painterResource(id = R.drawable.ic_music_note),
-            error = painterResource(id = R.drawable.ic_music_note),
-            modifier = Modifier
-                .size(56.dp)
-                .clip(
-                    shape = RoundedCornerShape(8.dp),
-                ),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                text = song.title ?: "",
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1
+    if (showAddToPlaylistDialog) {
+        songForPlaylist?.let { song ->
+            AddToPlaylistDialog(
+                playlists = playlists.filter { !it.songIds.contains(song.id) && !PlaylistEntity.DEFAULT_PLAYLIST_MAP.containsKey(it.id)  },
+                onPlaylistSelected = { playlist ->
+                    viewModel.addToPlaylist(song, playlist)
+                    showAddToPlaylistDialog = false
+                },
+                onDismiss = { showAddToPlaylistDialog = false }
             )
-            Text(
-                text = song.artist ?: "",
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1
+        }
+    }
+
+    if(showDeleteDialog) {
+        DeleteConfirmDialog(
+            onDismiss = { showDeleteDialog = false },
+            onConfirm = {
+                songToDelete?.let { song ->
+                    viewModel.deleteSongFile(song)
+                }
+                showDeleteDialog = false
+            },
+            description = "\"${songToDelete?.title}\" will be permanently deleted from storage."
+        )
+    }
+
+    if(showDetailsDialog) {
+        songForDetails?.let { song ->
+            SongDetailDialog(
+                song = song,
+                onDismiss = {
+                    showDetailsDialog = false
+                }
+            )
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SongsList(
+                onSongClick = { song, index ->
+                    viewModel.playSong(index)
+                },
+                onOptionSelected = { song, option ->
+                    when(option) {
+                        SongOptions.PlayNext -> {
+                            viewModel.playNext(song)
+                        }
+                        SongOptions.AddToQueue -> {
+                            viewModel.addToQueue(song)
+                        }
+                        SongOptions.AddToPlaylist -> {
+                            songForPlaylist = song
+                            showAddToPlaylistDialog = true
+                        }
+//                SongOptions.EditSongInfo -> {
+//
+//                }
+                        SongOptions.Delete -> {
+                            songToDelete = song
+                            viewModel.checkIfSongCanBeDeleted(song, context)
+                        }
+                        SongOptions.Details -> {
+                            songForDetails = song
+                            showDetailsDialog = true
+                        }
+                        SongOptions.UpdateFavorite -> {
+                            viewModel.updateFavorite(song)
+                        }
+                    }
+                },
+                scrollState = songListState,
+                currentPlayingIndex = currentMediaIndex,
+                songs = songs,
+                modifier = Modifier.weight(1f)
+            )
+
+            VerticalAlphabetScroller(
+                onLetterSelected = { letter ->
+                    scope.launch {
+                        // Ask the ViewModel for the index from the database
+                        val index = viewModel.getSongIndexForLetter(letter)
+                        if (index != -1) {
+                            // Scroll the lazy list to the correct global index
+                            songListState.scrollToItem(index)
+                        }
+                    }
+                },
+                scope = scope,
+                modifier = Modifier
+                    .fillMaxHeight(0.9f)
+//                    .padding(end = 4.dp)
+            )
+        }
+
+        FloatingActionButton(
+            onClick = {
+                scope.launch {
+                    if(currentMediaIndex != -1) {
+                        songListState.scrollToItem(currentMediaIndex)
+                    }
+                }
+            },
+            shape = CircleShape,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 16.dp)
+                .padding(bottom = 16.dp),
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        ) {
+            Icon(
+                imageVector = Icons.Filled.GpsFixed,
+                contentDescription = "Move to current playing song in list",
             )
         }
     }
