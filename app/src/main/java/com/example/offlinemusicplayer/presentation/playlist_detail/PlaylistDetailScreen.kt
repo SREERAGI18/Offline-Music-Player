@@ -79,7 +79,7 @@ fun PlaylistDetailScreen(
     }
 
     val icon by remember(playlist) {
-        when(playlist?.name) {
+        when (playlist?.name) {
             PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> {
                 mutableStateOf(Icons.Filled.History)
             }
@@ -95,7 +95,7 @@ fun PlaylistDetailScreen(
         }
     }
 
-    if(showDeleteDialog) {
+    if (showDeleteDialog) {
         DeleteConfirmDialog(
             onDismiss = { showDeleteDialog = false },
             onConfirm = {
@@ -107,13 +107,13 @@ fun PlaylistDetailScreen(
         )
     }
 
-    if(showSongSelection) {
+    if (showSongSelection) {
         SongSelectionDialog(
             songs = viewModel.songs,
             title = playlistTitle,
             selectedSongIds = playlist?.songIds,
             onSubmit = { selectedSongs ->
-                if(playlist != null) {
+                if (playlist != null) {
                     viewModel.updatePlaylistContent(selectedSongs)
                 }
                 showSongSelection = false
@@ -124,7 +124,7 @@ fun PlaylistDetailScreen(
         )
     }
 
-    if(showCreatePlaylistDialog) {
+    if (showCreatePlaylistDialog) {
         CreatePlaylistDialog(
             onDismiss = {
                 showCreatePlaylistDialog = false
@@ -181,8 +181,8 @@ fun PlaylistDetailScreen(
                     onDismiss = {
                         menuExpanded = false
                     },
-                    onOptionSelected = { option  ->
-                        when(option) {
+                    onOptionSelected = { option ->
+                        when (option) {
                             PlaylistOptions.Play -> {
                                 viewModel.playAllSongsOfPlaylist()
                             }
@@ -247,7 +247,7 @@ fun PlaylistDetailScreen(
             }
         }
 
-        if(songs.isNotEmpty()) {
+        if (songs.isNotEmpty()) {
             PlaylistSongList(
                 songs = songs,
                 onSongClick = { song, index ->
@@ -257,7 +257,7 @@ fun PlaylistDetailScreen(
                     viewModel.moveSong(from, to)
                 },
                 onOptionSelected = { song, option ->
-                    when(option) {
+                    when (option) {
                         PlaylistSongOptions.PlayNext -> {
                             viewModel.playNext(song)
                         }

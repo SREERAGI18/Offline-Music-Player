@@ -14,7 +14,7 @@ import coil3.util.DebugLogger
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class MusicApp: Application(), SingletonImageLoader.Factory {
+class MusicApp : Application(), SingletonImageLoader.Factory {
     override fun onCreate() {
         super.onCreate()
         val channel = NotificationChannel(

@@ -6,9 +6,9 @@ import com.example.offlinemusicplayer.domain.enum_classes.PlayerState
 object PlayerStateMapper {
     fun map(player: Player): PlayerState {
         return if ((
-                    player.playbackState == Player.STATE_BUFFERING ||
-                            player.playbackState == Player.STATE_READY
-                    ) &&
+                player.playbackState == Player.STATE_BUFFERING ||
+                    player.playbackState == Player.STATE_READY
+                ) &&
             player.playWhenReady
         ) {
             PlayerState.Playing

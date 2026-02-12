@@ -146,7 +146,10 @@ class AudioFilesManager(
                 val composer = cursor.getStringOrNullFromCol(AudioColumns.COMPOSER)
                 val albumArtist = cursor.getStringOrNullFromCol(MediaStore.Audio.Media.ALBUM_ARTIST)
 
-                Logger.logError("AudioFilesFetcher", "Song ID: $id, Name: $title, Artist: $artistName, Album: $albumName")
+                Logger.logError(
+                    "AudioFilesFetcher",
+                    "Song ID: $id, Name: $title, Artist: $artistName, Album: $albumName"
+                )
 
                 val entity = Song(
                     id = id,

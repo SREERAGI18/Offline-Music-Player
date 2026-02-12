@@ -12,6 +12,7 @@ import kotlinx.serialization.Serializable
 sealed class Screens {
     @Serializable
     data object SongList : Screens()
+
     @Serializable
     data object Search : Screens()
 
@@ -23,10 +24,13 @@ sealed class Screens {
 
     @Serializable
     data object Playlist : Screens()
+
     @Serializable
     data class PlaylistDetail(val playlistId: Long) : Screens()
+
     @Serializable
     data object Music : Screens()
+
     @Serializable
     data object Main : Screens()
 
@@ -91,6 +95,5 @@ sealed class Screens {
                 imageVector = Icons.Default.AccountCircle
             ),
         )
-
     }
 }

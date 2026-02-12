@@ -22,7 +22,6 @@ object MediaInfoExtractor {
 
                 // We only care about audio tracks
                 if (mime?.startsWith("audio/") == true) {
-
                     // --- Bitrate Extraction (with fallback) ---
                     var bitRate = if (format.containsKey(MediaFormat.KEY_BIT_RATE)) {
                         format.getInteger(MediaFormat.KEY_BIT_RATE)
@@ -59,13 +58,16 @@ object MediaInfoExtractor {
                     // --- Format Description ---
                     val audioFormat = getFormatDescription(mime)
 
-                    Logger.logInfo(TAG, "Extracted Info: Format=$audioFormat, Bitrate=$bitRate, SampleRate=$samplingRate")
+                    Logger.logInfo(
+                        TAG,
+                        "Extracted Info: Format=$audioFormat, Bitrate=$bitRate, SampleRate=$samplingRate"
+                    )
 
                     // We found the audio track, create the MediaInfo object and return.
-                    if(bitRate != null && samplingRate != null) {
+                    if (bitRate != null && samplingRate != null) {
                         return MediaInfo(
                             samplingRate = samplingRate,
-                            bitRateInKbps = bitRate/1000,
+                            bitRateInKbps = bitRate / 1000,
                             format = audioFormat
                         )
                     } else {
@@ -76,7 +78,6 @@ object MediaInfoExtractor {
             // If loop finishes without finding an audio track
             Logger.logInfo(TAG, "No audio track found in file: $filePath")
             return null
-
         } catch (e: IOException) {
             e.printStackTrace()
             return null
@@ -89,7 +90,6 @@ object MediaInfoExtractor {
      * Gets a user-friendly format description.
      */
     private fun getFormatDescription(mime: String): String? {
-
         // Fallback for older APIs or when KEY_DESCRIPTION is missing
         return when (mime) {
             "audio/mpeg" -> "MP3"

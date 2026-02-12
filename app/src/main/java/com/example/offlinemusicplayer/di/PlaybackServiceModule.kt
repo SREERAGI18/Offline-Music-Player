@@ -46,8 +46,12 @@ object PlaybackServiceModule {
     fun loadControl(): LoadControl {
         /*return DefaultLoadControl.Builder()
             .setBackBuffer(
-                *//* backBufferDurationMs = *//* 30_000,
-                *//* retainBackBufferFromKeyframe = *//* false
+         */
+        /* backBufferDurationMs = */
+        /* 30_000,
+         */
+        /* retainBackBufferFromKeyframe = */
+        /* false
             )
             .build()*/
         return DefaultLoadControl.Builder()
@@ -72,6 +76,7 @@ object PlaybackServiceModule {
     @Provides
     fun extractorsFactory(): ExtractorsFactory =
         DefaultExtractorsFactory()
+
     @Provides
     fun mediaSourceFactory(
         @ApplicationContext context: Context,
@@ -149,7 +154,6 @@ object PlaybackServiceModule {
 //            coroutineScope = coroutineScope
         )
 
-
     @Provides
     fun mediaSession(
         service: Service,
@@ -180,10 +184,12 @@ object PlaybackServiceModule {
         sessionCallback: MediaSession.Callback
     ): MediaLibraryService.MediaLibrarySession {
         return MediaLibraryService.MediaLibrarySession.Builder(
-            /* service = */ service as MediaLibraryService,
-            /* player = */player,
-            /* callback = */ sessionCallback as MediaSessionCallback
+            /* service = */
+            service as MediaLibraryService,
+            /* player = */
+            player,
+            /* callback = */
+            sessionCallback as MediaSessionCallback
         ).setId("com.example.offlinemusicplayer.media_session").build()
     }
-
 }

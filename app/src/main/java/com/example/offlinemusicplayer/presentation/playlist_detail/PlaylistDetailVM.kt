@@ -29,7 +29,7 @@ class PlaylistDetailVM @Inject constructor(
     private val playlistUseCases: PlaylistUseCases,
     private val songsUseCases: SongsUseCases,
     private val playerRepository: PlayerServiceRepository,
-): ViewModel() {
+) : ViewModel() {
     private val playlistId: Long = savedStateHandle[Screens.PLAYLIST_ID_KEY] ?: 0L
 
     val currentMedia = playerRepository.currentMedia
@@ -50,7 +50,7 @@ class PlaylistDetailVM @Inject constructor(
     fun getSongs() {
         viewModelScope.launch {
             playlist.collectLatest { currentPlayList ->
-                if(currentPlayList != null) {
+                if (currentPlayList != null) {
                     songs.clear()
                     songs.addAll(songsUseCases.getSongsByIds(currentPlayList.songIds))
                 }
@@ -58,7 +58,7 @@ class PlaylistDetailVM @Inject constructor(
         }
     }
 
-    fun setMediaList(initialSongPosition:Int) {
+    fun setMediaList(initialSongPosition: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             Logger.logError("PlaylistDetailVM", "songs: $songs")
             withContext(Dispatchers.Main) {
@@ -75,7 +75,7 @@ class PlaylistDetailVM @Inject constructor(
 
     fun removeSongFromPlaylist(song: Song) {
         viewModelScope.launch {
-            playlistUseCases.removeSongFromPlaylist(playlistId = playlistId, songId =  song.id)
+            playlistUseCases.removeSongFromPlaylist(playlistId = playlistId, songId = song.id)
             songs.remove(song)
         }
     }
@@ -115,7 +115,7 @@ class PlaylistDetailVM @Inject constructor(
     fun updatePlaylistName(playlistName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val playlist = playlist.value
-            if(playlist == null) return@launch
+            if (playlist == null) return@launch
 
             playlistUseCases.updatePlaylist(
                 playlist.copy(name = playlistName)
@@ -126,7 +126,7 @@ class PlaylistDetailVM @Inject constructor(
     fun updatePlaylistContent(songs: List<Song>) {
         viewModelScope.launch(Dispatchers.IO) {
             val playlist = playlist.value
-            if(playlist == null) return@launch
+            if (playlist == null) return@launch
 
             val songIds = songs.map { it.id }
             playlistUseCases.updatePlaylist(
@@ -138,7 +138,7 @@ class PlaylistDetailVM @Inject constructor(
     fun deletePlaylist() {
         viewModelScope.launch(Dispatchers.IO) {
             val playlist = playlist.value
-            if(playlist == null) return@launch
+            if (playlist == null) return@launch
 
             playlistUseCases.deletePlaylist(playlist)
         }
@@ -147,7 +147,7 @@ class PlaylistDetailVM @Inject constructor(
     fun addAllSongsToQueue(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val playlist = playlist.value
-            if(playlist == null) return@launch
+            if (playlist == null) return@launch
 
             val songs = songsUseCases.getSongsByIds(playlist.songIds)
             playerRepository.addMedia(songs)
@@ -160,7 +160,7 @@ class PlaylistDetailVM @Inject constructor(
     fun playAllSongsOfPlaylist() {
         viewModelScope.launch(Dispatchers.IO) {
             val playlist = playlist.value
-            if(playlist == null) return@launch
+            if (playlist == null) return@launch
 
             val songs = songsUseCases.getSongsByIds(playlist.songIds)
             playerRepository.setMediaList(songs)

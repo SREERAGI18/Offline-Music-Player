@@ -12,12 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -91,10 +88,11 @@ fun PlaylistSongItem(
             Text(
                 text = song.title,
                 style = MaterialTheme.typography.titleMedium.copy(
-                    color = if(song.isPlaying)
+                    color = if (song.isPlaying) {
                         MaterialTheme.colorScheme.primary
-                    else
+                    } else {
                         MaterialTheme.colorScheme.onBackground
+                    }
                 ),
                 maxLines = 1
             )
@@ -137,10 +135,11 @@ private fun SongOptionsDropDown(
     onOptionSelected: (PlaylistSongOptions) -> Unit,
     isDefaultPlaylist: Boolean
 ) {
-    val options = if(isDefaultPlaylist)
+    val options = if (isDefaultPlaylist) {
         PlaylistSongOptions.entries.filter { it.type != OptionType.Modify }
-    else
+    } else {
         PlaylistSongOptions.entries.toList()
+    }
 
     AppDropdown(
         options = options,

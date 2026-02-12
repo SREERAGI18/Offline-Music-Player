@@ -18,8 +18,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.MusicNote
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,7 +37,6 @@ import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity.Companion.DEFAULT_PLAYLIST_MAP
 import com.example.offlinemusicplayer.domain.enum_classes.OptionType
 import com.example.offlinemusicplayer.domain.enum_classes.PlaylistOptions
-import com.example.offlinemusicplayer.domain.enum_classes.PlaylistSongOptions
 import com.example.offlinemusicplayer.domain.model.Playlist
 
 @Composable
@@ -54,7 +51,7 @@ fun PlaylistItem(
     }
 
     val icon by remember(playlist) {
-        when(playlist.name) {
+        when (playlist.name) {
             PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> {
                 mutableStateOf(Icons.Filled.History)
             }
@@ -148,7 +145,7 @@ fun PlaylistOptionsDropDown(
         .entries
         .toList()
         .filter {
-            if(isDefaultPlaylist) {
+            if (isDefaultPlaylist) {
                 it.type != OptionType.Modify
             } else {
                 true

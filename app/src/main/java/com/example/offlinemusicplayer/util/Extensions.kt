@@ -10,11 +10,11 @@ import androidx.compose.ui.unit.dp
 import java.util.concurrent.TimeUnit
 
 fun Long?.toTimeMmSs(): String {
-    if(this == null) return "00:00"
+    if (this == null) return "00:00"
 
     val minutes = TimeUnit.MILLISECONDS.toMinutes(this)
     val seconds = TimeUnit.MILLISECONDS.toSeconds(this) -
-            TimeUnit.MINUTES.toSeconds(minutes)
+        TimeUnit.MINUTES.toSeconds(minutes)
     return String.format("%02d:%02d", minutes, seconds)
 }
 

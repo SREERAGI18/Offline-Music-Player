@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.map
 
 class PlaylistRepositoryImpl(
     private val playlistDao: PlaylistDao,
-): PlaylistRepository {
+) : PlaylistRepository {
     override fun getPlaylists(): Flow<List<Playlist>> =
         playlistDao.getPlaylists().map { list ->
             list.map {

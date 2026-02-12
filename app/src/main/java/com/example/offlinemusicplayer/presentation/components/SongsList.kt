@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -65,7 +64,6 @@ fun SongsList(
     onSongClick: (Song, Int) -> Unit,
     onOptionSelected: ((Song, SongOptions) -> Unit)? = null
 ) {
-
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         state = scrollState

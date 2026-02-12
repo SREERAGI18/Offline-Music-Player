@@ -22,7 +22,6 @@ fun RootNavHost(
         startDestination = Screens.Main,
         modifier = modifier
     ) {
-
         composable<Screens.Main> {
             MainScreen(mainNavController)
         }

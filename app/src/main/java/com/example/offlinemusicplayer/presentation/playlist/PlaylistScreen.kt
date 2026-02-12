@@ -58,7 +58,7 @@ fun PlaylistScreen(
         mutableStateOf(false)
     }
 
-    if(showDeleteDialog) {
+    if (showDeleteDialog) {
         DeleteConfirmDialog(
             onDismiss = { showDeleteDialog = false },
             onConfirm = {
@@ -69,13 +69,13 @@ fun PlaylistScreen(
         )
     }
 
-    if(showSongSelection) {
+    if (showSongSelection) {
         SongSelectionDialog(
             songs = viewModel.songs,
             title = playlistTitle,
             selectedSongIds = viewModel.playlistToModify?.songIds,
             onSubmit = { selectedSongs ->
-                if(viewModel.playlistToModify != null) {
+                if (viewModel.playlistToModify != null) {
                     viewModel.updatePlaylistContent(selectedSongs)
                 } else {
                     viewModel.addPlaylist(playlistTitle, selectedSongs)
@@ -88,7 +88,7 @@ fun PlaylistScreen(
         )
     }
 
-    if(showCreatePlaylistDialog) {
+    if (showCreatePlaylistDialog) {
         CreatePlaylistDialog(
             onDismiss = {
                 showCreatePlaylistDialog = false
@@ -96,7 +96,7 @@ fun PlaylistScreen(
             initialName = playlistTitle,
             isCreatePlaylist = isCreatePlaylist,
             onCreate = {
-                if(isCreatePlaylist) {
+                if (isCreatePlaylist) {
                     playlistTitle = it
                     showCreatePlaylistDialog = false
                     showSongSelection = true
@@ -127,7 +127,7 @@ fun PlaylistScreen(
                         onPlaylistClicked(playlist)
                     },
                     onOptionSelected = { option ->
-                        when(option) {
+                        when (option) {
                             PlaylistOptions.Play -> {
                                 viewModel.playAllSongsOfPlaylist(playlist)
                             }

@@ -89,7 +89,6 @@ fun NowPlayingDetail(
     onCollapse: () -> Unit,
     onNavigate: (Screens) -> Unit,
 ) {
-
     val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()
     val lyrics by viewModel.lyrics.collectAsStateWithLifecycle()
     val currentMediaPosition by viewModel.currentMediaPosition.collectAsStateWithLifecycle()
@@ -151,7 +150,7 @@ fun NowPlayingDetail(
             sheetShadowElevation = 0.dp,
             sheetContainerColor = Color.Transparent,
             containerColor = Color.Transparent
-        ) {  paddingValues ->
+        ) { paddingValues ->
             LyricsView(
                 lyrics = lyrics,
                 currentPosition = currentMediaPosition,
@@ -167,7 +166,6 @@ private fun PlayerControls(
     viewModel: MainVM,
     onNavigate: (Screens) -> Unit
 ) {
-
     val context = LocalContext.current
     val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()
     val currentPosition by viewModel.currentMediaPosition.collectAsStateWithLifecycle()
@@ -208,7 +206,6 @@ private fun PlayerControls(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

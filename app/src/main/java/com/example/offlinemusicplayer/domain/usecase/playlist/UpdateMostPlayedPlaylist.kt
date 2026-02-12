@@ -10,7 +10,7 @@ class UpdateMostPlayedPlaylist(
     suspend operator fun invoke() {
         val mostPlayedPlaylist = playlistRepository.getMostPlayedPlaylist()
 
-        if(mostPlayedPlaylist == null) return
+        if (mostPlayedPlaylist == null) return
 
         val mostPlayedSongs = getMostPlayedSongs()
         val mostPlayedSongIds = mostPlayedSongs.map { it.id }

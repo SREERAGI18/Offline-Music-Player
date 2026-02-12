@@ -104,7 +104,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             OfflineMusicPlayerTheme {
-
                 val isDarkTheme = isSystemInDarkTheme()
                 val primaryArgb = MaterialTheme.colorScheme.primary.toArgb()
                 val backgroundArgb = MaterialTheme.colorScheme.background.toArgb()
@@ -131,13 +130,13 @@ class MainActivity : ComponentActivity() {
                     requestStoragePermission()
                 }
 
-                if(showSettings == true) {
+                if (showSettings == true) {
                     SettingsDialog()
-                } else if(showSettings == false) {
+                } else if (showSettings == false) {
                     PermissionRationaleDialog(permissions)
                 }
 
-                if(isPermissionGranted) {
+                if (isPermissionGranted) {
                     MainBody()
                 } else {
                     RequestPermissionButton()
@@ -228,9 +227,9 @@ class MainActivity : ComponentActivity() {
         }
 
         LaunchedEffect(newlyAddedSongCount) {
-            if(newlyAddedSongCount > 0) {
-                withContext(Dispatchers.Main){
-                    val message = "$newlyAddedSongCount" + if(newlyAddedSongCount == 1) {
+            if (newlyAddedSongCount > 0) {
+                withContext(Dispatchers.Main) {
+                    val message = "$newlyAddedSongCount" + if (newlyAddedSongCount == 1) {
                         " song added"
                     } else {
                         " songs added"
@@ -245,7 +244,7 @@ class MainActivity : ComponentActivity() {
                 .fillMaxSize()
                 .nestedScroll(mergedScrollConnection),
             topBar = {
-                if(showTopBar) {
+                if (showTopBar) {
                     TopAppBar(
                         scrollBehavior = topBarScrollBehavior,
                         title = {
@@ -390,7 +389,6 @@ class MainActivity : ComponentActivity() {
     }
 
     fun requestStoragePermission(permissions: Array<String> = this.permissions) {
-
         val permissionToRationale = permissions.first()
 
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, permissionToRationale)) {
@@ -478,12 +476,10 @@ class MainActivity : ComponentActivity() {
                 ).show()
             }
         }
-
     }
 
-    private fun checkIfPermissionGranted():Boolean {
-
-        val requiredPermission1 = if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+    private fun checkIfPermissionGranted(): Boolean {
+        val requiredPermission1 = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
             Manifest.permission.READ_EXTERNAL_STORAGE
         } else {
             Manifest.permission.READ_MEDIA_AUDIO

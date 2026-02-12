@@ -44,7 +44,7 @@ fun CommonDialog(
             )
         },
         dismissButton = {
-            if(negativeText != null) {
+            if (negativeText != null) {
                 TextButton(
                     onClick = {
                         onNegativeClick?.invoke()

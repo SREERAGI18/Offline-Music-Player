@@ -38,10 +38,10 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.offlinemusicplayer.MainActivity
 import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
-import com.example.offlinemusicplayer.presentation.dialogs.DeleteConfirmDialog
-import com.example.offlinemusicplayer.presentation.dialogs.SongDetailDialog
 import com.example.offlinemusicplayer.presentation.components.SongsList
 import com.example.offlinemusicplayer.presentation.dialogs.AddToPlaylistDialog
+import com.example.offlinemusicplayer.presentation.dialogs.DeleteConfirmDialog
+import com.example.offlinemusicplayer.presentation.dialogs.SongDetailDialog
 
 @Composable
 fun SearchScreen() {
@@ -72,7 +72,7 @@ fun SearchScreen() {
 
     LaunchedEffect(intentSenderRequest) {
         intentSenderRequest?.let { request ->
-            if(contentUriToDelete == null) return@let
+            if (contentUriToDelete == null) return@let
             mainActivity?.launchRecoverableSecurityPermission(
                 intentSenderRequest = request,
                 onPermissionGranted = {
@@ -100,7 +100,7 @@ fun SearchScreen() {
         }
     }
 
-    if(showDeleteDialog) {
+    if (showDeleteDialog) {
         DeleteConfirmDialog(
             onDismiss = { showDeleteDialog = false },
             onConfirm = {
@@ -113,7 +113,7 @@ fun SearchScreen() {
         )
     }
 
-    if(showDetailsDialog) {
+    if (showDetailsDialog) {
         songForDetails?.let { song ->
             SongDetailDialog(
                 song = song,
@@ -172,7 +172,7 @@ fun SearchScreen() {
                 viewModel.playSong(index)
             },
             onOptionSelected = { song, option ->
-                when(option) {
+                when (option) {
                     SongOptions.PlayNext -> {
                         viewModel.playNext(song)
                     }

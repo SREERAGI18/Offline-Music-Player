@@ -19,9 +19,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.player.MediaInfoExtractor
-import com.example.offlinemusicplayer.util.toFormattedTime
 import com.example.offlinemusicplayer.util.toFileSize
 import com.example.offlinemusicplayer.util.toFormattedDate
+import com.example.offlinemusicplayer.util.toFormattedTime
 
 @Composable
 fun SongDetailDialog(

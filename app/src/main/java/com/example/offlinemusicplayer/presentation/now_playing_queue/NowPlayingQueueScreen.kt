@@ -80,7 +80,7 @@ fun NowPlayingQueueScreen(
                 viewModel.moveSong(from, to)
             },
             onOptionSelected = { index, option ->
-                when(option) {
+                when (option) {
                     QueueSongOptions.Play -> {
                         viewModel.playSong(index)
                     }

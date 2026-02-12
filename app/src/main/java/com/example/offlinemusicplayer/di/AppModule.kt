@@ -57,7 +57,8 @@ object AppModule {
         coroutineScope.launch(Dispatchers.Main) {
             val player = controller.await()
             playerRepository.connect(
-                player = player, onClose = player::release
+                player = player,
+                onClose = player::release
             )
         }
     }

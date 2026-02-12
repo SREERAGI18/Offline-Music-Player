@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Size
-import androidx.core.net.toUri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.offlinemusicplayer.domain.model.Song

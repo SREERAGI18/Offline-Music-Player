@@ -8,7 +8,7 @@ class CreatePlaylist(private val repo: PlaylistRepository) {
         repo.insertPlaylist(Playlist(name = name, songIds = songIds))
     }
 
-    suspend operator fun invoke(id:Long, name: String, songIds: List<Long>) {
+    suspend operator fun invoke(id: Long, name: String, songIds: List<Long>) {
         repo.insertPlaylist(Playlist(id = id, name = name, songIds = songIds))
     }
 }

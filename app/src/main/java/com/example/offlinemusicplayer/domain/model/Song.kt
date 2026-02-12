@@ -2,10 +2,7 @@ package com.example.offlinemusicplayer.domain.model
 
 import android.content.ContentUris
 import android.content.Context
-import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
-import android.util.Size
 import androidx.core.net.toUri
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 

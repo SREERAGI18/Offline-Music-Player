@@ -1,6 +1,5 @@
 package com.example.offlinemusicplayer.presentation.components
 
-import android.util.Size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -10,14 +9,13 @@ import coil3.compose.AsyncImage
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import com.example.offlinemusicplayer.R
-import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 import com.example.offlinemusicplayer.domain.model.Song
 
 @Composable
 fun CachedAlbumArt(
     modifier: Modifier = Modifier,
     song: Song?,
-    contentDescription:String,
+    contentDescription: String,
     contentScale: ContentScale,
 ) {
     val context = LocalContext.current

@@ -1,6 +1,5 @@
 package com.example.offlinemusicplayer.presentation.now_playing_queue
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.example.offlinemusicplayer.domain.model.Song
@@ -12,7 +11,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NowPlayingQueueVM @Inject constructor(
     private val playerRepository: PlayerServiceRepository
-): ViewModel() {
+) : ViewModel() {
 
     val currentMedia = playerRepository.currentMedia
     val currentQueue = mutableStateListOf<Song>()

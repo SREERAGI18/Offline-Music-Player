@@ -113,7 +113,6 @@ fun SongSelectionDialog(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
                     ) {
-
                         TextButton(
                             onClick = onCancel,
                         ) {

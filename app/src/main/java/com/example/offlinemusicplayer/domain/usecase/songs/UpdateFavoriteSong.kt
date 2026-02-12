@@ -11,7 +11,7 @@ class UpdateFavoriteSong(
     suspend operator fun invoke(songId: Long, isFav: Boolean) {
         val mostPlayedPlaylist = playlistRepository.getFavoritesPlaylist()
 
-        if(mostPlayedPlaylist == null) return
+        if (mostPlayedPlaylist == null) return
 
         songsRepository.updateFavoriteSong(songId, isFav)
 

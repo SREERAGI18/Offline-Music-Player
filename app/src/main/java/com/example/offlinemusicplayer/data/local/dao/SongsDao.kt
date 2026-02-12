@@ -19,10 +19,14 @@ interface SongsDao {
     @Query("SELECT * FROM songs ORDER BY dateModified DESC, title ASC LIMIT :size")
     suspend fun getRecentSongs(size: Int): List<SongsEntity>
 
-    @Query("SELECT * FROM songs WHERE title LIKE '%' || :query || '%' OR artist LIKE '%' || :query || '%' ORDER BY title ASC")
+    @Query(
+        "SELECT * FROM songs WHERE title LIKE '%' || :query || '%' OR artist LIKE '%' || :query || '%' ORDER BY title ASC"
+    )
     fun searchSongsPaged(query: String): PagingSource<Int, SongsEntity>
 
-    @Query("SELECT * FROM songs WHERE title LIKE '%' || :query || '%' OR artist LIKE '%' || :query || '%' ORDER BY title ASC")
+    @Query(
+        "SELECT * FROM songs WHERE title LIKE '%' || :query || '%' OR artist LIKE '%' || :query || '%' ORDER BY title ASC"
+    )
     fun searchSongs(query: String): List<SongsEntity>
 
 //    @Query("SELECT * FROM songs WHERE volumeName = :volume ORDER BY title ASC")
@@ -79,7 +83,9 @@ interface SongsDao {
     @Query("SELECT COUNT(*) FROM songs WHERE title < (SELECT title FROM songs WHERE id = :songId)")
     suspend fun getSongIndexById(songId: Long): Int
 
-    @Query("SELECT COUNT(*) FROM songs WHERE title < (SELECT title FROM songs WHERE title LIKE :letter || '%' ORDER BY title ASC LIMIT 1)")
+    @Query(
+        "SELECT COUNT(*) FROM songs WHERE title < (SELECT title FROM songs WHERE title LIKE :letter || '%' ORDER BY title ASC LIMIT 1)"
+    )
     suspend fun getFirstSongIndexByLetter(letter: String): Int
 
     @Query("UPDATE songs SET lyrics = :lyrics WHERE id = :songId")

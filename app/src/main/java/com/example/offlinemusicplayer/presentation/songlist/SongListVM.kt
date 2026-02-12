@@ -54,10 +54,10 @@ class SongListVM @Inject constructor(
         getPlaylist()
     }
 
-    fun setMediaList(initialSongPosition:Int) {
+    fun setMediaList(initialSongPosition: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             playerRepository.connected.collectLatest {
-                if(!it) return@collectLatest
+                if (!it) return@collectLatest
 
                 val songs = songsUseCases.getAllSongs()
                 Logger.logError("SongListVM", "songs: $songs")
@@ -121,7 +121,7 @@ class SongListVM @Inject constructor(
     }
 
     fun checkIfSongCanBeDeleted(song: Song, context: Context) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val contentUri = ContentUris.withAppendedId(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 song.id
@@ -131,17 +131,16 @@ class SongListVM @Inject constructor(
                 context.contentResolver.delete(contentUri, null, null)
             } catch (e: SecurityException) {
                 // We caught the exception! Return the IntentSender to the caller.
-                if(e is RecoverableSecurityException) {
+                if (e is RecoverableSecurityException) {
                     _intentSenderRequest.value = IntentSenderRequest
                         .Builder(e.userAction.actionIntent.intentSender)
                         .build()
                 }
             } catch (e: Exception) {
-
             }
         } else {
             (context as? MainActivity)?.apply {
-                if(!checkIfWriteAccessGranted()) {
+                if (!checkIfWriteAccessGranted()) {
                     requestStoragePermission()
                 } else {
                     deleteSongFile(song)
@@ -153,7 +152,7 @@ class SongListVM @Inject constructor(
     fun getPlaylist() {
         viewModelScope.launch {
             playlistUseCases.getPlaylists().collectLatest {
-                if(it.isEmpty()) createDefaultPlaylists()
+                if (it.isEmpty()) createDefaultPlaylists()
 
                 playlists.clear()
                 playlists.addAll(it)
@@ -190,5 +189,4 @@ class SongListVM @Inject constructor(
     fun resetIntentSenderRequest() {
         _intentSenderRequest.value = null
     }
-
 }

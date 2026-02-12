@@ -75,7 +75,7 @@ fun SongListScreen() {
 
     LaunchedEffect(intentSenderRequest) {
         intentSenderRequest?.let { request ->
-            if(contentUriToDelete == null) return@let
+            if (contentUriToDelete == null) return@let
             mainActivity?.launchRecoverableSecurityPermission(
                 intentSenderRequest = request,
                 onPermissionGranted = {
@@ -93,7 +93,9 @@ fun SongListScreen() {
     if (showAddToPlaylistDialog) {
         songForPlaylist?.let { song ->
             AddToPlaylistDialog(
-                playlists = playlists.filter { !it.songIds.contains(song.id) && !PlaylistEntity.DEFAULT_PLAYLIST_MAP.containsKey(it.id)  },
+                playlists = playlists.filter {
+                    !it.songIds.contains(song.id) && !PlaylistEntity.DEFAULT_PLAYLIST_MAP.containsKey(it.id)
+                },
                 onPlaylistSelected = { playlist ->
                     viewModel.addToPlaylist(song, playlist)
                     showAddToPlaylistDialog = false
@@ -103,7 +105,7 @@ fun SongListScreen() {
         }
     }
 
-    if(showDeleteDialog) {
+    if (showDeleteDialog) {
         DeleteConfirmDialog(
             onDismiss = { showDeleteDialog = false },
             onConfirm = {
@@ -116,7 +118,7 @@ fun SongListScreen() {
         )
     }
 
-    if(showDetailsDialog) {
+    if (showDetailsDialog) {
         songForDetails?.let { song ->
             SongDetailDialog(
                 song = song,
@@ -139,7 +141,7 @@ fun SongListScreen() {
                     viewModel.playSong(index)
                 },
                 onOptionSelected = { song, option ->
-                    when(option) {
+                    when (option) {
                         SongOptions.PlayNext -> {
                             viewModel.playNext(song)
                         }
@@ -193,7 +195,7 @@ fun SongListScreen() {
         FloatingActionButton(
             onClick = {
                 scope.launch {
-                    if(currentMediaIndex != -1) {
+                    if (currentMediaIndex != -1) {
                         songListState.scrollToItem(currentMediaIndex)
                     }
                 }

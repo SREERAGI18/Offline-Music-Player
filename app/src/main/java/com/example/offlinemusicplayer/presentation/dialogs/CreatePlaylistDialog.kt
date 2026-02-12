@@ -32,13 +32,13 @@ fun CreatePlaylistDialog(
         mutableStateOf(initialName)
     }
 
-    val title = if(isCreatePlaylist) {
+    val title = if (isCreatePlaylist) {
         R.string.create_playlist
     } else {
         R.string.edit_playlist
     }
 
-    val confirmButtonText = if(isCreatePlaylist) {
+    val confirmButtonText = if (isCreatePlaylist) {
         R.string.create
     } else {
         R.string.save

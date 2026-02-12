@@ -21,7 +21,7 @@ class MainVM @Inject constructor(
     private val syncSongsWithDevice: SyncSongsWithDevice,
     private val updateLyrics: UpdateLyrics,
     private val getSongsByIds: GetSongsByIds
-): ViewModel() {
+) : ViewModel() {
 
     private val _newlyAddedSongCount = MutableStateFlow(0)
     val newlyAddedSongCount = _newlyAddedSongCount.asStateFlow()
@@ -96,9 +96,9 @@ class MainVM @Inject constructor(
         viewModelScope.launch {
             val parsedLyrics = parseLrc(lrcContent)
             _lyrics.value = parsedLyrics
-            Logger.logError("MainVM", "Lyrics added for song: ${song.title}\n${parsedLyrics}")
+            Logger.logError("MainVM", "Lyrics added for song: ${song.title}\n$parsedLyrics")
 
-            updateLyrics(songId = song.id, lyrics =  parsedLyrics)
+            updateLyrics(songId = song.id, lyrics = parsedLyrics)
         }
     }
 
@@ -108,10 +108,10 @@ class MainVM @Inject constructor(
 
     fun updateLyricsState(song: Song?) {
         viewModelScope.launch {
-            if(song == null) return@launch
+            if (song == null) return@launch
 
             val songById = getSongsByIds(listOf(song.id))
-            if(songById.isEmpty()) return@launch
+            if (songById.isEmpty()) return@launch
 
             _lyrics.value = songById.first().lyrics
         }

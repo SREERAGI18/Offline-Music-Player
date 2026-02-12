@@ -40,7 +40,7 @@ class SearchVM @Inject constructor(
     private val playlistUseCases: PlaylistUseCases,
     private val songsUseCases: SongsUseCases,
     private val playerRepository: PlayerServiceRepository,
-): ViewModel() {
+) : ViewModel() {
     var contentUriToDelete: Uri? = null
 
     private val _searchQuery = MutableStateFlow("")
@@ -120,7 +120,7 @@ class SearchVM @Inject constructor(
     }
 
     fun checkIfSongCanBeDeleted(song: Song, context: Context) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val contentUri = ContentUris.withAppendedId(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 song.id
@@ -130,17 +130,16 @@ class SearchVM @Inject constructor(
                 context.contentResolver.delete(contentUri, null, null)
             } catch (e: SecurityException) {
                 // We caught the exception! Return the IntentSender to the caller.
-                if(e is RecoverableSecurityException) {
+                if (e is RecoverableSecurityException) {
                     _intentSenderRequest.value = IntentSenderRequest
                         .Builder(e.userAction.actionIntent.intentSender)
                         .build()
                 }
             } catch (e: Exception) {
-
             }
         } else {
             (context as? MainActivity)?.apply {
-                if(!checkIfWriteAccessGranted()) {
+                if (!checkIfWriteAccessGranted()) {
                     requestStoragePermission()
                 } else {
                     deleteSongFile(song)

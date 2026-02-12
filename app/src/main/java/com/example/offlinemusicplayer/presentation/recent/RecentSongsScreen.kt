@@ -60,7 +60,7 @@ fun RecentSongsScreen() {
 
     LaunchedEffect(intentSenderRequest) {
         intentSenderRequest?.let { request ->
-            if(contentUriToDelete == null) return@let
+            if (contentUriToDelete == null) return@let
             mainActivity?.launchRecoverableSecurityPermission(
                 intentSenderRequest = request,
                 onPermissionGranted = {
@@ -88,7 +88,7 @@ fun RecentSongsScreen() {
         }
     }
 
-    if(showDeleteDialog) {
+    if (showDeleteDialog) {
         DeleteConfirmDialog(
             onDismiss = { showDeleteDialog = false },
             onConfirm = {
@@ -101,7 +101,7 @@ fun RecentSongsScreen() {
         )
     }
 
-    if(showDetailsDialog) {
+    if (showDetailsDialog) {
         songForDetails?.let { song ->
             SongDetailDialog(
                 song = song,
@@ -117,7 +117,7 @@ fun RecentSongsScreen() {
             viewModel.playSong(index)
         },
         onOptionSelected = { song, option ->
-            when(option) {
+            when (option) {
                 SongOptions.PlayNext -> {
                     viewModel.playNext(song)
                 }

@@ -127,7 +127,7 @@ interface PlayerServiceRepository {
      *
      * @param seekPosition The target position in milliseconds where the playback should move.
      */
-    fun seekToPosition(seekPosition:Long)
+    fun seekToPosition(seekPosition: Long)
 
     /**
      * Sets whether shuffling of [Song] is enabled.
@@ -167,7 +167,7 @@ interface PlayerServiceRepository {
     /**
      * returns a list of current playing playlist.
      */
-    fun getMediaList():List<Song>
+    fun getMediaList(): List<Song>
 
     /**
      * Adds a [Song] to the end of the playlist.
@@ -246,5 +246,5 @@ interface PlayerServiceRepository {
     /**
      * Get current media duration.
      */
-    fun getDuration():Long
+    fun getDuration(): Long
 }

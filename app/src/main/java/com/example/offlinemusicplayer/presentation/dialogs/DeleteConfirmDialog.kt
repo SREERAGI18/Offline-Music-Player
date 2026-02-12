@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun DeleteConfirmDialog(
-    description:String?,
+    description: String?,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {

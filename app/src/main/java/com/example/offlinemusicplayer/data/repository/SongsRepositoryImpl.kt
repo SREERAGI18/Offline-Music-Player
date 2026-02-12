@@ -20,9 +20,9 @@ class SongsRepositoryImpl(
     override suspend fun syncSongsWithDevice(): Int {
         val songsChangeCount = getSongsChangeCount()
 
-        if(songsChangeCount != 0) {
+        if (songsChangeCount != 0) {
             songsDao.deleteAll()
-            val songs  = audioFilesManager.fetchAllSongsFromDevice()
+            val songs = audioFilesManager.fetchAllSongsFromDevice()
             songsDao.insertAll(songs.map { it.toSongsEntity() })
         }
 
@@ -32,7 +32,7 @@ class SongsRepositoryImpl(
     private suspend fun getSongsChangeCount(): Int {
         val dbCount = songsDao.getCount()
         val mediaCount = audioFilesManager.getMediaStoreAudioCount()
-        return mediaCount-dbCount
+        return mediaCount - dbCount
     }
 
     fun searchSongsPaged(query: String): Flow<PagingData<SongsEntity>> {
@@ -116,7 +116,7 @@ class SongsRepositoryImpl(
     }
 
     override suspend fun deleteSongFileById(song: Song) {
-        if(audioFilesManager.deleteSongFile(song)) {
+        if (audioFilesManager.deleteSongFile(song)) {
             songsDao.deleteSongById(song.id)
         }
     }

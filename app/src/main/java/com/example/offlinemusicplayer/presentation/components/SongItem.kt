@@ -16,8 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,7 +31,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.offlinemusicplayer.domain.enum_classes.QueueSongOptions
 import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 
@@ -69,7 +66,7 @@ fun SongItem(
                 .size(56.dp)
                 .clip(shape = RoundedCornerShape(8.dp),)
                 .background(color = MaterialTheme.colorScheme.surfaceVariant)
-                .padding(if(song.getExistingAlbumUri(context) == null) 10.dp else 0.dp),
+                .padding(if (song.getExistingAlbumUri(context) == null) 10.dp else 0.dp),
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.width(16.dp))
@@ -80,10 +77,11 @@ fun SongItem(
             Text(
                 text = song.title,
                 style = MaterialTheme.typography.titleMedium.copy(
-                    color = if(isPlaying)
+                    color = if (isPlaying) {
                         MaterialTheme.colorScheme.primary
-                    else
+                    } else {
                         MaterialTheme.colorScheme.onBackground
+                    }
                 ),
                 maxLines = 1
             )
@@ -99,7 +97,7 @@ fun SongItem(
                 onOptionSelected?.invoke(SongOptions.UpdateFavorite)
             }
         ) {
-            val icon = if(song.isFav) {
+            val icon = if (song.isFav) {
                 Icons.Default.Favorite
             } else {
                 Icons.Default.FavoriteBorder
@@ -110,7 +108,7 @@ fun SongItem(
             )
         }
 
-        if(onOptionSelected != null) {
+        if (onOptionSelected != null) {
             Box {
                 IconButton(
                     onClick = {

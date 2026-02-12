@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.offlinemusicplayer.domain.enum_classes.PlaylistSongOptions
 import com.example.offlinemusicplayer.domain.enum_classes.QueueSongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 
@@ -90,10 +87,11 @@ fun QueueSongItem(
             Text(
                 text = song.title,
                 style = MaterialTheme.typography.titleMedium.copy(
-                    color = if(song.isPlaying)
+                    color = if (song.isPlaying) {
                         MaterialTheme.colorScheme.primary
-                    else
+                    } else {
                         MaterialTheme.colorScheme.onBackground
+                    }
                 ),
                 maxLines = 1
             )

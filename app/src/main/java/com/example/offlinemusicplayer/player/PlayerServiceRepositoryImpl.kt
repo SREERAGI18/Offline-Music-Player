@@ -35,7 +35,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val preferencesManager: PreferencesManager,
     private val incrementPlayCount: IncrementPlayCount
-): PlayerServiceRepository, Closeable {
+) : PlayerServiceRepository, Closeable {
 
     private companion object {
         private val TAG = PlayerServiceRepositoryImpl::class.java.simpleName
@@ -131,7 +131,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         }
 
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
-            if(reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED && !isLastPlayedInitialised) {
+            if (reason == Player.TIMELINE_CHANGE_REASON_PLAYLIST_CHANGED && !isLastPlayedInitialised) {
                 initialiseLastPlayedSongIfExist()
                 isLastPlayedInitialised = true
             }
@@ -141,7 +141,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             super.onMediaItemTransition(mediaItem, reason)
             Logger.logInfo(TAG, "onMediaItemTransition, Reason: $reason")
-            if(reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED || mediaItem == null) return
+            if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED || mediaItem == null) return
 
             coroutineScope.launch {
                 val songId = mediaItem.mediaId.toLong()
@@ -210,7 +210,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         }
         _currentMedia.value = song
         _currentMediaIndex.value = player.currentMediaItemIndex
-        if(song != null) {
+        if (song != null) {
             preferencesManager.setLastPlayedSong(song.id)
         }
         updatePosition()
@@ -225,7 +225,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
         _currentState.value = playerState
 
         pendingLastPlayedSongIncrementId?.let { songId ->
-            if(songId.toString() == player.currentMediaItem?.mediaId && playerState == PlayerState.Playing) {
+            if (songId.toString() == player.currentMediaItem?.mediaId && playerState == PlayerState.Playing) {
                 coroutineScope.launch {
                     incrementPlayCount(songId)
                 }
@@ -252,7 +252,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
     private fun updateTimeline(player: Player) {
         mediaIndexToSeekTo?.let { index ->
-            if(index < player.mediaItemCount) {
+            if (index < player.mediaItemCount) {
                 player.seekTo(index, 0)
                 player.prepare()
                 mediaIndexToSeekTo = null
@@ -441,7 +441,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     override fun setMediaList(mediaList: List<Song>) {
         checkNotClosed()
 
-        if(isSamePlaylist(mediaList)) return
+        if (isSamePlaylist(mediaList)) return
 
         _player.value?.let { player ->
             player.clearMediaItems()
@@ -465,7 +465,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     override fun setMediaList(mediaList: List<Song>, index: Int, position: Duration?) {
         checkNotClosed()
 
-        if(isSamePlaylist(mediaList)) return
+        if (isSamePlaylist(mediaList)) return
 
         mediaIndexToSeekTo = index
         _player.value?.let { player ->
@@ -540,7 +540,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
     override fun moveMedia(fromIndex: Int, toIndex: Int) {
         checkNotClosed()
 
-        player.value?.moveMediaItem( fromIndex , toIndex)
+        player.value?.moveMediaItem(fromIndex, toIndex)
     }
 
     override fun clearMediaList() {
@@ -575,7 +575,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
         val songIndex = songs.indexOfFirst { it.id == songId }
 
-        return if(songIndex != -1) songIndex else null
+        return if (songIndex != -1) songIndex else null
     }
 
     override fun release() {
