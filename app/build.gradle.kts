@@ -19,7 +19,7 @@ detekt {
     autoCorrect = true
 
     // point to your custom config defining rules to run, overwriting default behavior
-//    config.setFrom("$projectDir/config/detekt.yml")
+    config.setFrom("$projectDir/config/detekt.yml")
 //    baseline = file("$projectDir/config/baseline.xml") // a way of suppressing issues before introducing detekt
 }
 
@@ -78,6 +78,7 @@ android {
 dependencies {
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
+    detektPlugins("ru.kode:detekt-rules-compose:1.4.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
