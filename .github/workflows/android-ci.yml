@@ -27,6 +27,12 @@ jobs:
       - name: Grant Gradle Permission
         run: chmod +x gradlew
 
+      - name: Run Detekt
+        run: ./gradlew detekt
+
+      - name: Run Ktlint
+        run: ./gradlew ktlintCheck
+
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
 
@@ -41,6 +47,4 @@ jobs:
         with:
           name: debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
-      - name: Run Detekt
-        run: ./gradlew detekt
 

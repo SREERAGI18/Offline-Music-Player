@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.dagger.hilt)
     id("io.gitlab.arturbosch.detekt") version "1.23.6"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
 
 android {
