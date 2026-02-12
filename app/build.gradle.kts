@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.dagger.hilt)
+    id("io.gitlab.arturbosch.detekt") version "1.23.6"
 }
 
 android {
