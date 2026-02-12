@@ -9,6 +9,16 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
 
+detekt {
+    buildUponDefaultConfig = true // preconfigure defaults
+    allRules = false // activate all available (even unstable) rules.
+    autoCorrect = true
+
+    // point to your custom config defining rules to run, overwriting default behavior
+//    config.setFrom("$projectDir/config/detekt.yml")
+//    baseline = file("$projectDir/config/baseline.xml") // a way of suppressing issues before introducing detekt
+}
+
 android {
     namespace = "com.example.offlinemusicplayer"
     compileSdk = 36
@@ -46,6 +56,8 @@ android {
 }
 
 dependencies {
+
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
