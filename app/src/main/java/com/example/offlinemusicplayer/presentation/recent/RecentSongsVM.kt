@@ -17,6 +17,7 @@ import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.playlist.PlaylistUseCases
 import com.example.offlinemusicplayer.domain.usecase.songs.SongsUseCases
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
+import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -111,14 +112,12 @@ class RecentSongsVM @Inject constructor(
             contentUriToDelete = contentUri
             try {
                 context.contentResolver.delete(contentUri, null, null)
+            } catch (e: RecoverableSecurityException) {
+                _intentSenderRequest.value = IntentSenderRequest
+                    .Builder(e.userAction.actionIntent.intentSender)
+                    .build()
             } catch (e: SecurityException) {
-                // We caught the exception! Return the IntentSender to the caller.
-                if (e is RecoverableSecurityException) {
-                    _intentSenderRequest.value = IntentSenderRequest
-                        .Builder(e.userAction.actionIntent.intentSender)
-                        .build()
-                }
-            } catch (e: Exception) {
+                Logger.logError("RecentSongsVM", "SecurityException: ${e.message}")
             }
         } else {
             (context as? MainActivity)?.apply {

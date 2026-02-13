@@ -17,7 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.example.offlinemusicplayer.domain.enum_classes.MusicScreenTabs
+import com.example.offlinemusicplayer.domain.enumclasses.MusicScreenTabs
 import com.example.offlinemusicplayer.presentation.navigation.Screens
 import com.example.offlinemusicplayer.presentation.playlist.PlaylistScreen
 import com.example.offlinemusicplayer.presentation.recent.RecentSongsScreen
@@ -75,7 +75,7 @@ fun MusicScreen(
             when (page) {
                 0 -> SongListScreen()
                 1 -> PlaylistScreen(
-                    onPlaylistClicked = { playlist ->
+                    onPlaylistClick = { playlist ->
                         navController.navigate(Screens.PlaylistDetail(playlist.id))
                     }
                 )

@@ -6,23 +6,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
-import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
+import com.example.offlinemusicplayer.domain.enumclasses.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 
 @Composable
 fun SongsList(
-    modifier: Modifier = Modifier,
     songs: LazyPagingItems<Song>,
-    currentPlayingIndex: Int? = -1,
     scrollState: LazyListState,
     onSongClick: (Song, Int) -> Unit,
+    modifier: Modifier = Modifier,
+    currentPlayingIndex: Int? = -1,
     onOptionSelected: ((Song, SongOptions) -> Unit)? = null
 ) {
     LazyColumn(
@@ -57,11 +56,11 @@ fun SongsList(
 
 @Composable
 fun SongsList(
-    modifier: Modifier = Modifier,
     songs: List<Song>,
-    currentPlayingIndex: Int? = -1,
     scrollState: LazyListState,
     onSongClick: (Song, Int) -> Unit,
+    modifier: Modifier = Modifier,
+    currentPlayingIndex: Int? = -1,
     onOptionSelected: ((Song, SongOptions) -> Unit)? = null
 ) {
     LazyColumn(

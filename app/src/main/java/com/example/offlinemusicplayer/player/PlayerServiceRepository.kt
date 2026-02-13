@@ -1,9 +1,9 @@
 package com.example.offlinemusicplayer.player
 
 import androidx.media3.common.Player
-import com.example.offlinemusicplayer.domain.enum_classes.Command
-import com.example.offlinemusicplayer.domain.enum_classes.PlayerState
-import com.example.offlinemusicplayer.domain.enum_classes.RepeatMode
+import com.example.offlinemusicplayer.domain.enumclasses.Command
+import com.example.offlinemusicplayer.domain.enumclasses.PlayerState
+import com.example.offlinemusicplayer.domain.enumclasses.RepeatMode
 import com.example.offlinemusicplayer.domain.model.Song
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration

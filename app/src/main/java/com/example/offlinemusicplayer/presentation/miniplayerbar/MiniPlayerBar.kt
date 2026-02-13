@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.presentation.mini_player_bar
+package com.example.offlinemusicplayer.presentation.miniplayerbar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -31,10 +31,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.offlinemusicplayer.domain.enum_classes.PlayerState
+import com.example.offlinemusicplayer.domain.enumclasses.PlayerState
 import com.example.offlinemusicplayer.presentation.components.CachedAlbumArt
 import com.example.offlinemusicplayer.presentation.main.MainVM
-import com.example.offlinemusicplayer.presentation.now_playing_detail.PlayerIconButton
+import com.example.offlinemusicplayer.presentation.nowplayingdetail.PlayerIconButton
 
 @Composable
 fun MiniPlayerBar(

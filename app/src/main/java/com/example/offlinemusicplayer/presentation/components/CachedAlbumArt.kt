@@ -13,10 +13,10 @@ import com.example.offlinemusicplayer.domain.model.Song
 
 @Composable
 fun CachedAlbumArt(
-    modifier: Modifier = Modifier,
     song: Song?,
     contentDescription: String,
     contentScale: ContentScale,
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val imageUri = song?.getAlbumUri()

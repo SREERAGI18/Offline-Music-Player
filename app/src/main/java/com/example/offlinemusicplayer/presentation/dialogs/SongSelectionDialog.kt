@@ -39,11 +39,11 @@ import com.example.offlinemusicplayer.domain.model.Song
 
 @Composable
 fun SongSelectionDialog(
-    modifier: Modifier = Modifier,
     songs: List<Song>,
-    selectedSongIds: List<Long>? = emptyList(),
     onSubmit: (List<Song>) -> Unit,
     onCancel: () -> Unit,
+    modifier: Modifier = Modifier,
+    selectedSongIds: List<Long>? = emptyList(),
     title: String = stringResource(id = R.string.select_songs)
 ) {
     val songsList = remember { mutableStateListOf<Song>() }
@@ -99,7 +99,7 @@ fun SongSelectionDialog(
                         items(songsList) { song ->
                             SongSelectionItem(
                                 song = song,
-                                onSongClicked = {
+                                onSongClick = {
                                     val index = songsList.indexOfFirst { it.id == song.id }
                                     if (index != -1) {
                                         songsList[index] = songsList[index].copy(selected = !songsList[index].selected)
@@ -144,7 +144,7 @@ fun SongSelectionDialog(
 @Composable
 private fun SongSelectionItem(
     song: Song,
-    onSongClicked: () -> Unit
+    onSongClick: () -> Unit
 ) {
     val checkBoxImage = if (song.selected) {
         Icons.Default.CheckBox
@@ -156,12 +156,12 @@ private fun SongSelectionItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                onSongClicked()
+                onSongClick()
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
-            onClick = onSongClicked
+            onClick = onSongClick
         ) {
             Icon(
                 imageVector = checkBoxImage,

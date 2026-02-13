@@ -12,9 +12,9 @@ fun CommonDialog(
     title: String,
     description: String,
     positiveText: String,
-    negativeText: String? = null,
     onDismiss: () -> Unit,
     onPositiveClick: () -> Unit,
+    negativeText: String? = null,
     onNegativeClick: (() -> Unit)? = null,
     dismissable: Boolean = true
 ) {

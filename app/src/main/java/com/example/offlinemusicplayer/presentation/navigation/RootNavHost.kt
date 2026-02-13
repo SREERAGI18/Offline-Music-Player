@@ -8,7 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.offlinemusicplayer.presentation.main.MainScreen
-import com.example.offlinemusicplayer.presentation.now_playing_queue.NowPlayingQueueScreen
+import com.example.offlinemusicplayer.presentation.nowplayingqueue.NowPlayingQueueScreen
 import com.example.offlinemusicplayer.presentation.search.SearchScreen
 
 @Composable

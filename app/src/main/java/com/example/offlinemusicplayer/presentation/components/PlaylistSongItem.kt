@@ -28,20 +28,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import com.example.offlinemusicplayer.domain.enum_classes.OptionType
-import com.example.offlinemusicplayer.domain.enum_classes.PlaylistSongOptions
+import com.example.offlinemusicplayer.domain.enumclasses.OptionType
+import com.example.offlinemusicplayer.domain.enumclasses.PlaylistSongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 
 @Composable
 fun PlaylistSongItem(
-    modifier: Modifier = Modifier,
     song: Song,
     onSongClick: () -> Unit,
-    onOptionSelected: (PlaylistSongOptions) -> Unit,
+    onOptionSelect: (PlaylistSongOptions) -> Unit,
     onDragStart: () -> Unit,
     onDragEnd: () -> Unit,
     onDrag: (Float) -> Unit,
-    isDefaultPlaylist: Boolean
+    isDefaultPlaylist: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     var menuExpanded by remember {
         mutableStateOf(false)
@@ -121,7 +121,7 @@ fun PlaylistSongItem(
                 onDismiss = {
                     menuExpanded = false
                 },
-                onOptionSelected = onOptionSelected,
+                onOptionSelect = onOptionSelect,
                 isDefaultPlaylist = isDefaultPlaylist
             )
         }
@@ -132,7 +132,7 @@ fun PlaylistSongItem(
 private fun SongOptionsDropDown(
     menuExpanded: Boolean,
     onDismiss: () -> Unit,
-    onOptionSelected: (PlaylistSongOptions) -> Unit,
+    onOptionSelect: (PlaylistSongOptions) -> Unit,
     isDefaultPlaylist: Boolean
 ) {
     val options = if (isDefaultPlaylist) {
@@ -143,8 +143,8 @@ private fun SongOptionsDropDown(
 
     AppDropdown(
         options = options,
-        onOptionSelected = {
-            onOptionSelected(it as PlaylistSongOptions)
+        onOptionSelect = {
+            onOptionSelect(it as PlaylistSongOptions)
         },
         onDismiss = onDismiss,
         menuExpanded = menuExpanded

@@ -21,9 +21,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LyricsView(
-    modifier: Modifier = Modifier,
     lyrics: Map<Long, String>,
-    currentPosition: Long?
+    currentPosition: Long?,
+    modifier: Modifier = Modifier,
 ) {
     // If there are no lyrics, show a placeholder message.
     if (lyrics.isEmpty()) {

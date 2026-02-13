@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.presentation.now_playing_detail
+package com.example.offlinemusicplayer.presentation.nowplayingdetail
 
 import android.content.Context
 import android.net.Uri
@@ -70,8 +70,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.example.offlinemusicplayer.R
-import com.example.offlinemusicplayer.domain.enum_classes.PlayerState
-import com.example.offlinemusicplayer.domain.enum_classes.RepeatMode
+import com.example.offlinemusicplayer.domain.enumclasses.PlayerState
+import com.example.offlinemusicplayer.domain.enumclasses.RepeatMode
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.CachedAlbumArt
 import com.example.offlinemusicplayer.presentation.components.LyricsView
@@ -407,10 +407,10 @@ private fun readLrcFile(context: Context, uri: Uri): String {
 
 @Composable
 fun PlayerIconButton(
-    modifier: Modifier = Modifier,
     onClick: () -> Unit,
     icon: ImageVector,
     contentDescription: String,
+    modifier: Modifier = Modifier,
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,
     enabled: Boolean = true
 ) {

@@ -54,8 +54,13 @@ class AudioFilesManager(
                 // especially on Android 10+ for files you don't own.
                 Logger.logError("AudioFilesFetcher", "SecurityException on deleting song: ${e.message}")
                 false
-            } catch (e: Exception) {
-                Logger.logError("AudioFilesFetcher", "Error deleting song: ${e.message}")
+            } catch (e: IllegalArgumentException) {
+                // Thrown if the URI is invalid or malformed
+                Logger.logError("AudioFilesFetcher", "Invalid URI for song: ${e.message}")
+                false
+            } catch (e: UnsupportedOperationException) {
+                // Thrown if the content provider doesn't support delete
+                Logger.logError("AudioFilesFetcher", "Delete not supported: ${e.message}")
                 false
             }
         }

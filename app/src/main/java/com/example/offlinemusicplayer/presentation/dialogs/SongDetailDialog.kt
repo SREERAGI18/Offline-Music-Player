@@ -25,7 +25,7 @@ import com.example.offlinemusicplayer.util.toFormattedTime
 
 @Composable
 fun SongDetailDialog(
-    song: Song,
+    song: Song?,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
@@ -48,8 +48,8 @@ fun SongDetailDialog(
 }
 
 @Composable
-private fun SongDetailContent(song: Song) {
-    val mediaInfo = MediaInfoExtractor.extractAudioInfo(song.path)
+private fun SongDetailContent(song: Song?) {
+    val mediaInfo = MediaInfoExtractor.extractAudioInfo(song?.path)
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
@@ -61,17 +61,17 @@ private fun SongDetailContent(song: Song) {
         Spacer(modifier = Modifier.height(16.dp))
         SongDetailItem(
             title = "Name",
-            value = song.title
+            value = song?.title
         )
         Spacer(modifier = Modifier.height(8.dp))
         SongDetailItem(
             title = "Path",
-            value = song.path
+            value = song?.path
         )
         Spacer(modifier = Modifier.height(8.dp))
         SongDetailItem(
             title = "Size",
-            value = song.size.toFileSize()
+            value = song?.size?.toFileSize()
         )
         Spacer(modifier = Modifier.height(8.dp))
         SongDetailItem(
@@ -81,12 +81,12 @@ private fun SongDetailContent(song: Song) {
         Spacer(modifier = Modifier.height(8.dp))
         SongDetailItem(
             title = "Last Modified",
-            value = song.dateModified.toFormattedDate()
+            value = song?.dateModified?.toFormattedDate()
         )
         Spacer(modifier = Modifier.height(8.dp))
         SongDetailItem(
             title = "Duration",
-            value = song.duration.toFormattedTime()
+            value = song?.duration?.toFormattedTime()
         )
         Spacer(modifier = Modifier.height(8.dp))
         SongDetailItem(
@@ -104,7 +104,7 @@ private fun SongDetailContent(song: Song) {
 @Composable
 private fun SongDetailItem(
     title: String,
-    value: String
+    value: String?
 ) {
     val annotatedString = buildAnnotatedString {
         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {

@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.presentation.now_playing_queue
+package com.example.offlinemusicplayer.presentation.nowplayingqueue
 
 import QueueSongsList
 import androidx.compose.foundation.layout.Column
@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.offlinemusicplayer.domain.enum_classes.QueueSongOptions
+import com.example.offlinemusicplayer.domain.enumclasses.QueueSongOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,10 +76,10 @@ fun NowPlayingQueueScreen(
             onSongClick = { song, index ->
                 viewModel.playSong(index)
             },
-            onSongMoved = { from, to ->
+            onSongMove = { from, to ->
                 viewModel.moveSong(from, to)
             },
-            onOptionSelected = { index, option ->
+            onOptionSelect = { index, option ->
                 when (option) {
                     QueueSongOptions.Play -> {
                         viewModel.playSong(index)

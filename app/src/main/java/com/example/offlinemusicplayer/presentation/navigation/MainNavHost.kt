@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.offlinemusicplayer.presentation.music.MusicScreen
-import com.example.offlinemusicplayer.presentation.playlist_detail.PlaylistDetailScreen
+import com.example.offlinemusicplayer.presentation.playlistdetail.PlaylistDetailScreen
 
 @Composable
 fun MainNavHost(

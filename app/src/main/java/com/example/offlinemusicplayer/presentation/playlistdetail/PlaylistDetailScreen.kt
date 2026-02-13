@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.presentation.playlist_detail
+package com.example.offlinemusicplayer.presentation.playlistdetail
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,14 +34,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity.Companion.DEFAULT_PLAYLIST_MAP
-import com.example.offlinemusicplayer.domain.enum_classes.PlaylistOptions
-import com.example.offlinemusicplayer.domain.enum_classes.PlaylistSongOptions
+import com.example.offlinemusicplayer.domain.enumclasses.PlaylistOptions
+import com.example.offlinemusicplayer.domain.enumclasses.PlaylistSongOptions
+import com.example.offlinemusicplayer.domain.model.Playlist
+import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.PlaylistOptionsDropDown
 import com.example.offlinemusicplayer.presentation.components.PlaylistSongList
 import com.example.offlinemusicplayer.presentation.dialogs.CreatePlaylistDialog
@@ -78,22 +81,7 @@ fun PlaylistDetailScreen(
         mutableStateOf(false)
     }
 
-    val icon by remember(playlist) {
-        when (playlist?.name) {
-            PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> {
-                mutableStateOf(Icons.Filled.History)
-            }
-            PlaylistEntity.MOST_PLAYED_PLAYLIST_NAME -> {
-                mutableStateOf(Icons.AutoMirrored.Default.TrendingUp)
-            }
-            PlaylistEntity.FAVORITES_NAME -> {
-                mutableStateOf(Icons.Filled.Favorite)
-            }
-            else -> {
-                mutableStateOf(Icons.Filled.MusicNote)
-            }
-        }
-    }
+    val icon = playlistIconFor(playlist?.name)
 
     if (showDeleteDialog) {
         DeleteConfirmDialog(
@@ -113,9 +101,7 @@ fun PlaylistDetailScreen(
             title = playlistTitle,
             selectedSongIds = playlist?.songIds,
             onSubmit = { selectedSongs ->
-                if (playlist != null) {
-                    viewModel.updatePlaylistContent(selectedSongs)
-                }
+                viewModel.updatePlaylistContent(selectedSongs)
                 showSongSelection = false
             },
             onCancel = {
@@ -181,7 +167,7 @@ fun PlaylistDetailScreen(
                     onDismiss = {
                         menuExpanded = false
                     },
-                    onOptionSelected = { option ->
+                    onOptionSelect = { option ->
                         when (option) {
                             PlaylistOptions.Play -> {
                                 viewModel.playAllSongsOfPlaylist()
@@ -247,44 +233,65 @@ fun PlaylistDetailScreen(
             }
         }
 
-        if (songs.isNotEmpty()) {
-            PlaylistSongList(
-                songs = songs,
-                onSongClick = { song, index ->
-                    viewModel.playSong(index)
-                },
-                onSongMoved = { from, to ->
-                    viewModel.moveSong(from, to)
-                },
-                onOptionSelected = { song, option ->
-                    when (option) {
-                        PlaylistSongOptions.PlayNext -> {
-                            viewModel.playNext(song)
-                        }
-                        PlaylistSongOptions.AddToQueue -> {
-                            viewModel.addToQueue(song)
-                        }
-                        PlaylistSongOptions.RemoveFromPlaylist -> {
-                            viewModel.removeSongFromPlaylist(song)
-                        }
+        PlaylistContent(
+            songs = songs,
+            viewModel = viewModel,
+            playlist = playlist,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(horizontal = 16.dp),
+        )
+    }
+}
+
+@Composable
+private fun PlaylistContent(
+    songs: List<Song>,
+    viewModel: PlaylistDetailVM,
+    playlist: Playlist?,
+    modifier: Modifier = Modifier,
+) {
+    if (songs.isNotEmpty()) {
+        PlaylistSongList(
+            songs = songs,
+            onSongClick = { song, index ->
+                viewModel.playSong(index)
+            },
+            onSongMove = { from, to ->
+                viewModel.moveSong(from, to)
+            },
+            onOptionSelect = { song, option ->
+                when (option) {
+                    PlaylistSongOptions.PlayNext -> {
+                        viewModel.playNext(song)
                     }
-                },
-                isDefaultPlaylist = playlist?.id in DEFAULT_PLAYLIST_MAP,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(horizontal = 16.dp),
+                    PlaylistSongOptions.AddToQueue -> {
+                        viewModel.addToQueue(song)
+                    }
+                    PlaylistSongOptions.RemoveFromPlaylist -> {
+                        viewModel.removeSongFromPlaylist(song)
+                    }
+                }
+            },
+            isDefaultPlaylist = playlist?.id in DEFAULT_PLAYLIST_MAP,
+            modifier = modifier
+        )
+    } else {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "No songs added in playlist",
+                style = MaterialTheme.typography.bodyLarge
             )
-        } else {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "No songs added in playlist",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
         }
     }
+}
+private fun playlistIconFor(name: String?): ImageVector = when (name) {
+    PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> Icons.Filled.History
+    PlaylistEntity.MOST_PLAYED_PLAYLIST_NAME -> Icons.AutoMirrored.Default.TrendingUp
+    PlaylistEntity.FAVORITES_NAME -> Icons.Filled.Favorite
+    else -> Icons.Filled.MusicNote
 }

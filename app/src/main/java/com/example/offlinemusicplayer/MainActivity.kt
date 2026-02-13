@@ -65,10 +65,10 @@ import com.example.offlinemusicplayer.presentation.activities.ProfileActivity
 import com.example.offlinemusicplayer.presentation.activities.SettingsActivity
 import com.example.offlinemusicplayer.presentation.dialogs.CommonDialog
 import com.example.offlinemusicplayer.presentation.main.MainVM
-import com.example.offlinemusicplayer.presentation.mini_player_bar.MiniPlayerBar
+import com.example.offlinemusicplayer.presentation.miniplayerbar.MiniPlayerBar
 import com.example.offlinemusicplayer.presentation.navigation.RootNavHost
 import com.example.offlinemusicplayer.presentation.navigation.Screens
-import com.example.offlinemusicplayer.presentation.now_playing_detail.NowPlayingDetail
+import com.example.offlinemusicplayer.presentation.nowplayingdetail.NowPlayingDetail
 import com.example.offlinemusicplayer.presentation.providers.LocalBottomScrollBehavior
 import com.example.offlinemusicplayer.presentation.providers.LocalScrollBehavior
 import com.example.offlinemusicplayer.ui.theme.OfflineMusicPlayerTheme
@@ -115,7 +115,8 @@ class MainActivity : ComponentActivity() {
                             primaryArgb,
                         ) {
                             // This lambda determines whether to use dark icons based on the background luminance
-                            // Return true for dark icons on a light background, false for light icons on a dark background
+                            // Return true for dark icons on a light background,
+                            // false for light icons on a dark background
                             !isDarkTheme
                         },
                         navigationBarStyle = SystemBarStyle.auto(
@@ -420,7 +421,7 @@ class MainActivity : ComponentActivity() {
     fun SettingsDialog() {
         CommonDialog(
             title = "Permission Denied",
-            description = "You have permanently denied the storage permission. To fetch the music file, please enable it from the settings.",
+            description = "Storage permission is permanently denied. Please enable it in Settings to fetch your music.",
             positiveText = "Settings",
             onPositiveClick = {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -445,7 +446,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun launchRecoverableSecurityPermission(intentSenderRequest: IntentSenderRequest, onPermissionGranted: () -> Unit) {
+    fun launchRecoverableSecurityPermission(intentSenderRequest: IntentSenderRequest?, onPermissionGranted: () -> Unit) {
+        if (intentSenderRequest == null) return
         onDeletePermissionGranted = onPermissionGranted
         recoverableSecurityPermissionLauncher.launch(intentSenderRequest)
     }

@@ -7,12 +7,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import com.example.offlinemusicplayer.domain.enum_classes.Options
+import com.example.offlinemusicplayer.domain.enumclasses.Options
 
 @Composable
 fun AppDropdown(
     options: List<Options>,
-    onOptionSelected: (Options) -> Unit,
+    onOptionSelect: (Options) -> Unit,
     onDismiss: () -> Unit,
     menuExpanded: Boolean
 ) {
@@ -30,7 +30,7 @@ fun AppDropdown(
                     )
                 },
                 onClick = {
-                    onOptionSelected(option)
+                    onOptionSelect(option)
                     onDismiss()
                 }
             )

@@ -27,20 +27,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.offlinemusicplayer.domain.enum_classes.QueueSongOptions
+import com.example.offlinemusicplayer.domain.enumclasses.QueueSongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 
 @Composable
 fun QueueSongItem(
-    modifier: Modifier = Modifier,
     song: Song,
     onSongClick: () -> Unit,
-    onOptionSelected: (QueueSongOptions) -> Unit,
+    onOptionSelect: (QueueSongOptions) -> Unit,
     onDragStart: () -> Unit,
     onDragEnd: () -> Unit,
-    onDrag: (Float) -> Unit
+    onDrag: (Float) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var menuExpanded by remember {
         mutableStateOf(false)
@@ -120,7 +119,7 @@ fun QueueSongItem(
                 onDismiss = {
                     menuExpanded = false
                 },
-                onOptionSelected = onOptionSelected
+                onOptionSelect = onOptionSelect
             )
         }
     }
@@ -130,29 +129,16 @@ fun QueueSongItem(
 private fun QueueOptionsDropDown(
     menuExpanded: Boolean,
     onDismiss: () -> Unit,
-    onOptionSelected: (QueueSongOptions) -> Unit,
+    onOptionSelect: (QueueSongOptions) -> Unit,
 ) {
     val options = QueueSongOptions.entries.toList()
 
     AppDropdown(
         options = options,
-        onOptionSelected = {
-            onOptionSelected(it as QueueSongOptions)
+        onOptionSelect = {
+            onOptionSelect(it as QueueSongOptions)
         },
         onDismiss = onDismiss,
         menuExpanded = menuExpanded
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun QueueSongItemPreview() {
-    QueueSongItem(
-        song = Song.testSong(),
-        onSongClick = {},
-        onDragStart = {},
-        onDragEnd = {},
-        onDrag = {},
-        onOptionSelected = {}
     )
 }

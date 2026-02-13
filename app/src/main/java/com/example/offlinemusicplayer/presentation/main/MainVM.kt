@@ -7,6 +7,8 @@ import com.example.offlinemusicplayer.domain.usecase.songs.GetSongsByIds
 import com.example.offlinemusicplayer.domain.usecase.songs.SyncSongsWithDevice
 import com.example.offlinemusicplayer.domain.usecase.songs.UpdateLyrics
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
+import com.example.offlinemusicplayer.util.Constants.MILLS_PER_SECOND
+import com.example.offlinemusicplayer.util.Constants.SECONDS_PER_MINUTE
 import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +16,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 import javax.inject.Inject
+
+private const val PATTERN_MATCH_GROUP_1 = 1
+private const val PATTERN_MATCH_GROUP_2 = 2
+private const val PATTERN_MATCH_GROUP_3 = 3
+private const val PATTERN_MATCH_GROUP_4 = 4
+private const val HUNDREDTHS_TO_MILLIS = 10L
 
 @HiltViewModel
 class MainVM @Inject constructor(
@@ -131,13 +139,14 @@ class MainVM @Inject constructor(
         lrcContent.lines().forEach { line ->
             val matcher = pattern.matcher(line)
             if (matcher.matches()) {
-                val minutes = matcher.group(1)?.toLong() ?: 0
-                val seconds = matcher.group(2)?.toLong() ?: 0
-                val hundredths = matcher.group(3)?.toLong() ?: 0
-                val text = matcher.group(4)?.trim() ?: ""
+                val minutes = matcher.group(PATTERN_MATCH_GROUP_1)?.toLong() ?: 0
+                val seconds = matcher.group(PATTERN_MATCH_GROUP_2)?.toLong() ?: 0
+                val hundredths = matcher.group(PATTERN_MATCH_GROUP_3)?.toLong() ?: 0
+                val text = matcher.group(PATTERN_MATCH_GROUP_4)?.trim() ?: ""
 
                 if (text.isNotEmpty()) {
-                    val timestamp = (minutes * 60 + seconds) * 1000 + hundredths * 10
+                    val timestamp = (minutes * SECONDS_PER_MINUTE + seconds) * MILLS_PER_SECOND +
+                        hundredths * HUNDREDTHS_TO_MILLIS
                     lyricsMap[timestamp] = text
                 }
             }

@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.presentation.playlist_detail
+package com.example.offlinemusicplayer.presentation.playlistdetail
 
 import android.content.Context
 import android.widget.Toast
@@ -12,6 +12,7 @@ import com.example.offlinemusicplayer.domain.usecase.playlist.PlaylistUseCases
 import com.example.offlinemusicplayer.domain.usecase.songs.SongsUseCases
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
 import com.example.offlinemusicplayer.presentation.navigation.Screens
+import com.example.offlinemusicplayer.util.Constants.TIMEOUT_IN_MS
 import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +38,7 @@ class PlaylistDetailVM @Inject constructor(
     val playlist: StateFlow<Playlist?> = playlistUseCases.getPlaylistById(playlistId)
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(TIMEOUT_IN_MS),
             initialValue = null
         )
 
@@ -114,8 +115,7 @@ class PlaylistDetailVM @Inject constructor(
 
     fun updatePlaylistName(playlistName: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val playlist = playlist.value
-            if (playlist == null) return@launch
+            val playlist = playlist.value ?: return@launch
 
             playlistUseCases.updatePlaylist(
                 playlist.copy(name = playlistName)
@@ -125,8 +125,7 @@ class PlaylistDetailVM @Inject constructor(
 
     fun updatePlaylistContent(songs: List<Song>) {
         viewModelScope.launch(Dispatchers.IO) {
-            val playlist = playlist.value
-            if (playlist == null) return@launch
+            val playlist = playlist.value ?: return@launch
 
             val songIds = songs.map { it.id }
             playlistUseCases.updatePlaylist(
@@ -137,8 +136,7 @@ class PlaylistDetailVM @Inject constructor(
 
     fun deletePlaylist() {
         viewModelScope.launch(Dispatchers.IO) {
-            val playlist = playlist.value
-            if (playlist == null) return@launch
+            val playlist = playlist.value ?: return@launch
 
             playlistUseCases.deletePlaylist(playlist)
         }
@@ -146,8 +144,7 @@ class PlaylistDetailVM @Inject constructor(
 
     fun addAllSongsToQueue(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            val playlist = playlist.value
-            if (playlist == null) return@launch
+            val playlist = playlist.value ?: return@launch
 
             val songs = songsUseCases.getSongsByIds(playlist.songIds)
             playerRepository.addMedia(songs)
@@ -159,8 +156,7 @@ class PlaylistDetailVM @Inject constructor(
 
     fun playAllSongsOfPlaylist() {
         viewModelScope.launch(Dispatchers.IO) {
-            val playlist = playlist.value
-            if (playlist == null) return@launch
+            val playlist = playlist.value ?: return@launch
 
             val songs = songsUseCases.getSongsByIds(playlist.songIds)
             playerRepository.setMediaList(songs)

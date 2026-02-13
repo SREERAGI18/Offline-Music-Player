@@ -3,7 +3,6 @@ package com.example.offlinemusicplayer.presentation.songlist
 import android.app.RecoverableSecurityException
 import android.content.ContentUris
 import android.content.Context
-import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
@@ -39,7 +38,6 @@ class SongListVM @Inject constructor(
 
     val songs: Flow<PagingData<Song>> = songsUseCases.getAllSongsPaginated()
     val currentMedia = playerRepository.currentMedia
-    var contentUriToDelete: Uri? = null
 
     val playlists = mutableStateListOf<Playlist>()
 
@@ -112,7 +110,8 @@ class SongListVM @Inject constructor(
         }
     }
 
-    fun deleteSongFile(song: Song) {
+    fun deleteSongFile(song: Song?) {
+        if (song == null) return
         viewModelScope.launch {
             _deleteProgress.value = true
             songsUseCases.deleteSongById(song)
@@ -126,17 +125,15 @@ class SongListVM @Inject constructor(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 song.id
             )
-            contentUriToDelete = contentUri
+
             try {
                 context.contentResolver.delete(contentUri, null, null)
+            } catch (e: RecoverableSecurityException) {
+                _intentSenderRequest.value = IntentSenderRequest
+                    .Builder(e.userAction.actionIntent.intentSender)
+                    .build()
             } catch (e: SecurityException) {
-                // We caught the exception! Return the IntentSender to the caller.
-                if (e is RecoverableSecurityException) {
-                    _intentSenderRequest.value = IntentSenderRequest
-                        .Builder(e.userAction.actionIntent.intentSender)
-                        .build()
-                }
-            } catch (e: Exception) {
+                Logger.logError("SongListVM", "SecurityException: ${e.message}")
             }
         } else {
             (context as? MainActivity)?.apply {

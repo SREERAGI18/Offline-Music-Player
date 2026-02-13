@@ -5,7 +5,7 @@ import android.database.Cursor
 internal fun Cursor.getIntFromCol(columnName: String): Int {
     try {
         return getInt(getColumnIndexOrThrow(columnName))
-    } catch (ex: Throwable) {
+    } catch (ex: IllegalArgumentException) {
         throw IllegalStateException("invalid column $columnName", ex)
     }
 }
@@ -13,7 +13,7 @@ internal fun Cursor.getIntFromCol(columnName: String): Int {
 internal fun Cursor.getLongFromCol(columnName: String): Long {
     try {
         return getLong(getColumnIndexOrThrow(columnName))
-    } catch (ex: Throwable) {
+    } catch (ex: IllegalArgumentException) {
         throw IllegalStateException("invalid column $columnName", ex)
     }
 }
@@ -21,7 +21,7 @@ internal fun Cursor.getLongFromCol(columnName: String): Long {
 internal fun Cursor.getStringFromCol(columnName: String): String {
     try {
         return getString(getColumnIndexOrThrow(columnName))
-    } catch (ex: Throwable) {
+    } catch (ex: IllegalArgumentException) {
         throw IllegalStateException("invalid column $columnName", ex)
     }
 }
@@ -29,7 +29,7 @@ internal fun Cursor.getStringFromCol(columnName: String): String {
 internal fun Cursor.getStringOrNullFromCol(columnName: String): String? {
     try {
         return getString(getColumnIndexOrThrow(columnName))
-    } catch (ex: Throwable) {
+    } catch (ex: IllegalArgumentException) {
         throw IllegalStateException("invalid column $columnName", ex)
     }
 }

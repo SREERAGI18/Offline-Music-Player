@@ -3,7 +3,6 @@ package com.example.offlinemusicplayer.presentation.search
 import android.app.RecoverableSecurityException
 import android.content.ContentUris
 import android.content.Context
-import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
@@ -18,6 +17,7 @@ import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.playlist.PlaylistUseCases
 import com.example.offlinemusicplayer.domain.usecase.songs.SongsUseCases
 import com.example.offlinemusicplayer.player.PlayerServiceRepository
+import com.example.offlinemusicplayer.util.Constants.DEBOUNCE_IN_MS
 import com.example.offlinemusicplayer.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +41,6 @@ class SearchVM @Inject constructor(
     private val songsUseCases: SongsUseCases,
     private val playerRepository: PlayerServiceRepository,
 ) : ViewModel() {
-    var contentUriToDelete: Uri? = null
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -55,7 +54,7 @@ class SearchVM @Inject constructor(
     val playlists = mutableStateListOf<Playlist>()
 
     val songs: Flow<PagingData<Song>> = searchQuery
-        .debounce(300L)
+        .debounce(DEBOUNCE_IN_MS)
         .flatMapLatest { query ->
             songsUseCases.searchSongsPaginated(query)
         }
@@ -125,17 +124,15 @@ class SearchVM @Inject constructor(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 song.id
             )
-            contentUriToDelete = contentUri
+
             try {
                 context.contentResolver.delete(contentUri, null, null)
+            } catch (e: RecoverableSecurityException) {
+                _intentSenderRequest.value = IntentSenderRequest
+                    .Builder(e.userAction.actionIntent.intentSender)
+                    .build()
             } catch (e: SecurityException) {
-                // We caught the exception! Return the IntentSender to the caller.
-                if (e is RecoverableSecurityException) {
-                    _intentSenderRequest.value = IntentSenderRequest
-                        .Builder(e.userAction.actionIntent.intentSender)
-                        .build()
-                }
-            } catch (e: Exception) {
+                Logger.logError("SearchVM", "SecurityException: ${e.message}")
             }
         } else {
             (context as? MainActivity)?.apply {

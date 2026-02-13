@@ -20,12 +20,14 @@ interface SongsDao {
     suspend fun getRecentSongs(size: Int): List<SongsEntity>
 
     @Query(
-        "SELECT * FROM songs WHERE title LIKE '%' || :query || '%' OR artist LIKE '%' || :query || '%' ORDER BY title ASC"
+        "SELECT * FROM songs WHERE title LIKE '%' || :query || '%' " +
+            "OR artist LIKE '%' || :query || '%' ORDER BY title ASC"
     )
     fun searchSongsPaged(query: String): PagingSource<Int, SongsEntity>
 
     @Query(
-        "SELECT * FROM songs WHERE title LIKE '%' || :query || '%' OR artist LIKE '%' || :query || '%' ORDER BY title ASC"
+        "SELECT * FROM songs WHERE title LIKE '%' || :query || '%' " +
+            "OR artist LIKE '%' || :query || '%' ORDER BY title ASC"
     )
     fun searchSongs(query: String): List<SongsEntity>
 
@@ -84,7 +86,8 @@ interface SongsDao {
     suspend fun getSongIndexById(songId: Long): Int
 
     @Query(
-        "SELECT COUNT(*) FROM songs WHERE title < (SELECT title FROM songs WHERE title LIKE :letter || '%' ORDER BY title ASC LIMIT 1)"
+        "SELECT COUNT(*) FROM songs " +
+            "WHERE title < (SELECT title FROM songs WHERE title LIKE :letter || '%' ORDER BY title ASC LIMIT 1)"
     )
     suspend fun getFirstSongIndexByLetter(letter: String): Int
 

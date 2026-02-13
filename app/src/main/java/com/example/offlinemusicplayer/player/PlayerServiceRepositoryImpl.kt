@@ -6,15 +6,16 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.datasource.HttpDataSource
-import com.example.offlinemusicplayer.domain.enum_classes.Command
-import com.example.offlinemusicplayer.domain.enum_classes.PlayerState
-import com.example.offlinemusicplayer.domain.enum_classes.RepeatMode
+import com.example.offlinemusicplayer.domain.enumclasses.Command
+import com.example.offlinemusicplayer.domain.enumclasses.PlayerState
+import com.example.offlinemusicplayer.domain.enumclasses.RepeatMode
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.domain.usecase.songs.IncrementPlayCount
 import com.example.offlinemusicplayer.player.mapper.MediaMapper
 import com.example.offlinemusicplayer.player.mapper.PlayerStateMapper
 import com.example.offlinemusicplayer.player.mapper.RepeatModeMapper
 import com.example.offlinemusicplayer.player.mapper.SetCommandMapper
+import com.example.offlinemusicplayer.util.Constants.ONE_SEC_IN_MS
 import com.example.offlinemusicplayer.util.Logger
 import com.example.offlinemusicplayer.util.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
@@ -177,7 +178,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
     fun initialiseLastPlayedSongIfExist() {
         val lastPlayedSongId = preferencesManager.getLastPlayedSongId()
-        val lastPlayedPosition = preferencesManager.getLastPlayedPosition()
+
         val repeatMode = preferencesManager.getRepeatMode()
         val shuffleModeEnabled = preferencesManager.getShuffleMode()
 
@@ -268,9 +269,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
 
         checkNotClosed()
 
-        if (this.onClose != null) {
-            throw IllegalStateException("previously connected")
-        }
+        check(this.onClose == null) { "previously connected" }
 
         _player.value = player
         _connected.value = true
@@ -604,7 +603,7 @@ class PlayerServiceRepositoryImpl @Inject constructor(
             while (isActive) {
                 updatePosition()
                 saveLastPlayedPosition()
-                delay(1000)
+                delay(ONE_SEC_IN_MS)
             }
         }
     }

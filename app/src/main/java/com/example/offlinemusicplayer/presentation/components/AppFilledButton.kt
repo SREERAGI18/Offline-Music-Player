@@ -10,9 +10,9 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 fun AppFilledButton(
-    modifier: Modifier = Modifier,
     onClick: () -> Unit,
     text: String,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     containerColor: Color = MaterialTheme.colorScheme.primary,
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,

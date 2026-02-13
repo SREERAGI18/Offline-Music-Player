@@ -8,8 +8,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,9 +27,11 @@ import com.example.offlinemusicplayer.util.scrollMagnifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+private const val SCROLL_MAG_OFFSET_DIVISOR = 4
+
 @Composable
 fun VerticalAlphabetScroller(
-    onLetterSelected: (String) -> Unit,
+    onLetterSelect: (String) -> Unit,
     scope: CoroutineScope,
     modifier: Modifier = Modifier
 ) {
@@ -66,7 +71,7 @@ fun VerticalAlphabetScroller(
                         val letter = getLetterForOffset(startOffset.y)
                         if (selectedLetter != letter) {
                             selectedLetter = letter
-                            scope.launch { onLetterSelected(letter) }
+                            scope.launch { onLetterSelect(letter) }
                         }
                     },
                     onVerticalDrag = { change, _ ->
@@ -74,7 +79,7 @@ fun VerticalAlphabetScroller(
                         val letter = getLetterForOffset(change.position.y)
                         if (selectedLetter != letter) {
                             selectedLetter = letter
-                            scope.launch { onLetterSelected(letter) }
+                            scope.launch { onLetterSelect(letter) }
                         }
                     },
                     onDragEnd = {
@@ -88,11 +93,14 @@ fun VerticalAlphabetScroller(
                 )
             }
             .scrollMagnifier(
-                sourceCenter = { Offset(componentWidth / 4, dragPosition.y) },
+                sourceCenter = { Offset(componentWidth / SCROLL_MAG_OFFSET_DIVISOR, dragPosition.y) },
                 magnifierCenter = {
                     // Position the magnifier to the left of the scroller
                     with(density) {
-                        Offset((componentWidth / 4) - 40.dp.toPx(), dragPosition.y - 80.dp.toPx())
+                        Offset(
+                            x = (componentWidth / SCROLL_MAG_OFFSET_DIVISOR) - 40.dp.toPx(),
+                            y = dragPosition.y - 80.dp.toPx()
+                        )
                     }
                 },
                 size = DpSize(50.dp, 50.dp),

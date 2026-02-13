@@ -35,16 +35,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity.Companion.DEFAULT_PLAYLIST_MAP
-import com.example.offlinemusicplayer.domain.enum_classes.OptionType
-import com.example.offlinemusicplayer.domain.enum_classes.PlaylistOptions
+import com.example.offlinemusicplayer.domain.enumclasses.OptionType
+import com.example.offlinemusicplayer.domain.enumclasses.PlaylistOptions
 import com.example.offlinemusicplayer.domain.model.Playlist
 
 @Composable
 fun PlaylistItem(
     playlist: Playlist,
-    modifier: Modifier = Modifier,
     onClick: (Playlist) -> Unit,
-    onOptionSelected: (PlaylistOptions) -> Unit,
+    onOptionSelect: (PlaylistOptions) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var menuExpanded by remember {
         mutableStateOf(false)
@@ -127,7 +127,7 @@ fun PlaylistItem(
                 onDismiss = {
                     menuExpanded = false
                 },
-                onOptionSelected = onOptionSelected,
+                onOptionSelect = onOptionSelect,
                 isDefaultPlaylist = playlist.id in DEFAULT_PLAYLIST_MAP
             )
         }
@@ -138,7 +138,7 @@ fun PlaylistItem(
 fun PlaylistOptionsDropDown(
     menuExpanded: Boolean,
     onDismiss: () -> Unit,
-    onOptionSelected: (PlaylistOptions) -> Unit,
+    onOptionSelect: (PlaylistOptions) -> Unit,
     isDefaultPlaylist: Boolean
 ) {
     val options = PlaylistOptions
@@ -154,8 +154,8 @@ fun PlaylistOptionsDropDown(
 
     AppDropdown(
         options = options,
-        onOptionSelected = {
-            onOptionSelected(it as PlaylistOptions)
+        onOptionSelect = {
+            onOptionSelect(it as PlaylistOptions)
         },
         onDismiss = onDismiss,
         menuExpanded = menuExpanded

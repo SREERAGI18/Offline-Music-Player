@@ -12,18 +12,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import com.example.offlinemusicplayer.domain.enum_classes.PlaylistSongOptions
+import com.example.offlinemusicplayer.domain.enumclasses.PlaylistSongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.ui.theme.shadow
+import com.example.offlinemusicplayer.util.Constants.DRAG_SHADOW_ELEVATION
 
 @Composable
 fun PlaylistSongList(
-    modifier: Modifier = Modifier,
     songs: List<Song>,
     onSongClick: (Song, Int) -> Unit,
-    onSongMoved: (Int, Int) -> Unit,
-    onOptionSelected: (Song, PlaylistSongOptions) -> Unit,
-    isDefaultPlaylist: Boolean
+    onSongMove: (Int, Int) -> Unit,
+    onOptionSelect: (Song, PlaylistSongOptions) -> Unit,
+    isDefaultPlaylist: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     var songList by remember { mutableStateOf(songs) }
     var draggedItemIndex by remember { mutableStateOf<Int?>(null) }
@@ -59,7 +60,7 @@ fun PlaylistSongList(
                     draggedItemIndex = null
                     dragOffsetY = 0f
 
-                    onSongMoved(dragStartIndex, dragEndIndex)
+                    onSongMove(dragStartIndex, dragEndIndex)
                 },
                 onDrag = { dragAmount ->
                     dragOffsetY += dragAmount
@@ -83,14 +84,14 @@ fun PlaylistSongList(
                         dragOffsetY = 0f // Reset offset after swap
                     }
                 },
-                onOptionSelected = { option ->
-                    onOptionSelected(song, option)
+                onOptionSelect = { option ->
+                    onOptionSelect(song, option)
                 },
                 isDefaultPlaylist = isDefaultPlaylist,
                 modifier = Modifier.graphicsLayer {
                     // Apply visual effect to the item being dragged
                     translationY = if (isBeingDragged) dragOffsetY else 0f
-                    shadowElevation = if (isBeingDragged) 6f else 0f
+                    shadowElevation = if (isBeingDragged) DRAG_SHADOW_ELEVATION else 0f
                     ambientShadowColor = shadowColor
                     spotShadowColor = shadowColor
                 }

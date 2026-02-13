@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.presentation.now_playing_queue
+package com.example.offlinemusicplayer.presentation.nowplayingqueue
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel

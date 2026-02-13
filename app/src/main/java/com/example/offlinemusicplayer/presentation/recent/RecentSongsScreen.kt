@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -17,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.offlinemusicplayer.MainActivity
-import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
+import com.example.offlinemusicplayer.domain.enumclasses.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.SongsList
 import com.example.offlinemusicplayer.presentation.dialogs.AddToPlaylistDialog
@@ -38,7 +37,6 @@ fun RecentSongsScreen() {
     }
 
     val songListState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(currentMedia) {
         currentMediaIndex = viewModel.getMediaIndex(currentMedia)
@@ -79,7 +77,7 @@ fun RecentSongsScreen() {
         songForPlaylist?.let { song ->
             AddToPlaylistDialog(
                 playlists = playlists.filter { !it.songIds.contains(song.id) },
-                onPlaylistSelected = { playlist ->
+                onPlaylistSelect = { playlist ->
                     viewModel.addToPlaylist(song, playlist)
                     showAddToPlaylistDialog = false
                 },
@@ -102,14 +100,12 @@ fun RecentSongsScreen() {
     }
 
     if (showDetailsDialog) {
-        songForDetails?.let { song ->
-            SongDetailDialog(
-                song = song,
-                onDismiss = {
-                    showDetailsDialog = false
-                }
-            )
-        }
+        SongDetailDialog(
+            song = songForDetails,
+            onDismiss = {
+                showDetailsDialog = false
+            }
+        )
     }
 
     SongsList(

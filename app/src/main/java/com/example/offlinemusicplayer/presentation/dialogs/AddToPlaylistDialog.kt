@@ -32,7 +32,7 @@ import com.example.offlinemusicplayer.domain.model.Playlist
 @Composable
 fun AddToPlaylistDialog(
     playlists: List<Playlist>,
-    onPlaylistSelected: (Playlist) -> Unit,
+    onPlaylistSelect: (Playlist) -> Unit,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
@@ -47,7 +47,7 @@ fun AddToPlaylistDialog(
             if (playlists.isNotEmpty()) {
                 PlaylistSelectionList(
                     playlists = playlists,
-                    onPlaylistSelected = onPlaylistSelected
+                    onPlaylistSelect = onPlaylistSelect
                 )
             } else {
                 Text(
@@ -63,7 +63,7 @@ fun AddToPlaylistDialog(
 @Composable
 private fun PlaylistSelectionList(
     playlists: List<Playlist>,
-    onPlaylistSelected: (Playlist) -> Unit
+    onPlaylistSelect: (Playlist) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -76,7 +76,7 @@ private fun PlaylistSelectionList(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        onPlaylistSelected(playlist)
+                        onPlaylistSelect(playlist)
                     },
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically

@@ -11,6 +11,7 @@ import coil3.disk.DiskCache
 import coil3.disk.directory
 import coil3.memory.MemoryCache
 import coil3.util.DebugLogger
+import com.example.offlinemusicplayer.util.Constants.DISK_CACHE_SIZE
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -40,7 +41,7 @@ class MusicApp : Application(), SingletonImageLoader.Factory {
             .diskCache {
                 DiskCache.Builder()
                     .directory(cacheDir.resolve("image_cache"))
-                    .maxSizeBytes(5 * 1024 * 1024)
+                    .maxSizeBytes(DISK_CACHE_SIZE)
                     .build()
             }
             .logger(DebugLogger())

@@ -35,12 +35,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
 
 @OptIn(UnstableApi::class)
 @Module
 @InstallIn(ServiceComponent::class)
 object PlaybackServiceModule {
+
+    private const val SEEK_INCREMENT_MS = 10_000L
 
     @Provides
     fun loadControl(): LoadControl {
@@ -123,8 +124,8 @@ object PlaybackServiceModule {
             .setAudioAttributes(audioAttributes, true)
             .setHandleAudioBecomingNoisy(true)
             .setWakeMode(C.WAKE_MODE_NETWORK)
-            .setSeekForwardIncrementMs(10_000)
-            .setSeekBackIncrementMs(10_000)
+            .setSeekForwardIncrementMs(SEEK_INCREMENT_MS)
+            .setSeekBackIncrementMs(SEEK_INCREMENT_MS)
             .setRenderersFactory(renderersFactory)
             .setBandwidthMeter(DefaultBandwidthMeter.getSingletonInstance(service))
             .setLoadControl(loadControl)
@@ -142,11 +143,7 @@ object PlaybackServiceModule {
 
     @OptIn(UnstableApi::class)
     @Provides
-    fun sessionCallback(
-        service: Service,
-        @ApplicationContext context: Context,
-        coroutineScope: CoroutineScope
-    ): MediaSession.Callback =
+    fun sessionCallback(): MediaSession.Callback =
         MediaSessionCallback(
 //            browseTree = Media3BrowseTree.getInstance(context),
 //            sharedPreferenceManager = sharedPreferenceManager,

@@ -31,15 +31,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
+import com.example.offlinemusicplayer.domain.enumclasses.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 
 @Composable
 fun SongItem(
-    modifier: Modifier = Modifier,
     song: Song,
     isPlaying: Boolean,
     onSongClick: () -> Unit,
+    modifier: Modifier = Modifier,
     onOptionSelected: ((SongOptions) -> Unit)? = null
 ) {
     val context = LocalContext.current
@@ -142,7 +142,7 @@ private fun SongOptionsDropDown(
 
     AppDropdown(
         options = options,
-        onOptionSelected = {
+        onOptionSelect = {
             onOptionSelected?.invoke(it as SongOptions)
         },
         onDismiss = onDismiss,

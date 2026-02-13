@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.domain.enum_classes
+package com.example.offlinemusicplayer.domain.enumclasses
 
 enum class PlaylistOptions(override val displayName: String, val type: OptionType) : Options {
     Play(displayName = "Play", type = OptionType.Action),

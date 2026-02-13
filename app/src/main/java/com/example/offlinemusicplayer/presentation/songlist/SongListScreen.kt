@@ -2,7 +2,6 @@ package com.example.offlinemusicplayer.presentation.songlist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,7 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.offlinemusicplayer.MainActivity
 import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
-import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
+import com.example.offlinemusicplayer.domain.enumclasses.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.SongsList
 import com.example.offlinemusicplayer.presentation.components.VerticalAlphabetScroller
@@ -62,7 +61,6 @@ fun SongListScreen() {
     val deleteProgress by viewModel.deleteProgress.collectAsStateWithLifecycle()
     val intentSenderRequest by viewModel.intentSenderRequest.collectAsStateWithLifecycle()
     val playlists = viewModel.playlists
-    val contentUriToDelete = viewModel.contentUriToDelete
 
     var showDeleteDialog by remember { mutableStateOf(false) }
     var songToDelete by remember { mutableStateOf<Song?>(null) }
@@ -74,16 +72,13 @@ fun SongListScreen() {
     var songForPlaylist by remember { mutableStateOf<Song?>(null) }
 
     LaunchedEffect(intentSenderRequest) {
-        intentSenderRequest?.let { request ->
-            if (contentUriToDelete == null) return@let
-            mainActivity?.launchRecoverableSecurityPermission(
-                intentSenderRequest = request,
-                onPermissionGranted = {
-                    showDeleteDialog = true
-                    viewModel.resetIntentSenderRequest()
-                }
-            )
-        }
+        mainActivity?.launchRecoverableSecurityPermission(
+            intentSenderRequest = intentSenderRequest,
+            onPermissionGranted = {
+                showDeleteDialog = true
+                viewModel.resetIntentSenderRequest()
+            }
+        )
     }
 
 //    if(deleteProgress) {
@@ -96,7 +91,7 @@ fun SongListScreen() {
                 playlists = playlists.filter {
                     !it.songIds.contains(song.id) && !PlaylistEntity.DEFAULT_PLAYLIST_MAP.containsKey(it.id)
                 },
-                onPlaylistSelected = { playlist ->
+                onPlaylistSelect = { playlist ->
                     viewModel.addToPlaylist(song, playlist)
                     showAddToPlaylistDialog = false
                 },
@@ -109,9 +104,7 @@ fun SongListScreen() {
         DeleteConfirmDialog(
             onDismiss = { showDeleteDialog = false },
             onConfirm = {
-                songToDelete?.let { song ->
-                    viewModel.deleteSongFile(song)
-                }
+                viewModel.deleteSongFile(songToDelete)
                 showDeleteDialog = false
             },
             description = "\"${songToDelete?.title}\" will be permanently deleted from storage."
@@ -119,14 +112,12 @@ fun SongListScreen() {
     }
 
     if (showDetailsDialog) {
-        songForDetails?.let { song ->
-            SongDetailDialog(
-                song = song,
-                onDismiss = {
-                    showDetailsDialog = false
-                }
-            )
-        }
+        SongDetailDialog(
+            song = songForDetails,
+            onDismiss = {
+                showDetailsDialog = false
+            }
+        )
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -152,9 +143,6 @@ fun SongListScreen() {
                             songForPlaylist = song
                             showAddToPlaylistDialog = true
                         }
-//                SongOptions.EditSongInfo -> {
-//
-//                }
                         SongOptions.Delete -> {
                             songToDelete = song
                             viewModel.checkIfSongCanBeDeleted(song, context)
@@ -175,7 +163,7 @@ fun SongListScreen() {
             )
 
             VerticalAlphabetScroller(
-                onLetterSelected = { letter ->
+                onLetterSelect = { letter ->
                     scope.launch {
                         // Ask the ViewModel for the index from the database
                         val index = viewModel.getSongIndexForLetter(letter)
@@ -186,9 +174,7 @@ fun SongListScreen() {
                     }
                 },
                 scope = scope,
-                modifier = Modifier
-                    .fillMaxHeight(0.9f)
-//                    .padding(end = 4.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             )
         }
 

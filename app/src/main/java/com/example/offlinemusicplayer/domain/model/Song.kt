@@ -5,6 +5,8 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
 import com.example.offlinemusicplayer.data.local.entity.SongsEntity
+import com.example.offlinemusicplayer.util.Logger
+import java.io.FileNotFoundException
 
 data class Song(
     val id: Long,
@@ -64,8 +66,8 @@ data class Song(
             // If it succeeds, the file exists. We close it immediately.
             context.contentResolver.openInputStream(uri)?.close()
             uri
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (e: FileNotFoundException) {
+            Logger.logInfo("Song", "File not found: ${e.message}")
             null
         }
     }

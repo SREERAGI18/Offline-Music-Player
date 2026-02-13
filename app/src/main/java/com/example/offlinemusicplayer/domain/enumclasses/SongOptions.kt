@@ -1,4 +1,4 @@
-package com.example.offlinemusicplayer.domain.enum_classes
+package com.example.offlinemusicplayer.domain.enumclasses
 
 enum class SongOptions(override val displayName: String) : Options {
     PlayNext("Play next"),

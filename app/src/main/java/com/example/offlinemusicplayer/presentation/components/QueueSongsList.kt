@@ -3,23 +3,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import com.example.offlinemusicplayer.domain.enum_classes.QueueSongOptions
+import com.example.offlinemusicplayer.domain.enumclasses.QueueSongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.QueueSongItem
 import com.example.offlinemusicplayer.ui.theme.shadow
+import com.example.offlinemusicplayer.util.Constants.DRAG_SHADOW_ELEVATION
 
 @Composable
 fun QueueSongsList(
-    modifier: Modifier = Modifier,
     songs: List<Song>,
     onSongClick: (Song, Int) -> Unit,
-    onSongMoved: (Int, Int) -> Unit,
-    onOptionSelected: (Int, QueueSongOptions) -> Unit
+    onSongMove: (Int, Int) -> Unit,
+    onOptionSelect: (Int, QueueSongOptions) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var songList by remember { mutableStateOf(songs) }
     var draggedItemIndex by remember { mutableStateOf<Int?>(null) }
@@ -55,7 +59,7 @@ fun QueueSongsList(
                     draggedItemIndex = null
                     dragOffsetY = 0f
 
-                    onSongMoved(dragStartIndex, dragEndIndex)
+                    onSongMove(dragStartIndex, dragEndIndex)
                 },
                 onDrag = { dragAmount ->
                     dragOffsetY += dragAmount
@@ -79,13 +83,13 @@ fun QueueSongsList(
                         dragOffsetY = 0f // Reset offset after swap
                     }
                 },
-                onOptionSelected = { option ->
-                    onOptionSelected(index, option)
+                onOptionSelect = { option ->
+                    onOptionSelect(index, option)
                 },
                 modifier = Modifier.graphicsLayer {
                     // Apply visual effect to the item being dragged
                     translationY = if (isBeingDragged) dragOffsetY else 0f
-                    shadowElevation = if (isBeingDragged) 6f else 0f
+                    shadowElevation = if (isBeingDragged) DRAG_SHADOW_ELEVATION else 0f
                     ambientShadowColor = shadowColor
                     spotShadowColor = shadowColor
                 }

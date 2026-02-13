@@ -1,12 +1,8 @@
 package com.example.offlinemusicplayer.data.local.entity
 
 import android.content.ContentUris
-import android.content.Context
-import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
 import android.provider.MediaStore
-import android.util.Size
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.offlinemusicplayer.domain.model.Song
@@ -62,20 +58,5 @@ data class SongsEntity(
             id
         )
         return contentUri
-    }
-
-    fun getAlbumArt(context: Context, size: Size = Size(56, 56)): Bitmap? {
-        val uri = getContentUri()
-
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            try {
-                context.contentResolver.loadThumbnail(uri, size, null)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                null
-            }
-        } else {
-            null
-        }
     }
 }

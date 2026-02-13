@@ -2,7 +2,7 @@ package com.example.offlinemusicplayer.util
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.offlinemusicplayer.domain.enum_classes.RepeatMode
+import com.example.offlinemusicplayer.domain.enumclasses.RepeatMode
 
 class PreferencesManager(context: Context) {
 

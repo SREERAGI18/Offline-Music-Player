@@ -36,7 +36,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.offlinemusicplayer.MainActivity
-import com.example.offlinemusicplayer.domain.enum_classes.SongOptions
+import com.example.offlinemusicplayer.domain.enumclasses.SongOptions
 import com.example.offlinemusicplayer.domain.model.Song
 import com.example.offlinemusicplayer.presentation.components.SongsList
 import com.example.offlinemusicplayer.presentation.dialogs.AddToPlaylistDialog
@@ -53,7 +53,6 @@ fun SearchScreen() {
     val deleteProgress by viewModel.deleteProgress.collectAsStateWithLifecycle()
     val intentSenderRequest by viewModel.intentSenderRequest.collectAsStateWithLifecycle()
     val playlists = viewModel.playlists
-    val contentUriToDelete = viewModel.contentUriToDelete
 
     val focusRequester = remember { FocusRequester() }
 
@@ -71,16 +70,13 @@ fun SearchScreen() {
     var songForPlaylist by remember { mutableStateOf<Song?>(null) }
 
     LaunchedEffect(intentSenderRequest) {
-        intentSenderRequest?.let { request ->
-            if (contentUriToDelete == null) return@let
-            mainActivity?.launchRecoverableSecurityPermission(
-                intentSenderRequest = request,
-                onPermissionGranted = {
-                    showDeleteDialog = true
-                    viewModel.resetIntentSenderRequest()
-                }
-            )
-        }
+        mainActivity?.launchRecoverableSecurityPermission(
+            intentSenderRequest = intentSenderRequest,
+            onPermissionGranted = {
+                showDeleteDialog = true
+                viewModel.resetIntentSenderRequest()
+            }
+        )
     }
 
 //    if(deleteProgress) {
@@ -91,7 +87,7 @@ fun SearchScreen() {
         songForPlaylist?.let { song ->
             AddToPlaylistDialog(
                 playlists = playlists.filter { !it.songIds.contains(song.id) },
-                onPlaylistSelected = { playlist ->
+                onPlaylistSelect = { playlist ->
                     viewModel.addToPlaylist(song, playlist)
                     showAddToPlaylistDialog = false
                 },
@@ -114,14 +110,12 @@ fun SearchScreen() {
     }
 
     if (showDetailsDialog) {
-        songForDetails?.let { song ->
-            SongDetailDialog(
-                song = song,
-                onDismiss = {
-                    showDetailsDialog = false
-                }
-            )
-        }
+        SongDetailDialog(
+            song = songForDetails,
+            onDismiss = {
+                showDetailsDialog = false
+            }
+        )
     }
 
     LaunchedEffect(query) {

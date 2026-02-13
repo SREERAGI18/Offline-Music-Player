@@ -7,6 +7,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 fun Long?.toTimeMmSs(): String {
@@ -15,7 +16,7 @@ fun Long?.toTimeMmSs(): String {
     val minutes = TimeUnit.MILLISECONDS.toMinutes(this)
     val seconds = TimeUnit.MILLISECONDS.toSeconds(this) -
         TimeUnit.MINUTES.toSeconds(minutes)
-    return String.format("%02d:%02d", minutes, seconds)
+    return String.format(Locale.US, "%02d:%02d", minutes, seconds)
 }
 
 fun Modifier.scrollMagnifier(
