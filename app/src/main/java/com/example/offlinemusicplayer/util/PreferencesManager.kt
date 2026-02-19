@@ -4,8 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.offlinemusicplayer.domain.enumclasses.RepeatMode
 
-class PreferencesManager(context: Context) {
-
+class PreferencesManager(
+    context: Context,
+) {
     // Initialize SharedPreferences instance
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -23,7 +24,7 @@ class PreferencesManager(context: Context) {
      *
      * @param songId The unique identifier of the song.
      */
-    fun setLastPlayedSong(songId: Long,) {
+    fun setLastPlayedSong(songId: Long) {
         sharedPreferences.edit().apply {
             putLong(KEY_LAST_PLAYED_SONG_ID, songId)
             apply()
@@ -42,18 +43,14 @@ class PreferencesManager(context: Context) {
      *
      * @return The song ID, or an empty string if not found.
      */
-    fun getLastPlayedSongId(): Long {
-        return sharedPreferences.getLong(KEY_LAST_PLAYED_SONG_ID, 0L)
-    }
+    fun getLastPlayedSongId(): Long = sharedPreferences.getLong(KEY_LAST_PLAYED_SONG_ID, 0L)
 
     /**
      * Retrieves the last played song's position from storage.
      *
      * @return The last playback position in milliseconds, or 0 if not found.
      */
-    fun getLastPlayedPosition(): Long {
-        return sharedPreferences.getLong(KEY_LAST_PLAYED_POSITION, 0L)
-    }
+    fun getLastPlayedPosition(): Long = sharedPreferences.getLong(KEY_LAST_PLAYED_POSITION, 0L)
 
     fun saveShuffleMode(shuffleModeEnabled: Boolean) {
         sharedPreferences.edit().apply {
@@ -62,9 +59,7 @@ class PreferencesManager(context: Context) {
         }
     }
 
-    fun getShuffleMode(): Boolean {
-        return sharedPreferences.getBoolean(KEY_SHUFFLE_MODE, false)
-    }
+    fun getShuffleMode(): Boolean = sharedPreferences.getBoolean(KEY_SHUFFLE_MODE, false)
 
     fun saveRepeatMode(repeatMode: RepeatMode) {
         sharedPreferences.edit().apply {

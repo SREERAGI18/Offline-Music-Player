@@ -26,135 +26,145 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RecentSongsVM @Inject constructor(
-    private val playerRepository: PlayerServiceRepository,
-    private val playlistUseCases: PlaylistUseCases,
-    private val songsUseCases: SongsUseCases,
-) : ViewModel() {
-    val songs = mutableStateListOf<Song>()
-    val currentMedia = playerRepository.currentMedia
-    var contentUriToDelete: Uri? = null
+class RecentSongsVM
+    @Inject
+    constructor(
+        private val playerRepository: PlayerServiceRepository,
+        private val playlistUseCases: PlaylistUseCases,
+        private val songsUseCases: SongsUseCases,
+    ) : ViewModel() {
+        val songs = mutableStateListOf<Song>()
+        val currentMedia = playerRepository.currentMedia
+        var contentUriToDelete: Uri? = null
 
-    val playlists = mutableStateListOf<Playlist>()
+        val playlists = mutableStateListOf<Playlist>()
 
-    private val _deleteProgress: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val deleteProgress = _deleteProgress.asStateFlow()
+        private val _deleteProgress: MutableStateFlow<Boolean> = MutableStateFlow(false)
+        val deleteProgress = _deleteProgress.asStateFlow()
 
-    private val _intentSenderRequest: MutableStateFlow<IntentSenderRequest?> = MutableStateFlow(null)
-    val intentSenderRequest = _intentSenderRequest.asStateFlow()
+        private val _intentSenderRequest: MutableStateFlow<IntentSenderRequest?> = MutableStateFlow(null)
+        val intentSenderRequest = _intentSenderRequest.asStateFlow()
 
-    init {
-        fetchRecentSongs()
-        getPlaylist()
-    }
-
-    private fun fetchRecentSongs() {
-        viewModelScope.launch {
-            songs.clear()
-            songs.addAll(songsUseCases.getRecentSongs())
+        init {
+            fetchRecentSongs()
+            getPlaylist()
         }
-    }
 
-    fun playSong(index: Int) {
-        playerRepository.setMediaList(songs)
-        playerRepository.skipToMediaByIndex(index)
-        playerRepository.play()
-    }
-
-    fun getMediaIndex(currentMedia: Song?): Int {
-        val index = songs.indexOfFirst { it.id == currentMedia?.id }
-
-        return index
-    }
-
-    fun playNext(song: Song) {
-        viewModelScope.launch {
-            // Find if the song already exists in the playlist
-            val existingIndex = playerRepository.findIndexOfSongInPlaylist(song.id)
-            val currentIndex = playerRepository.getCurrentMediaIndex()
-            val nextIndex = currentIndex + 1
-
-            if (existingIndex != null) {
-                // Song exists, move it
-                playerRepository.moveMedia(existingIndex, nextIndex)
-            } else {
-                // Song doesn't exist, add it
-                playerRepository.addMedia(nextIndex, song)
+        private fun fetchRecentSongs() {
+            viewModelScope.launch {
+                songs.clear()
+                songs.addAll(songsUseCases.getRecentSongs())
             }
         }
-    }
 
-    fun addToQueue(song: Song) {
-        viewModelScope.launch {
-            val existingIndex = playerRepository.findIndexOfSongInPlaylist(song.id)
-            if (existingIndex == null) {
-                // Only add the song if it's not already in the queue
-                playerRepository.addMedia(song)
-            }
+        fun playSong(index: Int) {
+            playerRepository.setMediaList(songs)
+            playerRepository.skipToMediaByIndex(index)
+            playerRepository.play()
         }
-    }
 
-    fun deleteSongFile(song: Song) {
-        viewModelScope.launch {
-            _deleteProgress.value = true
-            songsUseCases.deleteSongById(song)
-            songs.remove(song)
-            _deleteProgress.value = false
+        fun getMediaIndex(currentMedia: Song?): Int {
+            val index = songs.indexOfFirst { it.id == currentMedia?.id }
+
+            return index
         }
-    }
 
-    fun checkIfSongCanBeDeleted(song: Song, context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val contentUri = ContentUris.withAppendedId(
-                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                song.id
-            )
-            contentUriToDelete = contentUri
-            try {
-                context.contentResolver.delete(contentUri, null, null)
-            } catch (e: RecoverableSecurityException) {
-                _intentSenderRequest.value = IntentSenderRequest
-                    .Builder(e.userAction.actionIntent.intentSender)
-                    .build()
-            } catch (e: SecurityException) {
-                Logger.logError("RecentSongsVM", "SecurityException: ${e.message}")
-            }
-        } else {
-            (context as? MainActivity)?.apply {
-                if (!checkIfWriteAccessGranted()) {
-                    requestStoragePermission()
+        fun playNext(song: Song) {
+            viewModelScope.launch {
+                // Find if the song already exists in the playlist
+                val existingIndex = playerRepository.findIndexOfSongInPlaylist(song.id)
+                val currentIndex = playerRepository.getCurrentMediaIndex()
+                val nextIndex = currentIndex + 1
+
+                if (existingIndex != null) {
+                    // Song exists, move it
+                    playerRepository.moveMedia(existingIndex, nextIndex)
                 } else {
-                    deleteSongFile(song)
+                    // Song doesn't exist, add it
+                    playerRepository.addMedia(nextIndex, song)
                 }
             }
         }
-    }
 
-    fun getPlaylist() {
-        viewModelScope.launch {
-            playlistUseCases.getPlaylists().collectLatest {
-                playlists.clear()
-                playlists.addAll(it)
-                Log.d("SongListVM", "playlists: $playlists")
+        fun addToQueue(song: Song) {
+            viewModelScope.launch {
+                val existingIndex = playerRepository.findIndexOfSongInPlaylist(song.id)
+                if (existingIndex == null) {
+                    // Only add the song if it's not already in the queue
+                    playerRepository.addMedia(song)
+                }
             }
         }
-    }
 
-    fun addToPlaylist(song: Song, playlist: Playlist) {
-        viewModelScope.launch {
-            val updatedSongIds = playlist.songIds + song.id
-            playlistUseCases.updatePlaylist(songIds = updatedSongIds, playlist = playlist)
+        fun deleteSongFile(song: Song) {
+            viewModelScope.launch {
+                _deleteProgress.value = true
+                songsUseCases.deleteSongById(song)
+                songs.remove(song)
+                _deleteProgress.value = false
+            }
+        }
+
+        fun checkIfSongCanBeDeleted(
+            song: Song,
+            context: Context,
+        ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val contentUri =
+                    ContentUris.withAppendedId(
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        song.id,
+                    )
+                contentUriToDelete = contentUri
+                try {
+                    context.contentResolver.delete(contentUri, null, null)
+                } catch (e: RecoverableSecurityException) {
+                    _intentSenderRequest.value =
+                        IntentSenderRequest
+                            .Builder(e.userAction.actionIntent.intentSender)
+                            .build()
+                } catch (e: SecurityException) {
+                    Logger.logError("RecentSongsVM", "SecurityException: ${e.message}")
+                }
+            } else {
+                (context as? MainActivity)?.apply {
+                    if (!checkIfWriteAccessGranted()) {
+                        requestStoragePermission()
+                    } else {
+                        deleteSongFile(song)
+                    }
+                }
+            }
+        }
+
+        fun getPlaylist() {
+            viewModelScope.launch {
+                playlistUseCases.getPlaylists().collectLatest {
+                    playlists.clear()
+                    playlists.addAll(it)
+                    Log.d("SongListVM", "playlists: $playlists")
+                }
+            }
+        }
+
+        fun addToPlaylist(
+            song: Song,
+            playlist: Playlist,
+        ) {
+            viewModelScope.launch {
+                val updatedSongIds = playlist.songIds + song.id
+                playlistUseCases.updatePlaylist(songIds = updatedSongIds, playlist = playlist)
+            }
+        }
+
+        fun updateFavorite(song: Song) {
+            viewModelScope.launch {
+                songsUseCases.updateFavoriteSong(songId = song.id, isFav = !song.isFav)
+                fetchRecentSongs()
+            }
+        }
+
+        fun resetIntentSenderRequest() {
+            _intentSenderRequest.value = null
         }
     }
-
-    fun updateFavorite(song: Song) {
-        viewModelScope.launch {
-            songsUseCases.updateFavoriteSong(songId = song.id, isFav = !song.isFav)
-            fetchRecentSongs()
-        }
-    }
-
-    fun resetIntentSenderRequest() {
-        _intentSenderRequest.value = null
-    }
-}

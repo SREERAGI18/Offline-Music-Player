@@ -45,38 +45,40 @@ fun QueueSongItem(
         mutableStateOf(false)
     }
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .background(color = MaterialTheme.colorScheme.background)
-            .clickable {
-                onSongClick()
-            },
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .background(color = MaterialTheme.colorScheme.background)
+                .clickable {
+                    onSongClick()
+                },
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
             onClick = { /* Clicks are disabled during drag, so this is safe */ },
-            modifier = Modifier.pointerInput(Unit) {
-                detectDragGestures(
-                    onDragStart = {
-                        onDragStart()
-                    },
-                    onDragEnd = {
-                        onDragEnd()
-                    },
-                    onDragCancel = {
-                        onDragEnd() // Treat cancel as the end of the drag
-                    },
-                    onDrag = { change, dragAmount ->
-                        change.consume()
-                        onDrag(dragAmount.y) // We only care about vertical drag for reordering
-                    }
-                )
-            }
+            modifier =
+                Modifier.pointerInput(Unit) {
+                    detectDragGestures(
+                        onDragStart = {
+                            onDragStart()
+                        },
+                        onDragEnd = {
+                            onDragEnd()
+                        },
+                        onDragCancel = {
+                            onDragEnd() // Treat cancel as the end of the drag
+                        },
+                        onDrag = { change, dragAmount ->
+                            change.consume()
+                            onDrag(dragAmount.y) // We only care about vertical drag for reordering
+                        },
+                    )
+                },
         ) {
             Icon(
                 imageVector = Icons.Default.DragHandle,
-                contentDescription = "Drag to reorder"
+                contentDescription = "Drag to reorder",
             )
         }
         Column(
@@ -85,20 +87,22 @@ fun QueueSongItem(
         ) {
             Text(
                 text = song.title,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = if (song.isPlaying) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onBackground
-                    }
-                ),
-                maxLines = 1
+                style =
+                    MaterialTheme.typography.titleMedium.copy(
+                        color =
+                            if (song.isPlaying) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onBackground
+                            },
+                    ),
+                maxLines = 1,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = song.artist ?: "",
                 style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1
+                maxLines = 1,
             )
         }
         Spacer(modifier = Modifier.width(16.dp))
@@ -107,11 +111,11 @@ fun QueueSongItem(
             IconButton(
                 onClick = {
                     menuExpanded = true
-                }
+                },
             ) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More options"
+                    contentDescription = "More options",
                 )
             }
             QueueOptionsDropDown(
@@ -119,7 +123,7 @@ fun QueueSongItem(
                 onDismiss = {
                     menuExpanded = false
                 },
-                onOptionSelect = onOptionSelect
+                onOptionSelect = onOptionSelect,
             )
         }
     }
@@ -139,6 +143,6 @@ private fun QueueOptionsDropDown(
             onOptionSelect(it as QueueSongOptions)
         },
         onDismiss = onDismiss,
-        menuExpanded = menuExpanded
+        menuExpanded = menuExpanded,
     )
 }

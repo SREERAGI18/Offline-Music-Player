@@ -7,10 +7,9 @@ import androidx.media3.common.MediaMetadata
 import com.example.offlinemusicplayer.domain.model.Song
 
 class MediaMapper {
-
     fun mapToSong(
         mediaItem: MediaItem,
-        defaultArtist: String = "<Unknown>"
+        defaultArtist: String = "<Unknown>",
     ): Song {
         val metadata = mediaItem.mediaMetadata
         val extras = metadata.extras ?: Bundle.EMPTY
@@ -35,31 +34,31 @@ class MediaMapper {
         )
     }
 
-    fun mapToMediaItem(
-        song: Song
-    ): MediaItem {
-        val metadata = MediaMetadata.Builder()
-            .setTitle(song.title)
-            .setArtist(song.artist)
-            .setAlbumTitle(song.album)
-            .setExtras(
-                Bundle().apply {
-                    putLong("duration", song.duration)
-                    putLong("size", song.size)
-                    putLong("dateAdded", song.dateAdded)
-                    putInt("trackNumber", song.trackNumber)
-                    putInt("year", song.year)
-                    putLong("dateModified", song.dateModified)
-                    putLong("albumId", song.albumId)
-                    putLong("artistId", song.artistId)
-                    putString("composer", song.composer)
-                    putString("albumArtist", song.albumArtist)
-                    putInt("playCount", song.playCount)
-                }
-            )
-            .build()
+    fun mapToMediaItem(song: Song): MediaItem {
+        val metadata =
+            MediaMetadata
+                .Builder()
+                .setTitle(song.title)
+                .setArtist(song.artist)
+                .setAlbumTitle(song.album)
+                .setExtras(
+                    Bundle().apply {
+                        putLong("duration", song.duration)
+                        putLong("size", song.size)
+                        putLong("dateAdded", song.dateAdded)
+                        putInt("trackNumber", song.trackNumber)
+                        putInt("year", song.year)
+                        putLong("dateModified", song.dateModified)
+                        putLong("albumId", song.albumId)
+                        putLong("artistId", song.artistId)
+                        putString("composer", song.composer)
+                        putString("albumArtist", song.albumArtist)
+                        putInt("playCount", song.playCount)
+                    },
+                ).build()
 
-        return MediaItem.Builder()
+        return MediaItem
+            .Builder()
             .setMediaId(song.id.toString())
             .setUri(song.path.toUri())
             .setMediaMetadata(metadata)

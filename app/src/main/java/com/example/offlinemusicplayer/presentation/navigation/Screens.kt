@@ -26,7 +26,9 @@ sealed class Screens {
     data object Playlist : Screens()
 
     @Serializable
-    data class PlaylistDetail(val playlistId: Long) : Screens()
+    data class PlaylistDetail(
+        val playlistId: Long,
+    ) : Screens()
 
     @Serializable
     data object Music : Screens()
@@ -43,7 +45,7 @@ sealed class Screens {
     data class MenuItem(
         val screen: Screens,
         val label: String,
-        val imageVector: ImageVector
+        val imageVector: ImageVector,
     )
 
     companion object {
@@ -70,30 +72,32 @@ sealed class Screens {
             }
         }
 
-        val bottomMenuItems = listOf(
-            MenuItem(
-                screen = Main,
-                label = "Music",
-                imageVector = Icons.Default.LibraryMusic
-            ),
-            MenuItem(
-                screen = Search,
-                label = "Search",
-                imageVector = Icons.Default.Search
+        val bottomMenuItems =
+            listOf(
+                MenuItem(
+                    screen = Main,
+                    label = "Music",
+                    imageVector = Icons.Default.LibraryMusic,
+                ),
+                MenuItem(
+                    screen = Search,
+                    label = "Search",
+                    imageVector = Icons.Default.Search,
+                ),
             )
-        )
 
-        val drawerMenuItems = listOf(
-            MenuItem(
-                screen = Settings,
-                label = "Settings",
-                imageVector = Icons.Default.Settings
-            ),
-            MenuItem(
-                screen = Profile,
-                label = "Profile",
-                imageVector = Icons.Default.AccountCircle
-            ),
-        )
+        val drawerMenuItems =
+            listOf(
+                MenuItem(
+                    screen = Settings,
+                    label = "Settings",
+                    imageVector = Icons.Default.Settings,
+                ),
+                MenuItem(
+                    screen = Profile,
+                    label = "Profile",
+                    imageVector = Icons.Default.AccountCircle,
+                ),
+            )
     }
 }

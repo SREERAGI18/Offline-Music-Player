@@ -8,18 +8,19 @@ import com.example.offlinemusicplayer.domain.model.Playlist
 data class PlaylistEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
-    val songIds: String
+    val songIds: String,
 ) {
     fun toPlaylist(): Playlist {
-        val songIdList = if (songIds.isBlank()) {
-            emptyList()
-        } else {
-            songIds.split(",").mapNotNull { it.toLongOrNull() }
-        }
+        val songIdList =
+            if (songIds.isBlank()) {
+                emptyList()
+            } else {
+                songIds.split(",").mapNotNull { it.toLongOrNull() }
+            }
         return Playlist(
             id = id,
             name = name,
-            songIds = songIdList
+            songIds = songIdList,
         )
     }
 
@@ -31,10 +32,11 @@ data class PlaylistEntity(
         const val FAVORITES_NAME = "Favorites"
         const val FAVORITES_ID = 3L
 
-        val DEFAULT_PLAYLIST_MAP = mapOf<Long, String>(
-            RECENTLY_PLAYED_PLAYLIST_ID to RECENTLY_PLAYED_PLAYLIST_NAME,
-            MOST_PLAYED_PLAYLIST_ID to MOST_PLAYED_PLAYLIST_NAME,
-            FAVORITES_ID to FAVORITES_NAME
-        )
+        val DEFAULT_PLAYLIST_MAP =
+            mapOf<Long, String>(
+                RECENTLY_PLAYED_PLAYLIST_ID to RECENTLY_PLAYED_PLAYLIST_NAME,
+                MOST_PLAYED_PLAYLIST_ID to MOST_PLAYED_PLAYLIST_NAME,
+                FAVORITES_ID to FAVORITES_NAME,
+            )
     }
 }

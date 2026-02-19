@@ -9,7 +9,6 @@ import java.io.File
 import java.io.IOException
 
 object MediaInfoExtractor {
-
     private val TAG = MediaInfoExtractor::class.java.simpleName
 
     private const val BIT_RATE_THRESHOLD = 32000
@@ -49,7 +48,10 @@ object MediaInfoExtractor {
         return null
     }
 
-    private fun buildMediaInfo(format: MediaFormat, filePath: String): MediaInfo? {
+    private fun buildMediaInfo(
+        format: MediaFormat,
+        filePath: String,
+    ): MediaInfo? {
         val mime = format.getString(MediaFormat.KEY_MIME) ?: return null
 
         val bitRate = resolveBitrate(format, filePath) ?: return null
@@ -59,17 +61,20 @@ object MediaInfoExtractor {
 
         Logger.logInfo(
             TAG,
-            "Extracted Info: Format=$audioFormat, Bitrate=$bitRate, SampleRate=$sampleRate"
+            "Extracted Info: Format=$audioFormat, Bitrate=$bitRate, SampleRate=$sampleRate",
         )
 
         return MediaInfo(
             samplingRate = sampleRate,
             bitRateInKbps = bitRate / BPS_TO_KBPS,
-            format = audioFormat
+            format = audioFormat,
         )
     }
 
-    private fun resolveBitrate(format: MediaFormat, filePath: String): Int? {
+    private fun resolveBitrate(
+        format: MediaFormat,
+        filePath: String,
+    ): Int? {
         val declaredBitrate = format.getIntegerOrNull(MediaFormat.KEY_BIT_RATE) ?: return null
 
         if (declaredBitrate > BIT_RATE_THRESHOLD) return declaredBitrate
@@ -95,11 +100,9 @@ object MediaInfoExtractor {
         }
     }
 
-    private fun MediaFormat.getIntegerOrNull(key: String): Int? =
-        if (containsKey(key)) getInteger(key) else null
+    private fun MediaFormat.getIntegerOrNull(key: String): Int? = if (containsKey(key)) getInteger(key) else null
 
-    private fun MediaFormat.getLongOrNull(key: String): Long? =
-        if (containsKey(key)) getLong(key) else null
+    private fun MediaFormat.getLongOrNull(key: String): Long? = if (containsKey(key)) getLong(key) else null
 
     /**
      * Gets a user-friendly format description.

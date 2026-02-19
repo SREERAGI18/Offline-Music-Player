@@ -11,8 +11,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MusicService : MediaLibraryService(), LifecycleOwner {
-
+class MusicService :
+    MediaLibraryService(),
+    LifecycleOwner {
     @Inject
     lateinit var mediaSession: MediaLibrarySession
 

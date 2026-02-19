@@ -24,133 +24,138 @@ private const val PATTERN_MATCH_GROUP_4 = 4
 private const val HUNDREDTHS_TO_MILLIS = 10L
 
 @HiltViewModel
-class MainVM @Inject constructor(
-    private val playerRepository: PlayerServiceRepository,
-    private val syncSongsWithDevice: SyncSongsWithDevice,
-    private val updateLyrics: UpdateLyrics,
-    private val getSongsByIds: GetSongsByIds
-) : ViewModel() {
+class MainVM
+    @Inject
+    constructor(
+        private val playerRepository: PlayerServiceRepository,
+        private val syncSongsWithDevice: SyncSongsWithDevice,
+        private val updateLyrics: UpdateLyrics,
+        private val getSongsByIds: GetSongsByIds,
+    ) : ViewModel() {
+        private val _newlyAddedSongCount = MutableStateFlow(0)
+        val newlyAddedSongCount = _newlyAddedSongCount.asStateFlow()
 
-    private val _newlyAddedSongCount = MutableStateFlow(0)
-    val newlyAddedSongCount = _newlyAddedSongCount.asStateFlow()
+        val currentMedia = playerRepository.currentMedia
 
-    val currentMedia = playerRepository.currentMedia
+        val playerState = playerRepository.currentState
 
-    val playerState = playerRepository.currentState
+        val currentMediaPosition = playerRepository.mediaPosition
 
-    val currentMediaPosition = playerRepository.mediaPosition
+        val shuffleModeEnabled = playerRepository.shuffleModeEnabled
 
-    val shuffleModeEnabled = playerRepository.shuffleModeEnabled
+        val repeatMode = playerRepository.repeatMode
 
-    val repeatMode = playerRepository.repeatMode
+        private val _lyrics = MutableStateFlow<Map<Long, String>>(emptyMap())
+        val lyrics = _lyrics.asStateFlow()
 
-    private val _lyrics = MutableStateFlow<Map<Long, String>>(emptyMap())
-    val lyrics = _lyrics.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            _newlyAddedSongCount.value = syncSongsWithDevice()
-        }
-    }
-
-    fun play() {
-        playerRepository.play()
-    }
-
-    fun pause() {
-        playerRepository.pause()
-    }
-
-    fun skipToPrev() {
-        playerRepository.skipToPreviousMedia()
-    }
-
-    fun hasPrevious() = playerRepository.hasPreviousMedia()
-
-    fun skipToNext() {
-        playerRepository.skipToNextMedia()
-    }
-
-    fun hasNext() = playerRepository.hasNextMedia()
-
-    fun seekTo(position: Long) {
-        playerRepository.seekToPosition(position)
-    }
-
-    fun fastForwardBy10Secs() {
-        playerRepository.seekForward()
-    }
-
-    fun rewindBy10Secs() {
-        playerRepository.seekBack()
-    }
-
-    fun toggleShuffleMode() {
-        playerRepository.setShuffleModeEnabled(!shuffleModeEnabled.value)
-    }
-
-    fun toggleRepeatMode() {
-        val nextRepeatMode = repeatMode.value.nextRepeatMode()
-        playerRepository.setRepeatMode(nextRepeatMode)
-    }
-
-    /**
-     * Parses the content of an LRC file and updates the lyrics state.
-     *
-     * @param song The song associated with the lyrics.
-     * @param lrcContent The string content of the .lrc file.
-     */
-    fun addLrcFile(song: Song, lrcContent: String) {
-        viewModelScope.launch {
-            val parsedLyrics = parseLrc(lrcContent)
-            _lyrics.value = parsedLyrics
-            Logger.logError("MainVM", "Lyrics added for song: ${song.title}\n$parsedLyrics")
-
-            updateLyrics(songId = song.id, lyrics = parsedLyrics)
-        }
-    }
-
-    fun clearLyrics() {
-        _lyrics.value = emptyMap()
-    }
-
-    fun updateLyricsState(song: Song?) {
-        viewModelScope.launch {
-            if (song == null) return@launch
-
-            val songById = getSongsByIds(listOf(song.id))
-            if (songById.isEmpty()) return@launch
-
-            _lyrics.value = songById.first().lyrics
-        }
-    }
-
-    /**
-     * Parses a string containing LRC-formatted lyrics into a map of timestamps and text.
-     *
-     * @param lrcContent The raw string content of the LRC file.
-     * @return A map where the key is the timestamp in milliseconds and the value is the lyric line.
-     */
-    private fun parseLrc(lrcContent: String): Map<Long, String> {
-        val lyricsMap = mutableMapOf<Long, String>()
-        // Regex to find timestamps like [mm:ss.xx]
-        val pattern = Pattern.compile("\\[(\\d{2}):(\\d{2})\\.(\\d{2})](.*)")
-
-        lrcContent.lines().forEach { line ->
-            val matcher = pattern.matcher(line)
-            if (matcher.matches()) {
-                val minutes = matcher.group(PATTERN_MATCH_GROUP_1)?.toLong() ?: 0
-                val seconds = matcher.group(PATTERN_MATCH_GROUP_2)?.toLong() ?: 0
-                val hundredths = matcher.group(PATTERN_MATCH_GROUP_3)?.toLong() ?: 0
-                val text = matcher.group(PATTERN_MATCH_GROUP_4)?.trim() ?: ""
-
-                if (text.isNotEmpty()) {
-                    val timestamp = (minutes * SECONDS_PER_MINUTE + seconds) * MILLS_PER_SECOND +
-                        hundredths * HUNDREDTHS_TO_MILLIS
-                    lyricsMap[timestamp] = text
-                }
+        init {
+            viewModelScope.launch {
+                _newlyAddedSongCount.value = syncSongsWithDevice()
             }
         }
-        return lyricsMap.toSortedMap()
+
+        fun play() {
+            playerRepository.play()
+        }
+
+        fun pause() {
+            playerRepository.pause()
+        }
+
+        fun skipToPrev() {
+            playerRepository.skipToPreviousMedia()
+        }
+
+        fun hasPrevious() = playerRepository.hasPreviousMedia()
+
+        fun skipToNext() {
+            playerRepository.skipToNextMedia()
+        }
+
+        fun hasNext() = playerRepository.hasNextMedia()
+
+        fun seekTo(position: Long) {
+            playerRepository.seekToPosition(position)
+        }
+
+        fun fastForwardBy10Secs() {
+            playerRepository.seekForward()
+        }
+
+        fun rewindBy10Secs() {
+            playerRepository.seekBack()
+        }
+
+        fun toggleShuffleMode() {
+            playerRepository.setShuffleModeEnabled(!shuffleModeEnabled.value)
+        }
+
+        fun toggleRepeatMode() {
+            val nextRepeatMode = repeatMode.value.nextRepeatMode()
+            playerRepository.setRepeatMode(nextRepeatMode)
+        }
+
+        /**
+         * Parses the content of an LRC file and updates the lyrics state.
+         *
+         * @param song The song associated with the lyrics.
+         * @param lrcContent The string content of the .lrc file.
+         */
+        fun addLrcFile(
+            song: Song,
+            lrcContent: String,
+        ) {
+            viewModelScope.launch {
+                val parsedLyrics = parseLrc(lrcContent)
+                _lyrics.value = parsedLyrics
+                Logger.logError("MainVM", "Lyrics added for song: ${song.title}\n$parsedLyrics")
+
+                updateLyrics(songId = song.id, lyrics = parsedLyrics)
+            }
+        }
+
+        fun clearLyrics() {
+            _lyrics.value = emptyMap()
+        }
+
+        fun updateLyricsState(song: Song?) {
+            viewModelScope.launch {
+                if (song == null) return@launch
+
+                val songById = getSongsByIds(listOf(song.id))
+                if (songById.isEmpty()) return@launch
+
+                _lyrics.value = songById.first().lyrics
+            }
+        }
+
+        /**
+         * Parses a string containing LRC-formatted lyrics into a map of timestamps and text.
+         *
+         * @param lrcContent The raw string content of the LRC file.
+         * @return A map where the key is the timestamp in milliseconds and the value is the lyric line.
+         */
+        private fun parseLrc(lrcContent: String): Map<Long, String> {
+            val lyricsMap = mutableMapOf<Long, String>()
+            // Regex to find timestamps like [mm:ss.xx]
+            val pattern = Pattern.compile("\\[(\\d{2}):(\\d{2})\\.(\\d{2})](.*)")
+
+            lrcContent.lines().forEach { line ->
+                val matcher = pattern.matcher(line)
+                if (matcher.matches()) {
+                    val minutes = matcher.group(PATTERN_MATCH_GROUP_1)?.toLong() ?: 0
+                    val seconds = matcher.group(PATTERN_MATCH_GROUP_2)?.toLong() ?: 0
+                    val hundredths = matcher.group(PATTERN_MATCH_GROUP_3)?.toLong() ?: 0
+                    val text = matcher.group(PATTERN_MATCH_GROUP_4)?.trim() ?: ""
+
+                    if (text.isNotEmpty()) {
+                        val timestamp =
+                            (minutes * SECONDS_PER_MINUTE + seconds) * MILLS_PER_SECOND +
+                                hundredths * HUNDREDTHS_TO_MILLIS
+                        lyricsMap[timestamp] = text
+                    }
+                }
+            }
+            return lyricsMap.toSortedMap()
+        }
     }
-}

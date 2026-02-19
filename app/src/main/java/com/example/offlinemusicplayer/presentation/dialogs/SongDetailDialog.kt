@@ -26,17 +26,17 @@ import com.example.offlinemusicplayer.util.toFormattedTime
 @Composable
 fun SongDetailDialog(
     song: Song?,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         dismissButton = {
             TextButton(
-                onClick = onDismiss
+                onClick = onDismiss,
             ) {
                 Text(
                     text = "OK",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
         },
@@ -52,51 +52,51 @@ private fun SongDetailContent(song: Song?) {
     val mediaInfo = MediaInfoExtractor.extractAudioInfo(song?.path)
     Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.Start
+        horizontalAlignment = Alignment.Start,
     ) {
         Text(
             text = "Details",
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
         )
         Spacer(modifier = Modifier.height(16.dp))
         SongDetailItem(
             title = "Name",
-            value = song?.title
+            value = song?.title,
         )
         Spacer(modifier = Modifier.height(8.dp))
         SongDetailItem(
             title = "Path",
-            value = song?.path
+            value = song?.path,
         )
         Spacer(modifier = Modifier.height(8.dp))
         SongDetailItem(
             title = "Size",
-            value = song?.size?.toFileSize()
+            value = song?.size?.toFileSize(),
         )
         Spacer(modifier = Modifier.height(8.dp))
         SongDetailItem(
             title = "Format",
-            value = mediaInfo?.format ?: ""
+            value = mediaInfo?.format ?: "",
         )
         Spacer(modifier = Modifier.height(8.dp))
         SongDetailItem(
             title = "Last Modified",
-            value = song?.dateModified?.toFormattedDate()
+            value = song?.dateModified?.toFormattedDate(),
         )
         Spacer(modifier = Modifier.height(8.dp))
         SongDetailItem(
             title = "Duration",
-            value = song?.duration?.toFormattedTime()
+            value = song?.duration?.toFormattedTime(),
         )
         Spacer(modifier = Modifier.height(8.dp))
         SongDetailItem(
             title = "Bitrate",
-            value = "${mediaInfo?.bitRateInKbps} kbps"
+            value = "${mediaInfo?.bitRateInKbps} kbps",
         )
         Spacer(modifier = Modifier.height(8.dp))
         SongDetailItem(
             title = "Sampling rate",
-            value = "${mediaInfo?.samplingRate} Hz"
+            value = "${mediaInfo?.samplingRate} Hz",
         )
     }
 }
@@ -104,18 +104,19 @@ private fun SongDetailContent(song: Song?) {
 @Composable
 private fun SongDetailItem(
     title: String,
-    value: String?
+    value: String?,
 ) {
-    val annotatedString = buildAnnotatedString {
-        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-            append("$title: ")
+    val annotatedString =
+        buildAnnotatedString {
+            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                append("$title: ")
+            }
+            append(value)
         }
-        append(value)
-    }
 
     Text(
         text = annotatedString,
         style = MaterialTheme.typography.bodyMedium,
-        textAlign = TextAlign.Start
+        textAlign = TextAlign.Start,
     )
 }

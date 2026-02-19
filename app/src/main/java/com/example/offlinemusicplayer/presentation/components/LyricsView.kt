@@ -29,12 +29,12 @@ fun LyricsView(
     if (lyrics.isEmpty()) {
         Box(
             modifier = modifier.fillMaxSize().padding(16.dp),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = "No lyrics available. Tap the lyrics icon to add an .lrc file.",
                 style = MaterialTheme.typography.bodyLarge.copy(color = Color.White.copy(alpha = 0.7f)),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
         return
@@ -65,26 +65,28 @@ fun LyricsView(
 
     LazyColumn(
         state = lazyListState,
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         itemsIndexed(lyricsEntries) { index, entry ->
             val lyricText = entry.value
             // Determine the color: highlighted if it's the current line, faded otherwise.
-            val color = if (index == currentLineIndex) {
-                Color.White
-            } else {
-                Color.White.copy(alpha = 0.5f)
-            }
+            val color =
+                if (index == currentLineIndex) {
+                    Color.White
+                } else {
+                    Color.White.copy(alpha = 0.5f)
+                }
 
             Text(
                 text = lyricText,
                 style = MaterialTheme.typography.titleLarge,
                 color = color,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(vertical = 8.dp),
             )
         }
     }

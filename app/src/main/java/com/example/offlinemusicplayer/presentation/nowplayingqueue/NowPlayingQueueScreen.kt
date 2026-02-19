@@ -27,9 +27,7 @@ import com.example.offlinemusicplayer.domain.enumclasses.QueueSongOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NowPlayingQueueScreen(
-    onBackPress: () -> Unit
-) {
+fun NowPlayingQueueScreen(onBackPress: () -> Unit) {
     val viewModel: NowPlayingQueueVM = hiltViewModel()
 
     val currentMedia by viewModel.currentMedia.collectAsStateWithLifecycle()
@@ -45,7 +43,7 @@ fun NowPlayingQueueScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -53,9 +51,10 @@ fun NowPlayingQueueScreen(
         ) {
             IconButton(
                 onClick = onBackPress,
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onBackground
-                )
+                colors =
+                    IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onBackground,
+                    ),
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
@@ -67,7 +66,7 @@ fun NowPlayingQueueScreen(
 
             Text(
                 text = "Now playing",
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
             )
         }
 
@@ -89,7 +88,7 @@ fun NowPlayingQueueScreen(
                     }
                 }
             },
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
     }
 }

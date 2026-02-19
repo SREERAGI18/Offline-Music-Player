@@ -5,7 +5,6 @@ import com.example.offlinemusicplayer.domain.enumclasses.Command
 import com.example.offlinemusicplayer.util.Logger
 
 object SetCommandMapper {
-
     fun map(commands: Player.Commands): Set<Command> =
         buildSet {
             for (i in 0 until commands.size()) {
@@ -14,7 +13,7 @@ object SetCommandMapper {
                 } catch (e: IllegalArgumentException) {
                     Logger.logDebug(
                         "SetCommandMapper",
-                        "Ignoring unmapped command: ${commands.get(i)}, ${e.message}"
+                        "Ignoring unmapped command: ${commands.get(i)}, ${e.message}",
                     )
                 }
             }

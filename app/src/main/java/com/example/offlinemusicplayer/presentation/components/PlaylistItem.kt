@@ -68,24 +68,26 @@ fun PlaylistItem(
     }
 
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onClick(playlist) },
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable { onClick(playlist) },
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            modifier = Modifier
-                .size(50.dp)
-                .clip(MaterialTheme.shapes.small)
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .padding(8.dp),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .size(50.dp)
+                    .clip(MaterialTheme.shapes.small)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(8.dp),
+            contentAlignment = Alignment.Center,
         ) {
             Image(
                 imageVector = icon,
                 contentDescription = "${playlist.name} playlist icon",
                 modifier = Modifier.fillMaxSize(),
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
             )
         }
 
@@ -93,21 +95,20 @@ fun PlaylistItem(
 
         Column(
             modifier = Modifier.weight(1f),
-
         ) {
             Text(
                 text = playlist.name,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
                 text = "${playlist.songIds.size} Songs",
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
 
@@ -115,11 +116,11 @@ fun PlaylistItem(
             IconButton(
                 onClick = {
                     menuExpanded = true
-                }
+                },
             ) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More options"
+                    contentDescription = "More options",
                 )
             }
             PlaylistOptionsDropDown(
@@ -128,7 +129,7 @@ fun PlaylistItem(
                     menuExpanded = false
                 },
                 onOptionSelect = onOptionSelect,
-                isDefaultPlaylist = playlist.id in DEFAULT_PLAYLIST_MAP
+                isDefaultPlaylist = playlist.id in DEFAULT_PLAYLIST_MAP,
             )
         }
     }
@@ -139,18 +140,19 @@ fun PlaylistOptionsDropDown(
     menuExpanded: Boolean,
     onDismiss: () -> Unit,
     onOptionSelect: (PlaylistOptions) -> Unit,
-    isDefaultPlaylist: Boolean
+    isDefaultPlaylist: Boolean,
 ) {
-    val options = PlaylistOptions
-        .entries
-        .toList()
-        .filter {
-            if (isDefaultPlaylist) {
-                it.type != OptionType.Modify
-            } else {
-                true
+    val options =
+        PlaylistOptions
+            .entries
+            .toList()
+            .filter {
+                if (isDefaultPlaylist) {
+                    it.type != OptionType.Modify
+                } else {
+                    true
+                }
             }
-        }
 
     AppDropdown(
         options = options,
@@ -158,6 +160,6 @@ fun PlaylistOptionsDropDown(
             onOptionSelect(it as PlaylistOptions)
         },
         onDismiss = onDismiss,
-        menuExpanded = menuExpanded
+        menuExpanded = menuExpanded,
     )
 }

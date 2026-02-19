@@ -22,21 +22,21 @@ fun SongsList(
     onSongClick: (Song, Int) -> Unit,
     modifier: Modifier = Modifier,
     currentPlayingIndex: Int? = -1,
-    onOptionSelected: ((Song, SongOptions) -> Unit)? = null
+    onOptionSelected: ((Song, SongOptions) -> Unit)? = null,
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        state = scrollState
+        state = scrollState,
     ) {
         items(
             count = songs.itemCount,
-            key = songs.itemKey { it.id }
+            key = songs.itemKey { it.id },
         ) { index ->
             val song = songs[index] ?: return@items
             val isPlaying = currentPlayingIndex == index
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 SongItem(
                     song = song,
@@ -46,7 +46,7 @@ fun SongsList(
                     onOptionSelected = {
                         onOptionSelected?.invoke(song, it)
                     },
-                    isPlaying = isPlaying
+                    isPlaying = isPlaying,
                 )
                 HorizontalDivider()
             }
@@ -61,19 +61,19 @@ fun SongsList(
     onSongClick: (Song, Int) -> Unit,
     modifier: Modifier = Modifier,
     currentPlayingIndex: Int? = -1,
-    onOptionSelected: ((Song, SongOptions) -> Unit)? = null
+    onOptionSelected: ((Song, SongOptions) -> Unit)? = null,
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        state = scrollState
+        state = scrollState,
     ) {
-        itemsIndexed(songs) { index, song, ->
+        itemsIndexed(songs) { index, song ->
 
             val isPlaying = currentPlayingIndex == index
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 SongItem(
                     song = song,
@@ -83,7 +83,7 @@ fun SongsList(
                     onOptionSelected = {
                         onOptionSelected?.invoke(song, it)
                     },
-                    isPlaying = isPlaying
+                    isPlaying = isPlaying,
                 )
                 HorizontalDivider()
             }

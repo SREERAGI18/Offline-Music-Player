@@ -1,7 +1,6 @@
 package com.example.offlinemusicplayer.domain.enumclasses
 
 enum class PlayerState {
-
     /**
      * The player is idle, meaning it holds only limited resources. The player must be prepared
      * before it will play the media.
@@ -28,5 +27,5 @@ enum class PlayerState {
     /**
      * The player has finished playing the media.
      */
-    Ended
+    Ended,
 }

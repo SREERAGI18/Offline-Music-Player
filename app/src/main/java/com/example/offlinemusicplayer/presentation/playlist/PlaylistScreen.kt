@@ -30,9 +30,7 @@ import com.example.offlinemusicplayer.presentation.dialogs.DeleteConfirmDialog
 import com.example.offlinemusicplayer.presentation.dialogs.SongSelectionDialog
 
 @Composable
-fun PlaylistScreen(
-    onPlaylistClick: (Playlist) -> Unit
-) {
+fun PlaylistScreen(onPlaylistClick: (Playlist) -> Unit) {
     val context = LocalContext.current
     val viewModel = hiltViewModel<PlaylistVM>()
     val playlists by viewModel.playlists.collectAsStateWithLifecycle()
@@ -65,7 +63,7 @@ fun PlaylistScreen(
                 viewModel.deletePlaylist()
                 showDeleteDialog = false
             },
-            description = "\"${viewModel.playlistToModify?.name}\" will be permanently deleted."
+            description = "\"${viewModel.playlistToModify?.name}\" will be permanently deleted.",
         )
     }
 
@@ -84,7 +82,7 @@ fun PlaylistScreen(
             },
             onCancel = {
                 showSongSelection = false
-            }
+            },
         )
     }
 
@@ -104,14 +102,15 @@ fun PlaylistScreen(
                     viewModel.updatePlaylistName(it)
                     showCreatePlaylistDialog = false
                 }
-            }
+            },
         )
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -119,7 +118,7 @@ fun PlaylistScreen(
         ) {
             items(
                 items = playlists,
-                key = { it.id }
+                key = { it.id },
             ) { playlist ->
                 PlaylistItem(
                     playlist = playlist,
@@ -134,7 +133,7 @@ fun PlaylistScreen(
                             PlaylistOptions.AddToQueue -> {
                                 viewModel.addAllSongsToQueue(
                                     context = context,
-                                    playlist = playlist
+                                    playlist = playlist,
                                 )
                             }
                             PlaylistOptions.EditName -> {
@@ -152,7 +151,7 @@ fun PlaylistScreen(
                                 showDeleteDialog = true
                             }
                         }
-                    }
+                    },
                 )
             }
         }
@@ -165,7 +164,7 @@ fun PlaylistScreen(
             },
             modifier = Modifier.align(Alignment.BottomEnd),
             containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
+            contentColor = MaterialTheme.colorScheme.onPrimary,
         ) {
             Icon(
                 imageVector = Icons.Filled.Add,

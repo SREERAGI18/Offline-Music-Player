@@ -14,25 +14,25 @@ fun AppDropdown(
     options: List<Options>,
     onOptionSelect: (Options) -> Unit,
     onDismiss: () -> Unit,
-    menuExpanded: Boolean
+    menuExpanded: Boolean,
 ) {
     DropdownMenu(
         expanded = menuExpanded,
         onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
     ) {
         for (option in options) {
             DropdownMenuItem(
                 text = {
                     Text(
                         text = option.displayName,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 },
                 onClick = {
                     onOptionSelect(option)
                     onDismiss()
-                }
+                },
             )
         }
     }

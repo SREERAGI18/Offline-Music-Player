@@ -27,11 +27,10 @@ data class SongsEntity(
     val lastScanned: Long = System.currentTimeMillis(),
     val playCount: Int = 0,
     val isFav: Boolean = false,
-    val lyrics: Map<Long, String> = emptyMap()
+    val lyrics: Map<Long, String> = emptyMap(),
 ) {
-
-    fun toSong(): Song {
-        return Song(
+    fun toSong(): Song =
+        Song(
             id = id,
             title = title,
             artist = artist,
@@ -49,14 +48,15 @@ data class SongsEntity(
             albumArtist = albumArtist,
             playCount = playCount,
             isFav = isFav,
-            lyrics = lyrics
+            lyrics = lyrics,
         )
-    }
+
     fun getContentUri(): Uri {
-        val contentUri = ContentUris.withAppendedId(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            id
-        )
+        val contentUri =
+            ContentUris.withAppendedId(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                id,
+            )
         return contentUri
     }
 }

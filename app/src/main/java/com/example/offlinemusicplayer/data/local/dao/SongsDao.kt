@@ -9,7 +9,6 @@ import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 
 @Dao
 interface SongsDao {
-
     @Query("SELECT * FROM songs ORDER BY title ASC")
     fun getAllSongsPaged(): PagingSource<Int, SongsEntity>
 
@@ -21,13 +20,13 @@ interface SongsDao {
 
     @Query(
         "SELECT * FROM songs WHERE title LIKE '%' || :query || '%' " +
-            "OR artist LIKE '%' || :query || '%' ORDER BY title ASC"
+            "OR artist LIKE '%' || :query || '%' ORDER BY title ASC",
     )
     fun searchSongsPaged(query: String): PagingSource<Int, SongsEntity>
 
     @Query(
         "SELECT * FROM songs WHERE title LIKE '%' || :query || '%' " +
-            "OR artist LIKE '%' || :query || '%' ORDER BY title ASC"
+            "OR artist LIKE '%' || :query || '%' ORDER BY title ASC",
     )
     fun searchSongs(query: String): List<SongsEntity>
 
@@ -77,7 +76,10 @@ interface SongsDao {
     suspend fun getFavoriteSongs(isFav: Boolean = true): List<SongsEntity>
 
     @Query("UPDATE songs SET isFav = :isFav WHERE id = :songId")
-    suspend fun updateFavoriteSong(songId: Long, isFav: Boolean)
+    suspend fun updateFavoriteSong(
+        songId: Long,
+        isFav: Boolean,
+    )
 
     @Query("DELETE FROM songs WHERE id IN (:songIds)")
     suspend fun deleteSongsByIds(songIds: List<Long>)
@@ -87,10 +89,13 @@ interface SongsDao {
 
     @Query(
         "SELECT COUNT(*) FROM songs " +
-            "WHERE title < (SELECT title FROM songs WHERE title LIKE :letter || '%' ORDER BY title ASC LIMIT 1)"
+            "WHERE title < (SELECT title FROM songs WHERE title LIKE :letter || '%' ORDER BY title ASC LIMIT 1)",
     )
     suspend fun getFirstSongIndexByLetter(letter: String): Int
 
     @Query("UPDATE songs SET lyrics = :lyrics WHERE id = :songId")
-    suspend fun updateLyrics(songId: Long, lyrics: Map<Long, String>)
+    suspend fun updateLyrics(
+        songId: Long,
+        lyrics: Map<Long, String>,
+    )
 }

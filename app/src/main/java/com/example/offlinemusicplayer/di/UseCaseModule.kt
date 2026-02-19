@@ -40,21 +40,18 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 object UseCaseModule {
-
     @Provides
     fun provideSongsRepository(
         songsDao: SongsDao,
-        audioFilesManager: AudioFilesManager
+        audioFilesManager: AudioFilesManager,
     ): SongsRepository =
         SongsRepositoryImpl(
             songsDao = songsDao,
-            audioFilesManager = audioFilesManager
+            audioFilesManager = audioFilesManager,
         )
 
     @Provides
-    fun providePlaylistRepository(
-        playlistDao: PlaylistDao,
-    ): PlaylistRepository = PlaylistRepositoryImpl(playlistDao = playlistDao)
+    fun providePlaylistRepository(playlistDao: PlaylistDao): PlaylistRepository = PlaylistRepositoryImpl(playlistDao = playlistDao)
 
     @Provides
     fun providePlaylistUsesCases(
@@ -64,7 +61,7 @@ object UseCaseModule {
         createPlaylist: CreatePlaylist,
         getPlaylistById: GetPlaylistById,
         removeSongFromPlaylist: RemoveSongFromPlaylist,
-        deletePlaylist: DeletePlaylist
+        deletePlaylist: DeletePlaylist,
     ) = PlaylistUseCases(
         getPlaylists = getPlaylists,
         updatePlaylist = updatePlaylist,
@@ -72,7 +69,7 @@ object UseCaseModule {
         createPlaylist = createPlaylist,
         getPlaylistById = getPlaylistById,
         removeSongFromPlaylist = removeSongFromPlaylist,
-        deletePlaylist = deletePlaylist
+        deletePlaylist = deletePlaylist,
     )
 
     @Provides
@@ -90,7 +87,7 @@ object UseCaseModule {
         getFirstSongIndexByLetter: GetFirstSongIndexByLetter,
         getSongIndexById: GetSongIndexById,
         updateFavoriteSong: UpdateFavoriteSong,
-        updateLyrics: UpdateLyrics
+        updateLyrics: UpdateLyrics,
     ) = SongsUseCases(
         getAllSongs = getAllSongs,
         getAllSongsPaginated = getAllSongsPaginated,
@@ -105,7 +102,7 @@ object UseCaseModule {
         getFirstSongIndexByLetter = getFirstSongIndexByLetter,
         getSongIndexById = getSongIndexById,
         updateFavoriteSong = updateFavoriteSong,
-        updateLyrics = updateLyrics
+        updateLyrics = updateLyrics,
     )
 
     @Provides
@@ -145,34 +142,32 @@ object UseCaseModule {
     fun provideUpdateFavoriteSong(
         songsRepository: SongsRepository,
         playlistRepository: PlaylistRepository,
-        getFavoriteSongs: GetFavoriteSongs
+        getFavoriteSongs: GetFavoriteSongs,
     ) = UpdateFavoriteSong(
         playlistRepository = playlistRepository,
         songsRepository = songsRepository,
-        getFavoriteSongs = getFavoriteSongs
+        getFavoriteSongs = getFavoriteSongs,
     )
 
     @Provides
-    fun provideUpdateLyrics(
-        songsRepository: SongsRepository,
-    ) = UpdateLyrics(repo = songsRepository,)
+    fun provideUpdateLyrics(songsRepository: SongsRepository) = UpdateLyrics(repo = songsRepository)
 
     @Provides
     fun provideDeleteSongById(
         songsRepository: SongsRepository,
-        playlistRepository: PlaylistRepository
+        playlistRepository: PlaylistRepository,
     ) = DeleteSongById(
         songsRepository = songsRepository,
-        playlistRepository = playlistRepository
+        playlistRepository = playlistRepository,
     )
 
     @Provides
     fun provideIncrementPlayCount(
         repo: SongsRepository,
-        updateMostPlayedPlaylist: UpdateMostPlayedPlaylist
+        updateMostPlayedPlaylist: UpdateMostPlayedPlaylist,
     ) = IncrementPlayCount(
         repo = repo,
-        updateMostPlayedPlaylist = updateMostPlayedPlaylist
+        updateMostPlayedPlaylist = updateMostPlayedPlaylist,
     )
 
     @Provides
@@ -190,10 +185,10 @@ object UseCaseModule {
     @Provides
     fun provideUpdateMostPlayedPlaylist(
         repo: PlaylistRepository,
-        getMostPlayedSongs: GetMostPlayedSongs
+        getMostPlayedSongs: GetMostPlayedSongs,
     ) = UpdateMostPlayedPlaylist(
         playlistRepository = repo,
-        getMostPlayedSongs = getMostPlayedSongs
+        getMostPlayedSongs = getMostPlayedSongs,
     )
 
     @Provides

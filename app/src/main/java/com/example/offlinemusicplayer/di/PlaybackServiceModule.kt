@@ -40,22 +40,23 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 @Module
 @InstallIn(ServiceComponent::class)
 object PlaybackServiceModule {
-
     private const val SEEK_INCREMENT_MS = 10_000L
 
     @Provides
     fun loadControl(): LoadControl {
-        /*return DefaultLoadControl.Builder()
-            .setBackBuffer(
-         */
-        /* backBufferDurationMs = */
-        /* 30_000,
-         */
-        /* retainBackBufferFromKeyframe = */
-        /* false
-            )
-            .build()*/
+        /*
         return DefaultLoadControl.Builder()
+                .setBackBuffer(
+             backBufferDurationMs =
+             30_000,
+
+             retainBackBufferFromKeyframe =
+             false
+                )
+                .build()
+         */
+        return DefaultLoadControl
+            .Builder()
             .setPrioritizeTimeOverSizeThresholds(false)
             .build()
     }
@@ -64,9 +65,7 @@ object PlaybackServiceModule {
     fun mediaCodecSelector(): MediaCodecSelector = MediaCodecSelector.DEFAULT
 
     @Provides
-    fun renderersFactory(
-        service: Service
-    ): RenderersFactory = DefaultRenderersFactory(service)
+    fun renderersFactory(service: Service): RenderersFactory = DefaultRenderersFactory(service)
 
     @Provides
     fun defaultAnalyticsCollector(): AnalyticsCollector =
@@ -75,36 +74,33 @@ object PlaybackServiceModule {
         }
 
     @Provides
-    fun extractorsFactory(): ExtractorsFactory =
-        DefaultExtractorsFactory()
+    fun extractorsFactory(): ExtractorsFactory = DefaultExtractorsFactory()
 
     @Provides
     fun mediaSourceFactory(
         @ApplicationContext context: Context,
-        extractorsFactory: ExtractorsFactory
-    ): MediaSource.Factory {
-        return DefaultMediaSourceFactory(context, extractorsFactory)
-    }
+        extractorsFactory: ExtractorsFactory,
+    ): MediaSource.Factory = DefaultMediaSourceFactory(context, extractorsFactory)
 
     @OptIn(UnstableApi::class)
     @Provides
-    fun trackSelector(
-        service: Service
-    ): DefaultTrackSelector {
+    fun trackSelector(service: Service): DefaultTrackSelector {
         val trackSelector = DefaultTrackSelector(service)
         trackSelector.setParameters(
             trackSelector
                 .parameters
-                .buildUpon()
+                .buildUpon(),
         )
         return trackSelector
     }
 
     @Provides
-    fun audioAttributes(): AudioAttributes = AudioAttributes.Builder()
-        .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-        .setUsage(C.USAGE_MEDIA)
-        .build()
+    fun audioAttributes(): AudioAttributes =
+        AudioAttributes
+            .Builder()
+            .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+            .setUsage(C.USAGE_MEDIA)
+            .build()
 
     @OptIn(UnstableApi::class)
     @Provides
@@ -115,9 +111,10 @@ object PlaybackServiceModule {
         mediaSourceFactory: MediaSource.Factory,
         renderersFactory: RenderersFactory,
         trackSelector: DefaultTrackSelector,
-        audioAttributes: AudioAttributes
+        audioAttributes: AudioAttributes,
     ): ExoPlayer =
-        ExoPlayer.Builder(service)
+        ExoPlayer
+            .Builder(service)
             .setAnalyticsCollector(analyticsCollector)
             .setTrackSelector(trackSelector)
             .setMediaSourceFactory(mediaSourceFactory)
@@ -129,7 +126,8 @@ object PlaybackServiceModule {
             .setRenderersFactory(renderersFactory)
             .setBandwidthMeter(DefaultBandwidthMeter.getSingletonInstance(service))
             .setLoadControl(loadControl)
-            .build().apply {
+            .build()
+            .apply {
                 addListener(analyticsCollector)
                 setForegroundMode(true)
                 // addListener(dataUpdates.listener)
@@ -137,9 +135,7 @@ object PlaybackServiceModule {
 
     @OptIn(UnstableApi::class)
     @Provides
-    fun player(
-        exoPlayer: ExoPlayer
-    ): Player = ForwardingPlayer(exoPlayer)
+    fun player(exoPlayer: ExoPlayer): Player = ForwardingPlayer(exoPlayer)
 
     @OptIn(UnstableApi::class)
     @Provides
@@ -156,21 +152,22 @@ object PlaybackServiceModule {
         service: Service,
         player: Player,
         playerNotificationIntent: PendingIntent,
-        sessionCallback: MediaSession.Callback
+        sessionCallback: MediaSession.Callback,
     ): MediaSession =
-        MediaSession.Builder(
-            service as MediaSessionService,
-            player,
-        )
-            .setSessionActivity(playerNotificationIntent)
+        MediaSession
+            .Builder(
+                service as MediaSessionService,
+                player,
+            ).setSessionActivity(playerNotificationIntent)
             .setCallback(sessionCallback)
-            .build().also {
+            .build()
+            .also {
                 (service as LifecycleOwner).lifecycle.addObserver(
                     object : DefaultLifecycleObserver {
                         override fun onDestroy(owner: LifecycleOwner) {
                             it.release()
                         }
-                    }
+                    },
                 )
             }
 
@@ -178,15 +175,16 @@ object PlaybackServiceModule {
     fun mediaLibrarySession(
         service: Service,
         player: Player,
-        sessionCallback: MediaSession.Callback
-    ): MediaLibraryService.MediaLibrarySession {
-        return MediaLibraryService.MediaLibrarySession.Builder(
-            /* service = */
-            service as MediaLibraryService,
-            /* player = */
-            player,
-            /* callback = */
-            sessionCallback as MediaSessionCallback
-        ).setId("com.example.offlinemusicplayer.media_session").build()
-    }
+        sessionCallback: MediaSession.Callback,
+    ): MediaLibraryService.MediaLibrarySession =
+        MediaLibraryService.MediaLibrarySession
+            .Builder(
+                // service =
+                service as MediaLibraryService,
+                // player =
+                player,
+                // callback =
+                sessionCallback as MediaSessionCallback,
+            ).setId("com.example.offlinemusicplayer.media_session")
+            .build()
 }

@@ -47,38 +47,40 @@ fun PlaylistSongItem(
         mutableStateOf(false)
     }
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .background(color = MaterialTheme.colorScheme.background)
-            .clickable {
-                onSongClick()
-            },
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .background(color = MaterialTheme.colorScheme.background)
+                .clickable {
+                    onSongClick()
+                },
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
             onClick = { /* Clicks are disabled during drag, so this is safe */ },
-            modifier = Modifier.pointerInput(Unit) {
-                detectDragGestures(
-                    onDragStart = {
-                        onDragStart()
-                    },
-                    onDragEnd = {
-                        onDragEnd()
-                    },
-                    onDragCancel = {
-                        onDragEnd() // Treat cancel as the end of the drag
-                    },
-                    onDrag = { change, dragAmount ->
-                        change.consume()
-                        onDrag(dragAmount.y) // We only care about vertical drag for reordering
-                    }
-                )
-            }
+            modifier =
+                Modifier.pointerInput(Unit) {
+                    detectDragGestures(
+                        onDragStart = {
+                            onDragStart()
+                        },
+                        onDragEnd = {
+                            onDragEnd()
+                        },
+                        onDragCancel = {
+                            onDragEnd() // Treat cancel as the end of the drag
+                        },
+                        onDrag = { change, dragAmount ->
+                            change.consume()
+                            onDrag(dragAmount.y) // We only care about vertical drag for reordering
+                        },
+                    )
+                },
         ) {
             Icon(
                 imageVector = Icons.Default.DragHandle,
-                contentDescription = "Drag to reorder"
+                contentDescription = "Drag to reorder",
             )
         }
         Column(
@@ -87,20 +89,22 @@ fun PlaylistSongItem(
         ) {
             Text(
                 text = song.title,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = if (song.isPlaying) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onBackground
-                    }
-                ),
-                maxLines = 1
+                style =
+                    MaterialTheme.typography.titleMedium.copy(
+                        color =
+                            if (song.isPlaying) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onBackground
+                            },
+                    ),
+                maxLines = 1,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = song.artist ?: "",
                 style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1
+                maxLines = 1,
             )
         }
         Spacer(modifier = Modifier.width(16.dp))
@@ -109,11 +113,11 @@ fun PlaylistSongItem(
             IconButton(
                 onClick = {
                     menuExpanded = true
-                }
+                },
             ) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More options"
+                    contentDescription = "More options",
                 )
             }
             SongOptionsDropDown(
@@ -122,7 +126,7 @@ fun PlaylistSongItem(
                     menuExpanded = false
                 },
                 onOptionSelect = onOptionSelect,
-                isDefaultPlaylist = isDefaultPlaylist
+                isDefaultPlaylist = isDefaultPlaylist,
             )
         }
     }
@@ -133,13 +137,14 @@ private fun SongOptionsDropDown(
     menuExpanded: Boolean,
     onDismiss: () -> Unit,
     onOptionSelect: (PlaylistSongOptions) -> Unit,
-    isDefaultPlaylist: Boolean
+    isDefaultPlaylist: Boolean,
 ) {
-    val options = if (isDefaultPlaylist) {
-        PlaylistSongOptions.entries.filter { it.type != OptionType.Modify }
-    } else {
-        PlaylistSongOptions.entries.toList()
-    }
+    val options =
+        if (isDefaultPlaylist) {
+            PlaylistSongOptions.entries.filter { it.type != OptionType.Modify }
+        } else {
+            PlaylistSongOptions.entries.toList()
+        }
 
     AppDropdown(
         options = options,
@@ -147,6 +152,6 @@ private fun SongOptionsDropDown(
             onOptionSelect(it as PlaylistSongOptions)
         },
         onDismiss = onDismiss,
-        menuExpanded = menuExpanded
+        menuExpanded = menuExpanded,
     )
 }

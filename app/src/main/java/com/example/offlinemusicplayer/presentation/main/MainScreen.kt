@@ -5,9 +5,7 @@ import androidx.navigation.NavHostController
 import com.example.offlinemusicplayer.presentation.navigation.MainNavHost
 
 @Composable
-fun MainScreen(
-    navController: NavHostController
-) {
+fun MainScreen(navController: NavHostController) {
     MainNavHost(
         navController = navController,
     )

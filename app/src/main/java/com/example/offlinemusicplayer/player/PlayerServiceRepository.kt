@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Duration
 
 interface PlayerServiceRepository {
-
     /**
      * The active player, or null if no active player is currently available.
      */
@@ -56,6 +55,11 @@ interface PlayerServiceRepository {
      * Returns the [seekBack] increment.
      */
     val seekBackIncrement: StateFlow<Duration?>
+
+    /**
+     * The current playback speed relative to 1.0.
+     */
+    val playbackSpeed: StateFlow<Float>
 
     /**
      * Returns the [seekForward] increment.
@@ -162,7 +166,11 @@ interface PlayerServiceRepository {
      * @param position The position to start playback from.
      */
 
-    fun setMediaList(mediaList: List<Song>, index: Int, position: Duration? = null)
+    fun setMediaList(
+        mediaList: List<Song>,
+        index: Int,
+        position: Duration? = null,
+    )
 
     /**
      * returns a list of current playing playlist.
@@ -186,7 +194,10 @@ interface PlayerServiceRepository {
      * of the playlist, the media is added to the end of the playlist.
      * @param media The [Song] to add.
      */
-    fun addMedia(index: Int, media: Song)
+    fun addMedia(
+        index: Int,
+        media: Song,
+    )
 
     /**
      * Removes the [Song] at the given index of the playlist.
@@ -201,7 +212,10 @@ interface PlayerServiceRepository {
      * @param fromIndex The index from which the [Song] is moved.
      * @param toIndex The index to which the [Song] is moved.
      */
-    fun moveMedia(fromIndex: Int, toIndex: Int)
+    fun moveMedia(
+        fromIndex: Int,
+        toIndex: Int,
+    )
 
     /**
      * Clears the playlist.

@@ -8,7 +8,6 @@ import com.example.offlinemusicplayer.BuildConfig
  * This prevents log spam in release versions of the application.
  */
 object Logger {
-
     /**
      * Logs an error message. Use this for critical failures, exceptions,
      * and other unexpected errors that need immediate attention.
@@ -18,7 +17,10 @@ object Logger {
      *            the class or activity where the log call occurs.
      * @param message The message you would like logged.
      */
-    fun logError(tag: String, message: String) {
+    fun logError(
+        tag: String,
+        message: String,
+    ) {
         if (BuildConfig.DEBUG) {
             Log.e(tag, message)
         }
@@ -32,7 +34,10 @@ object Logger {
      * @param tag Used to identify the source of a log message.
      * @param message The message you would like logged.
      */
-    fun logWarning(tag: String, message: String) {
+    fun logWarning(
+        tag: String,
+        message: String,
+    ) {
         if (BuildConfig.DEBUG) {
             Log.w(tag, message)
         }
@@ -46,7 +51,10 @@ object Logger {
      * @param tag Used to identify the source of a log message.
      * @param message The message you would like logged.
      */
-    fun logInfo(tag: String, message: String) {
+    fun logInfo(
+        tag: String,
+        message: String,
+    ) {
         if (BuildConfig.DEBUG) {
             Log.i(tag, message)
         }
@@ -61,7 +69,10 @@ object Logger {
      * @param tag Used to identify the source of a log message.
      * @param message The message you would like logged.
      */
-    fun logDebug(tag: String, message: String) {
+    fun logDebug(
+        tag: String,
+        message: String,
+    ) {
         if (BuildConfig.DEBUG) {
             Log.d(tag, message)
         }
@@ -75,7 +86,10 @@ object Logger {
      * @param tag Used to identify the source of a log message.
      * @param message The message you would like logged.
      */
-    fun logVerbose(tag: String, message: String) {
+    fun logVerbose(
+        tag: String,
+        message: String,
+    ) {
         if (BuildConfig.DEBUG) {
             Log.v(tag, message)
         }

@@ -79,24 +79,24 @@ import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     var isPermissionGranted by mutableStateOf<Boolean>(false)
     var showSettings by mutableStateOf<Boolean?>(null)
 
-    val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        // Android 13+
-        arrayOf(Manifest.permission.READ_MEDIA_AUDIO)
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        // Android 10, 11, 12
-        // WRITE permission is not needed here, it's handled via RecoverableSecurityException
-        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-    } else {
-        // Android 9 (Pie) and below
-        arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-    }
+    val permissions =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13+
+            arrayOf(Manifest.permission.READ_MEDIA_AUDIO)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Android 10, 11, 12
+            // WRITE permission is not needed here, it's handled via RecoverableSecurityException
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        } else {
+            // Android 9 (Pie) and below
+            arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            )
+        }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,19 +110,21 @@ class MainActivity : ComponentActivity() {
 
                 SideEffect {
                     enableEdgeToEdge(
-                        statusBarStyle = SystemBarStyle.auto(
-                            primaryArgb,
-                            primaryArgb,
-                        ) {
-                            // This lambda determines whether to use dark icons based on the background luminance
-                            // Return true for dark icons on a light background,
-                            // false for light icons on a dark background
-                            !isDarkTheme
-                        },
-                        navigationBarStyle = SystemBarStyle.auto(
-                            backgroundArgb,
-                            backgroundArgb,
-                        )
+                        statusBarStyle =
+                            SystemBarStyle.auto(
+                                primaryArgb,
+                                primaryArgb,
+                            ) {
+                                // This lambda determines whether to use dark icons based on the background luminance
+                                // Return true for dark icons on a light background,
+                                // false for light icons on a dark background
+                                !isDarkTheme
+                            },
+                        navigationBarStyle =
+                            SystemBarStyle.auto(
+                                backgroundArgb,
+                                backgroundArgb,
+                            ),
                     )
                 }
 
@@ -162,38 +164,50 @@ class MainActivity : ComponentActivity() {
         val scope = rememberCoroutineScope()
 
         val rootNavBackStackEntry by rootNavController.currentBackStackEntryAsState()
-        val rootCurrentRoute: Screens? = remember(rootNavBackStackEntry) {
-            Screens.fromRoute(rootNavBackStackEntry?.destination?.route)
-        }
+        val rootCurrentRoute: Screens? =
+            remember(rootNavBackStackEntry) {
+                Screens.fromRoute(rootNavBackStackEntry?.destination?.route)
+            }
         val mainNavBackStackEntry by mainNavController.currentBackStackEntryAsState()
-        val mainCurrentRoute: Screens? = remember(mainNavBackStackEntry) {
-            Screens.fromRoute(mainNavBackStackEntry?.destination?.route)
-        }
+        val mainCurrentRoute: Screens? =
+            remember(mainNavBackStackEntry) {
+                Screens.fromRoute(mainNavBackStackEntry?.destination?.route)
+            }
 
 //        val showBackButton = currentRoute !is Screens.Home
         val showTopBar = mainCurrentRoute !is Screens.PlaylistDetail && rootCurrentRoute !is Screens.NowPlayingQueue
         val topBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         val bottomBarScrollBehavior = BottomAppBarDefaults.exitAlwaysScrollBehavior()
 
-        val mergedScrollConnection = remember {
-            object : NestedScrollConnection {
-                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+        val mergedScrollConnection =
+            remember {
+                object : NestedScrollConnection {
+                    override fun onPreScroll(
+                        available: Offset,
+                        source: NestedScrollSource,
+                    ): Offset {
 //                    val bottomConsumed = bottomBarScrollBehavior.nestedScrollConnection
 //                        .onPreScroll(available, source)
-                    val topConsumed = topBarScrollBehavior.nestedScrollConnection
-                        .onPreScroll(available, source)
-                    return topConsumed
-                }
+                        val topConsumed =
+                            topBarScrollBehavior.nestedScrollConnection
+                                .onPreScroll(available, source)
+                        return topConsumed
+                    }
 
-                override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+                    override fun onPostScroll(
+                        consumed: Offset,
+                        available: Offset,
+                        source: NestedScrollSource,
+                    ): Offset {
 //                    val bottomConsumed = bottomBarScrollBehavior.nestedScrollConnection
 //                        .onPostScroll(consumed, available, source)
-                    val topConsumed = topBarScrollBehavior.nestedScrollConnection
-                        .onPostScroll(consumed, available, source)
-                    return topConsumed
+                        val topConsumed =
+                            topBarScrollBehavior.nestedScrollConnection
+                                .onPostScroll(consumed, available, source)
+                        return topConsumed
+                    }
                 }
             }
-        }
 
         if (isSheetVisible && currentSong != null) {
             ModalBottomSheet(
@@ -206,7 +220,7 @@ class MainActivity : ComponentActivity() {
                 sheetState = sheetState,
                 containerColor = MaterialTheme.colorScheme.surface,
                 dragHandle = null,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             ) {
                 NowPlayingDetail(
                     viewModel = viewModel,
@@ -218,7 +232,7 @@ class MainActivity : ComponentActivity() {
                     },
                     onNavigate = {
                         rootNavController.navigate(it)
-                    }
+                    },
                 )
             }
         }
@@ -230,20 +244,23 @@ class MainActivity : ComponentActivity() {
         LaunchedEffect(newlyAddedSongCount) {
             if (newlyAddedSongCount > 0) {
                 withContext(Dispatchers.Main) {
-                    val message = "$newlyAddedSongCount" + if (newlyAddedSongCount == 1) {
-                        " song added"
-                    } else {
-                        " songs added"
-                    }
+                    val message =
+                        "$newlyAddedSongCount" +
+                            if (newlyAddedSongCount == 1) {
+                                " song added"
+                            } else {
+                                " songs added"
+                            }
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
         Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .nestedScroll(mergedScrollConnection),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .nestedScroll(mergedScrollConnection),
             topBar = {
                 if (showTopBar) {
                     TopAppBar(
@@ -251,16 +268,18 @@ class MainActivity : ComponentActivity() {
                         title = {
                             Text(
                                 text = "Offline Music Player",
-                                style = MaterialTheme.typography.titleLarge.copy(
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
+                                style =
+                                    MaterialTheme.typography.titleLarge.copy(
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                    ),
                             )
                         },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                            scrolledContainerColor = MaterialTheme.colorScheme.primary
-                        ),
+                        colors =
+                            TopAppBarDefaults.topAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                                scrolledContainerColor = MaterialTheme.colorScheme.primary,
+                            ),
                         actions = {
                             Screens.drawerMenuItems.forEach { item ->
                                 IconButton(
@@ -270,30 +289,30 @@ class MainActivity : ComponentActivity() {
                                                 startActivity(
                                                     Intent(
                                                         this@MainActivity,
-                                                        ProfileActivity::class.java
-                                                    )
+                                                        ProfileActivity::class.java,
+                                                    ),
                                                 )
                                             }
                                             Screens.Settings -> {
                                                 startActivity(
                                                     Intent(
                                                         this@MainActivity,
-                                                        SettingsActivity::class.java
-                                                    )
+                                                        SettingsActivity::class.java,
+                                                    ),
                                                 )
                                             }
                                             else -> rootNavController.navigate(item.screen)
                                         }
-                                    }
+                                    },
                                 ) {
                                     Icon(
                                         imageVector = item.imageVector,
                                         contentDescription = item.label,
-                                        tint = MaterialTheme.colorScheme.onPrimary
+                                        tint = MaterialTheme.colorScheme.onPrimary,
                                     )
                                 }
                             }
-                        }
+                        },
                     )
                 }
             },
@@ -312,7 +331,7 @@ class MainActivity : ComponentActivity() {
                     }
                     BottomAppBar(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        scrollBehavior = bottomBarScrollBehavior
+                        scrollBehavior = bottomBarScrollBehavior,
                     ) {
                         Screens.bottomMenuItems.forEach { item ->
                             NavigationBarItem(
@@ -330,28 +349,28 @@ class MainActivity : ComponentActivity() {
                                 icon = {
                                     Icon(
                                         imageVector = item.imageVector,
-                                        contentDescription = item.label
+                                        contentDescription = item.label,
                                     )
                                 },
                                 label = {
                                     Text(
                                         text = item.label,
-                                        style = MaterialTheme.typography.labelSmall
+                                        style = MaterialTheme.typography.labelSmall,
                                     )
                                 },
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                                    selectedTextColor = MaterialTheme.colorScheme.primary,
-                                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    indicatorColor = Color.Transparent
-                                )
+                                colors =
+                                    NavigationBarItemDefaults.colors(
+                                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        indicatorColor = Color.Transparent,
+                                    ),
                             )
                         }
                     }
                 }
-            }
-
+            },
         ) { innerPadding ->
             CompositionLocalProvider(
                 LocalScrollBehavior provides topBarScrollBehavior,
@@ -360,7 +379,7 @@ class MainActivity : ComponentActivity() {
                 RootNavHost(
                     navController = rootNavController,
                     mainNavController = mainNavController,
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.padding(innerPadding),
                 )
             }
         }
@@ -376,14 +395,15 @@ class MainActivity : ComponentActivity() {
                 onClick = {
                     requestStoragePermission()
                 },
-                colors = ButtonDefaults.textButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                colors =
+                    ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
             ) {
                 Text(
                     text = "Grant Storage permission",
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
                 )
             }
         }
@@ -413,7 +433,7 @@ class MainActivity : ComponentActivity() {
                 requestMultiplePermissions.launch(permissions)
             },
             onDismiss = {},
-            dismissable = false
+            dismissable = false,
         )
     }
 
@@ -430,62 +450,70 @@ class MainActivity : ComponentActivity() {
                 startActivity(intent)
             },
             onDismiss = {},
-            dismissable = false
+            dismissable = false,
         )
     }
 
     private var onDeletePermissionGranted: (() -> Unit)? = null
 
-    private val recoverableSecurityPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.StartIntentSenderForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            onDeletePermissionGranted?.invoke()
-        } else {
-            Toast.makeText(this, "File cannot be deleted. Permission denied", Toast.LENGTH_SHORT).show()
+    private val recoverableSecurityPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult(),
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                onDeletePermissionGranted?.invoke()
+            } else {
+                Toast.makeText(this, "File cannot be deleted. Permission denied", Toast.LENGTH_SHORT).show()
+            }
         }
-    }
 
-    fun launchRecoverableSecurityPermission(intentSenderRequest: IntentSenderRequest?, onPermissionGranted: () -> Unit) {
+    fun launchRecoverableSecurityPermission(
+        intentSenderRequest: IntentSenderRequest?,
+        onPermissionGranted: () -> Unit,
+    ) {
         if (intentSenderRequest == null) return
         onDeletePermissionGranted = onPermissionGranted
         recoverableSecurityPermissionLauncher.launch(intentSenderRequest)
     }
 
-    private val requestMultiplePermissions = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
+    private val requestMultiplePermissions =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions(),
+        ) { permissions ->
 
-        val isGranted = permissions.entries.all { it.value }
+            val isGranted = permissions.entries.all { it.value }
 
-        if (isGranted) {
-            isPermissionGranted = true
-            showSettings = null
-        } else {
-            isPermissionGranted = false
-            // Check if any permission was permanently denied.
-            val permanentlyDenied = permissions.entries.any {
-                !it.value && !ActivityCompat.shouldShowRequestPermissionRationale(this, it.key)
-            }
-
-            if (permanentlyDenied) {
-                showSettings = true
+            if (isGranted) {
+                isPermissionGranted = true
+                showSettings = null
             } else {
-                Toast.makeText(
-                    this,
-                    "Storage permission is required to play music.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                isPermissionGranted = false
+                // Check if any permission was permanently denied.
+                val permanentlyDenied =
+                    permissions.entries.any {
+                        !it.value && !ActivityCompat.shouldShowRequestPermissionRationale(this, it.key)
+                    }
+
+                if (permanentlyDenied) {
+                    showSettings = true
+                } else {
+                    Toast
+                        .makeText(
+                            this,
+                            "Storage permission is required to play music.",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                }
             }
         }
-    }
 
     private fun checkIfPermissionGranted(): Boolean {
-        val requiredPermission1 = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        } else {
-            Manifest.permission.READ_MEDIA_AUDIO
-        }
+        val requiredPermission1 =
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            } else {
+                Manifest.permission.READ_MEDIA_AUDIO
+            }
         val checkVal1 = ContextCompat.checkSelfPermission(this, requiredPermission1)
 
         return checkVal1 == PackageManager.PERMISSION_GRANTED

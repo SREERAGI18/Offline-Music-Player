@@ -8,17 +8,14 @@ class LyricsConverter {
     private val tag = this.javaClass.simpleName
 
     @TypeConverter
-    fun fromMap(value: Map<Long, String>): String {
-        return Json.encodeToString(value)
-    }
+    fun fromMap(value: Map<Long, String>): String = Json.encodeToString(value)
 
     @TypeConverter
-    fun toMap(value: String): Map<Long, String> {
-        return try {
+    fun toMap(value: String): Map<Long, String> =
+        try {
             Json.decodeFromString(value)
         } catch (e: IllegalArgumentException) {
             Logger.logError(tag, "Error decoding lyrics map: $e")
             emptyMap()
         }
-    }
 }

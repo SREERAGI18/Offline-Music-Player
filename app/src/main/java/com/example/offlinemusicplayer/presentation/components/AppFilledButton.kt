@@ -19,16 +19,17 @@ fun AppFilledButton(
 ) {
     ElevatedButton(
         onClick = onClick,
-        colors = ButtonDefaults.elevatedButtonColors(
-            containerColor = containerColor,
-            contentColor = contentColor,
-        ),
+        colors =
+            ButtonDefaults.elevatedButtonColors(
+                containerColor = containerColor,
+                contentColor = contentColor,
+            ),
         enabled = enabled,
         modifier = modifier,
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
         )
     }
 }

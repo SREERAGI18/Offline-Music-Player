@@ -14,11 +14,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-
     @Provides
     @Singleton
     fun provideDatabase(app: Application): MusicDatabase =
-        Room.databaseBuilder(app, MusicDatabase::class.java, "music_db")
+        Room
+            .databaseBuilder(app, MusicDatabase::class.java, "music_db")
             .fallbackToDestructiveMigration() // drop & rebuild on schema change (dev only)
             .build()
 

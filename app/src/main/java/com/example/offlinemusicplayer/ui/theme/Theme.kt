@@ -18,46 +18,49 @@ val ColorScheme.shadow: Color
     @ReadOnlyComposable
     get() = if (isSystemInDarkTheme()) Color.White else Color.Gray
 
-private val DarkColorScheme = darkColorScheme(
-    primary = SecondaryBlueLight,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
-    background = Color.Black,
-    onBackground = Color.White,
-    onPrimary = Color.White,
-    surfaceVariant = DarkGrey
-)
+private val DarkColorScheme =
+    darkColorScheme(
+        primary = SecondaryBlueLight,
+        secondary = PurpleGrey40,
+        tertiary = Pink40,
+        background = Color.Black,
+        onBackground = Color.White,
+        onPrimary = Color.White,
+        surfaceVariant = DarkGrey,
+    )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = SecondaryBlueLight,
-    tertiary = Pink40,
-    background = Color.White,
-    onBackground = Color.Black,
-    onPrimary = Color.White,
-    surfaceVariant = LightGrey
-)
+private val LightColorScheme =
+    lightColorScheme(
+        primary = Purple40,
+        secondary = SecondaryBlueLight,
+        tertiary = Pink40,
+        background = Color.White,
+        onBackground = Color.Black,
+        onPrimary = Color.White,
+        surfaceVariant = LightGrey,
+    )
 
 @Composable
 fun OfflineMusicPlayerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+    val colorScheme =
+        when {
+            dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+                val context = LocalContext.current
+                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+            darkTheme -> DarkColorScheme
+            else -> LightColorScheme
+        }
 
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = content,
     )
 }

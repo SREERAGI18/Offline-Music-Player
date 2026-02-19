@@ -1,13 +1,15 @@
 package com.example.offlinemusicplayer.domain.enumclasses
 
 enum class RepeatMode {
-    ONE, ALL, OFF;
+    ONE,
+    ALL,
+    OFF,
+    ;
 
-    fun nextRepeatMode(): RepeatMode {
-        return when (this) {
+    fun nextRepeatMode(): RepeatMode =
+        when (this) {
             ALL -> ONE
             ONE -> OFF
             OFF -> ALL
         }
-    }
 }

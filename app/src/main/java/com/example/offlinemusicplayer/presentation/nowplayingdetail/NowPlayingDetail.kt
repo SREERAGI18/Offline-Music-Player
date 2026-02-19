@@ -93,10 +93,11 @@ fun NowPlayingDetail(
     val lyrics by viewModel.lyrics.collectAsStateWithLifecycle()
     val currentMediaPosition by viewModel.currentMediaPosition.collectAsStateWithLifecycle()
 
-    val sheetState = rememberStandardBottomSheetState(
-        initialValue = SheetValue.Expanded,
-        skipHiddenState = true
-    )
+    val sheetState =
+        rememberStandardBottomSheetState(
+            initialValue = SheetValue.Expanded,
+            skipHiddenState = true,
+        )
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
 
     LaunchedEffect(currentSong) {
@@ -105,21 +106,23 @@ fun NowPlayingDetail(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         CachedAlbumArt(
             song = currentSong,
-            modifier = Modifier
-                .fillMaxSize()
-                .blur(radius = 24.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .blur(radius = 24.dp),
             contentScale = ContentScale.FillHeight,
-            contentDescription = ""
+            contentDescription = "",
         )
         // Add a transparent black tint over the blurred image
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.7f))
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.7f)),
         )
         BottomSheetScaffold(
             scaffoldState = scaffoldState,
@@ -130,7 +133,7 @@ fun NowPlayingDetail(
                     onNavigate = {
                         onNavigate(it)
                         onCollapse()
-                    }
+                    },
                 )
             },
             topBar = {
@@ -138,23 +141,24 @@ fun NowPlayingDetail(
             },
             sheetDragHandle = {
                 Box(
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(4.dp)
-                        .background(
-                            color = Color.White.copy(alpha = 0.3f),
-                            shape = CircleShape
-                        )
+                    modifier =
+                        Modifier
+                            .width(50.dp)
+                            .height(4.dp)
+                            .background(
+                                color = Color.White.copy(alpha = 0.3f),
+                                shape = CircleShape,
+                            ),
                 )
             },
             sheetShadowElevation = 0.dp,
             sheetContainerColor = Color.Transparent,
-            containerColor = Color.Transparent
+            containerColor = Color.Transparent,
         ) { paddingValues ->
             LyricsView(
                 lyrics = lyrics,
                 currentPosition = currentMediaPosition,
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.padding(paddingValues),
             )
         }
     }
@@ -164,7 +168,7 @@ fun NowPlayingDetail(
 @Composable
 private fun PlayerControls(
     viewModel: MainVM,
-    onNavigate: (Screens) -> Unit
+    onNavigate: (Screens) -> Unit,
 ) {
     val context = LocalContext.current
     val currentSong by viewModel.currentMedia.collectAsStateWithLifecycle()
@@ -179,17 +183,18 @@ private fun PlayerControls(
     var hasNext by remember { mutableStateOf(true) }
     var hasPrev by remember { mutableStateOf(true) }
 
-    val lrcFileLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri ->
-        uri?.let {
-            currentSong?.let { song ->
-                val lrcContent = readLrcFile(context, it)
-                viewModel.addLrcFile(song, lrcContent)
+    val lrcFileLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent(),
+        ) { uri ->
+            uri?.let {
+                currentSong?.let { song ->
+                    val lrcContent = readLrcFile(context, it)
+                    viewModel.addLrcFile(song, lrcContent)
+                }
+                Logger.logError("NowPlayingDetail", "LRC file selected: $uri")
             }
-            Logger.logError("NowPlayingDetail", "LRC file selected: $uri")
         }
-    }
 
     LaunchedEffect(currentPosition) {
         progress = currentPosition ?: 0L
@@ -201,10 +206,11 @@ private fun PlayerControls(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -212,10 +218,11 @@ private fun PlayerControls(
         ) {
             Text(
                 text = currentPosition.toTimeMmSs(),
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = MaterialTheme.colorScheme.onPrimary
-                ),
-                modifier = Modifier.width(40.dp)
+                style =
+                    MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                modifier = Modifier.width(40.dp),
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -229,31 +236,33 @@ private fun PlayerControls(
                 },
                 track = { sliderState ->
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(4.dp) // Your desired track height
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(4.dp), // Your desired track height
                     ) {
                         // Inactive track (the full background)
                         Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    color = Color.White.copy(alpha = 0.3f),
-                                    shape = CircleShape
-                                )
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        color = Color.White.copy(alpha = 0.3f),
+                                        shape = CircleShape,
+                                    ),
                         )
 
                         // Active track (the progress)
                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth(
-                                    sliderState.value / (currentSong?.duration?.toFloat() ?: 1f)
-                                )
-                                .fillMaxHeight()
-                                .background(
-                                    color = Color.White,
-                                    shape = CircleShape
-                                )
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth(
+                                        sliderState.value / (currentSong?.duration?.toFloat() ?: 1f),
+                                    ).fillMaxHeight()
+                                    .background(
+                                        color = Color.White,
+                                        shape = CircleShape,
+                                    ),
                         )
                     }
                 },
@@ -261,22 +270,24 @@ private fun PlayerControls(
                     SliderDefaults.Thumb(
                         interactionSource = remember { MutableInteractionSource() },
                         thumbSize = DpSize(18.dp, 18.dp),
-                        colors = SliderDefaults.colors(
-                            thumbColor = Color.White,
-                        )
+                        colors =
+                            SliderDefaults.colors(
+                                thumbColor = Color.White,
+                            ),
                     )
                 },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
                 text = currentSong?.duration.toTimeMmSs(),
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = MaterialTheme.colorScheme.onPrimary
-                ),
-                modifier = Modifier.width(40.dp)
+                style =
+                    MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                modifier = Modifier.width(40.dp),
             )
         }
 
@@ -285,37 +296,40 @@ private fun PlayerControls(
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceAround
+            horizontalArrangement = Arrangement.SpaceAround,
         ) {
-            val repeatModeIcon = when (repeatMode) {
-                RepeatMode.ONE -> Icons.Filled.RepeatOne
-                RepeatMode.ALL -> Icons.Filled.Repeat
-                RepeatMode.OFF -> Icons.Filled.Repeat
-            }
-            val repeatModeIconColor = if (repeatMode == RepeatMode.OFF) {
-                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
-            } else {
-                MaterialTheme.colorScheme.onPrimary
-            }
+            val repeatModeIcon =
+                when (repeatMode) {
+                    RepeatMode.ONE -> Icons.Filled.RepeatOne
+                    RepeatMode.ALL -> Icons.Filled.Repeat
+                    RepeatMode.OFF -> Icons.Filled.Repeat
+                }
+            val repeatModeIconColor =
+                if (repeatMode == RepeatMode.OFF) {
+                    MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                } else {
+                    MaterialTheme.colorScheme.onPrimary
+                }
 
-            val shuffleModeIconColor = if (shuffleModeEnabled) {
-                MaterialTheme.colorScheme.onPrimary
-            } else {
-                MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
-            }
+            val shuffleModeIconColor =
+                if (shuffleModeEnabled) {
+                    MaterialTheme.colorScheme.onPrimary
+                } else {
+                    MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                }
             PlayerIconButton(
                 onClick = { viewModel.toggleRepeatMode() },
                 icon = repeatModeIcon,
                 contentDescription = "Current repeat mode",
                 contentColor = repeatModeIconColor,
-                modifier = Modifier.size(25.dp)
+                modifier = Modifier.size(25.dp),
             )
 
             PlayerIconButton(
                 onClick = { viewModel.rewindBy10Secs() },
                 icon = Icons.Filled.Replay10,
                 contentDescription = "Rewind by 10 seconds",
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier.size(30.dp),
             )
 
             PlayerIconButton(
@@ -323,14 +337,14 @@ private fun PlayerControls(
                 icon = Icons.Filled.SkipPrevious,
                 contentDescription = "Skip to previous",
                 modifier = Modifier.size(40.dp),
-                enabled = hasPrev
+                enabled = hasPrev,
             )
 
             PlayerIconButton(
                 onClick = { if (isPlaying) viewModel.pause() else viewModel.play() },
                 icon = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                 contentDescription = if (isPlaying) "Pause" else "Play",
-                modifier = Modifier.size(60.dp)
+                modifier = Modifier.size(60.dp),
             )
 
             PlayerIconButton(
@@ -338,14 +352,14 @@ private fun PlayerControls(
                 icon = Icons.Filled.SkipNext,
                 contentDescription = "Skip to next",
                 modifier = Modifier.size(40.dp),
-                enabled = hasNext
+                enabled = hasNext,
             )
 
             PlayerIconButton(
                 onClick = { viewModel.fastForwardBy10Secs() },
                 icon = Icons.Filled.Forward10,
                 contentDescription = "Fast forward by 10 seconds",
-                modifier = Modifier.size(30.dp)
+                modifier = Modifier.size(30.dp),
             )
 
             PlayerIconButton(
@@ -353,7 +367,7 @@ private fun PlayerControls(
                 icon = Icons.Filled.Shuffle,
                 contentColor = shuffleModeIconColor,
                 contentDescription = "Fast forward by 10 seconds",
-                modifier = Modifier.size(25.dp)
+                modifier = Modifier.size(25.dp),
             )
         }
 
@@ -361,37 +375,42 @@ private fun PlayerControls(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Absolute.Center
+            horizontalArrangement = Arrangement.Absolute.Center,
         ) {
             IconButton(
                 onClick = { lrcFileLauncher.launch("*/*") },
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                )
+                colors =
+                    IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
             ) {
                 Icon(
                     imageVector = Icons.Default.Lyrics,
-                    contentDescription = "Show lyrics"
+                    contentDescription = "Show lyrics",
                 )
             }
             IconButton(
                 onClick = {
                     onNavigate(Screens.NowPlayingQueue)
                 },
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                )
+                colors =
+                    IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.QueueMusic,
-                    contentDescription = "Show playing queue"
+                    contentDescription = "Show playing queue",
                 )
             }
         }
     }
 }
 
-private fun readLrcFile(context: Context, uri: Uri): String {
+private fun readLrcFile(
+    context: Context,
+    uri: Uri,
+): String {
     val stringBuilder = StringBuilder()
     context.contentResolver.openInputStream(uri)?.use { inputStream ->
         BufferedReader(InputStreamReader(inputStream)).use { reader ->
@@ -412,20 +431,21 @@ fun PlayerIconButton(
     contentDescription: String,
     modifier: Modifier = Modifier,
     contentColor: Color = MaterialTheme.colorScheme.onPrimary,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     IconButton(
         onClick = onClick,
-        colors = IconButtonDefaults.iconButtonColors(
-            contentColor = contentColor
-        ),
+        colors =
+            IconButtonDefaults.iconButtonColors(
+                contentColor = contentColor,
+            ),
         enabled = enabled,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         )
     }
 }
@@ -434,17 +454,17 @@ fun PlayerIconButton(
 @Composable
 private fun TopBar(
     song: Song?,
-    onCollapse: () -> Unit
+    onCollapse: () -> Unit,
 ) {
     TopAppBar(
         navigationIcon = {
             IconButton(
-                onClick = onCollapse
+                onClick = onCollapse,
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    tint = MaterialTheme.colorScheme.onPrimary,
                 )
             }
         },
@@ -452,7 +472,7 @@ private fun TopBar(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 AsyncImage(
                     model = song?.getAlbumUri(),
@@ -460,43 +480,50 @@ private fun TopBar(
                     placeholder = painterResource(id = R.drawable.ic_music_note),
                     error = painterResource(id = R.drawable.ic_music_note),
                     contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(4.dp)),
+                    modifier =
+                        Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(4.dp)),
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 8.dp)
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .padding(horizontal = 8.dp),
                 ) {
                     Text(
                         text = song?.title ?: "",
-                        style = MaterialTheme.typography.titleSmall.copy(
-                            textAlign = TextAlign.Start,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        ),
+                        style =
+                            MaterialTheme.typography.titleSmall.copy(
+                                textAlign = TextAlign.Start,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            ),
                         maxLines = 1,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .basicMarquee()
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .basicMarquee(),
                     )
                     Text(
                         text = song?.artist ?: "",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            textAlign = TextAlign.Start,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        ),
+                        style =
+                            MaterialTheme.typography.bodySmall.copy(
+                                textAlign = TextAlign.Start,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            ),
                         maxLines = 1,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .basicMarquee()
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .basicMarquee(),
                     )
                 }
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent,
-        )
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent,
+            ),
     )
 }

@@ -53,9 +53,7 @@ import com.example.offlinemusicplayer.presentation.dialogs.SongSelectionDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlaylistDetailScreen(
-    onBackPress: () -> Unit
-) {
+fun PlaylistDetailScreen(onBackPress: () -> Unit) {
     val context = LocalContext.current
     val viewModel: PlaylistDetailVM = hiltViewModel()
     val playlist by viewModel.playlist.collectAsStateWithLifecycle()
@@ -91,7 +89,7 @@ fun PlaylistDetailScreen(
                 showDeleteDialog = false
                 onBackPress()
             },
-            description = "\"${playlist?.name}\" will be permanently deleted."
+            description = "\"${playlist?.name}\" will be permanently deleted.",
         )
     }
 
@@ -106,7 +104,7 @@ fun PlaylistDetailScreen(
             },
             onCancel = {
                 showSongSelection = false
-            }
+            },
         )
     }
 
@@ -120,25 +118,27 @@ fun PlaylistDetailScreen(
             onCreate = {
                 viewModel.updatePlaylistName(it)
                 showCreatePlaylistDialog = false
-            }
+            },
         )
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             IconButton(
                 onClick = onBackPress,
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onBackground
-                )
+                colors =
+                    IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onBackground,
+                    ),
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Default.ArrowBack,
@@ -148,18 +148,18 @@ fun PlaylistDetailScreen(
 
             Text(
                 text = "Playlist",
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
             )
 
             Box {
                 IconButton(
                     onClick = {
                         menuExpanded = true
-                    }
+                    },
                 ) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More options"
+                        contentDescription = "More options",
                     )
                 }
                 PlaylistOptionsDropDown(
@@ -187,32 +187,35 @@ fun PlaylistDetailScreen(
                             }
                         }
                     },
-                    isDefaultPlaylist = playlist?.id in DEFAULT_PLAYLIST_MAP
+                    isDefaultPlaylist = playlist?.id in DEFAULT_PLAYLIST_MAP,
                 )
             }
         }
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(MaterialTheme.shapes.medium)
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(100.dp)
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center,
             ) {
                 Image(
                     imageVector = icon,
                     contentDescription = "${playlist?.name} playlist icon",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(20.dp),
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(20.dp),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
                 )
             }
 
@@ -220,7 +223,7 @@ fun PlaylistDetailScreen(
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 Text(
                     text = playlist?.name ?: "",
@@ -237,10 +240,11 @@ fun PlaylistDetailScreen(
             songs = songs,
             viewModel = viewModel,
             playlist = playlist,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = 16.dp),
         )
     }
 }
@@ -275,23 +279,25 @@ private fun PlaylistContent(
                 }
             },
             isDefaultPlaylist = playlist?.id in DEFAULT_PLAYLIST_MAP,
-            modifier = modifier
+            modifier = modifier,
         )
     } else {
         Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = "No songs added in playlist",
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
             )
         }
     }
 }
-private fun playlistIconFor(name: String?): ImageVector = when (name) {
-    PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> Icons.Filled.History
-    PlaylistEntity.MOST_PLAYED_PLAYLIST_NAME -> Icons.AutoMirrored.Default.TrendingUp
-    PlaylistEntity.FAVORITES_NAME -> Icons.Filled.Favorite
-    else -> Icons.Filled.MusicNote
-}
+
+private fun playlistIconFor(name: String?): ImageVector =
+    when (name) {
+        PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> Icons.Filled.History
+        PlaylistEntity.MOST_PLAYED_PLAYLIST_NAME -> Icons.AutoMirrored.Default.TrendingUp
+        PlaylistEntity.FAVORITES_NAME -> Icons.Filled.Favorite
+        else -> Icons.Filled.MusicNote
+    }

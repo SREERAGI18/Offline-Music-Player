@@ -16,7 +16,6 @@ class SongsRepositoryImpl(
     private val songsDao: SongsDao,
     private val audioFilesManager: AudioFilesManager,
 ) : SongsRepository {
-
     override suspend fun syncSongsWithDevice(): Int {
         val songsChangeCount = getSongsChangeCount()
 
@@ -35,33 +34,33 @@ class SongsRepositoryImpl(
         return mediaCount - dbCount
     }
 
-    fun searchSongsPaged(query: String): Flow<PagingData<SongsEntity>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = { songsDao.searchSongsPaged(query) }
+    fun searchSongsPaged(query: String): Flow<PagingData<SongsEntity>> =
+        Pager(
+            config =
+                PagingConfig(
+                    pageSize = 20,
+                    enablePlaceholders = false,
+                ),
+            pagingSourceFactory = { songsDao.searchSongsPaged(query) },
         ).flow
-    }
 
-    fun getSongsByArtistPaged(artist: String): Flow<PagingData<SongsEntity>> {
-        return Pager(
+    fun getSongsByArtistPaged(artist: String): Flow<PagingData<SongsEntity>> =
+        Pager(
             config = PagingConfig(pageSize = 20),
-            pagingSourceFactory = { songsDao.getSongsByArtistPaged(artist) }
+            pagingSourceFactory = { songsDao.getSongsByArtistPaged(artist) },
         ).flow
-    }
 
     override fun getAllSongsPaginated(): Flow<PagingData<Song>> {
         Logger.logError("MusicRepositoryImpl", "getAllSongs")
 
         return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = false,
-                prefetchDistance = Int.MAX_VALUE,
-            ),
-            pagingSourceFactory = { songsDao.getAllSongsPaged() }
+            config =
+                PagingConfig(
+                    pageSize = 20,
+                    enablePlaceholders = false,
+                    prefetchDistance = Int.MAX_VALUE,
+                ),
+            pagingSourceFactory = { songsDao.getAllSongsPaged() },
         ).flow.map { pagingData ->
             pagingData.map {
                 it.toSong()
@@ -69,51 +68,48 @@ class SongsRepositoryImpl(
         }
     }
 
-    override suspend fun getAllSongs(): List<Song> {
-        return songsDao.getAllSongs().map {
+    override suspend fun getAllSongs(): List<Song> =
+        songsDao.getAllSongs().map {
             it.toSong()
         }
-    }
 
-    override suspend fun getSongsByIds(songIds: List<Long>): List<Song> {
-        return songsDao.getSongsByIds(songIds).map {
+    override suspend fun getSongsByIds(songIds: List<Long>): List<Song> =
+        songsDao.getSongsByIds(songIds).map {
             it.toSong()
         }
-    }
 
-    override fun getSongsByIdsPaginated(songIds: List<Long>): Flow<PagingData<Song>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = { songsDao.getSongsByIdsPaginated(songIds) }
+    override fun getSongsByIdsPaginated(songIds: List<Long>): Flow<PagingData<Song>> =
+        Pager(
+            config =
+                PagingConfig(
+                    pageSize = 20,
+                    enablePlaceholders = false,
+                ),
+            pagingSourceFactory = { songsDao.getSongsByIdsPaginated(songIds) },
         ).flow.map { pagingData ->
             pagingData.map { songEntity ->
                 songEntity.toSong()
             }
         }
-    }
 
-    override fun searchSongs(query: String): List<Song> {
-        return songsDao.searchSongs(query).map {
+    override fun searchSongs(query: String): List<Song> =
+        songsDao.searchSongs(query).map {
             it.toSong()
         }
-    }
 
-    override fun searchSongsPaginated(query: String): Flow<PagingData<Song>> {
-        return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = { songsDao.searchSongsPaged(query) }
+    override fun searchSongsPaginated(query: String): Flow<PagingData<Song>> =
+        Pager(
+            config =
+                PagingConfig(
+                    pageSize = 20,
+                    enablePlaceholders = false,
+                ),
+            pagingSourceFactory = { songsDao.searchSongsPaged(query) },
         ).flow.map { pagingData ->
             pagingData.map {
                 it.toSong()
             }
         }
-    }
 
     override suspend fun deleteSongFileById(song: Song) {
         if (audioFilesManager.deleteSongFile(song)) {
@@ -121,29 +117,29 @@ class SongsRepositoryImpl(
         }
     }
 
-    override suspend fun recentSongs(size: Int): List<Song> {
-        return songsDao.getRecentSongs(size = size).map {
+    override suspend fun recentSongs(size: Int): List<Song> =
+        songsDao.getRecentSongs(size = size).map {
             it.toSong()
         }
-    }
 
     override suspend fun incrementPlayCount(songId: Long) {
         songsDao.incrementPlayCount(songId)
     }
 
-    override suspend fun getMostPlayedSongs(limit: Int): List<Song> {
-        return songsDao.getMostPlayedSongs(limit).map {
+    override suspend fun getMostPlayedSongs(limit: Int): List<Song> =
+        songsDao.getMostPlayedSongs(limit).map {
             it.toSong()
         }
-    }
 
-    override suspend fun getFavoriteSongs(): List<Song> {
-        return songsDao.getFavoriteSongs().map {
+    override suspend fun getFavoriteSongs(): List<Song> =
+        songsDao.getFavoriteSongs().map {
             it.toSong()
         }
-    }
 
-    override suspend fun updateFavoriteSong(songId: Long, isFav: Boolean) {
+    override suspend fun updateFavoriteSong(
+        songId: Long,
+        isFav: Boolean,
+    ) {
         songsDao.updateFavoriteSong(songId, isFav)
     }
 
@@ -153,7 +149,7 @@ class SongsRepositoryImpl(
 
     override suspend fun updateLyrics(
         songId: Long,
-        lyrics: Map<Long, String>
+        lyrics: Map<Long, String>,
     ) {
         songsDao.updateLyrics(songId, lyrics)
     }

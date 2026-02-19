@@ -33,7 +33,7 @@ private const val SCROLL_MAG_OFFSET_DIVISOR = 4
 fun VerticalAlphabetScroller(
     onLetterSelect: (String) -> Unit,
     scope: CoroutineScope,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val alphabet = remember { listOf("#") + ('A'..'Z').map { it.toString() } }
     var componentHeight by remember { mutableFloatStateOf(0f) }
@@ -44,9 +44,10 @@ fun VerticalAlphabetScroller(
     var dragPosition by remember { mutableStateOf(Offset.Zero) }
     val density = LocalDensity.current
 
-    val letterHeight = remember(componentHeight) {
-        if (componentHeight > 0) componentHeight / alphabet.size else 0f
-    }
+    val letterHeight =
+        remember(componentHeight) {
+            if (componentHeight > 0) componentHeight / alphabet.size else 0f
+        }
 
     fun getLetterForOffset(offsetY: Float): String {
         if (letterHeight == 0f) return alphabet.first()
@@ -55,67 +56,66 @@ fun VerticalAlphabetScroller(
     }
 
     Column(
-        modifier = modifier
-            .fillMaxHeight()
-            .background(Color.Transparent)
-            .padding(horizontal = 4.dp)
-            .onGloballyPositioned {
-                componentHeight = it.size.height.toFloat()
-                componentWidth = it.size.width.toFloat()
-            }
-            .pointerInput(Unit) {
-                detectVerticalDragGestures(
-                    onDragStart = { startOffset ->
-                        isDragging = true
-                        dragPosition = startOffset
-                        val letter = getLetterForOffset(startOffset.y)
-                        if (selectedLetter != letter) {
-                            selectedLetter = letter
-                            scope.launch { onLetterSelect(letter) }
+        modifier =
+            modifier
+                .fillMaxHeight()
+                .background(Color.Transparent)
+                .padding(horizontal = 4.dp)
+                .onGloballyPositioned {
+                    componentHeight = it.size.height.toFloat()
+                    componentWidth = it.size.width.toFloat()
+                }.pointerInput(Unit) {
+                    detectVerticalDragGestures(
+                        onDragStart = { startOffset ->
+                            isDragging = true
+                            dragPosition = startOffset
+                            val letter = getLetterForOffset(startOffset.y)
+                            if (selectedLetter != letter) {
+                                selectedLetter = letter
+                                scope.launch { onLetterSelect(letter) }
+                            }
+                        },
+                        onVerticalDrag = { change, _ ->
+                            dragPosition = change.position
+                            val letter = getLetterForOffset(change.position.y)
+                            if (selectedLetter != letter) {
+                                selectedLetter = letter
+                                scope.launch { onLetterSelect(letter) }
+                            }
+                        },
+                        onDragEnd = {
+                            isDragging = false
+                            selectedLetter = null
+                        },
+                        onDragCancel = {
+                            isDragging = false
+                            selectedLetter = null
+                        },
+                    )
+                }.scrollMagnifier(
+                    sourceCenter = { Offset(componentWidth / SCROLL_MAG_OFFSET_DIVISOR, dragPosition.y) },
+                    magnifierCenter = {
+                        // Position the magnifier to the left of the scroller
+                        with(density) {
+                            Offset(
+                                x = (componentWidth / SCROLL_MAG_OFFSET_DIVISOR) - 40.dp.toPx(),
+                                y = dragPosition.y - 80.dp.toPx(),
+                            )
                         }
                     },
-                    onVerticalDrag = { change, _ ->
-                        dragPosition = change.position
-                        val letter = getLetterForOffset(change.position.y)
-                        if (selectedLetter != letter) {
-                            selectedLetter = letter
-                            scope.launch { onLetterSelect(letter) }
-                        }
-                    },
-                    onDragEnd = {
-                        isDragging = false
-                        selectedLetter = null
-                    },
-                    onDragCancel = {
-                        isDragging = false
-                        selectedLetter = null
-                    }
-                )
-            }
-            .scrollMagnifier(
-                sourceCenter = { Offset(componentWidth / SCROLL_MAG_OFFSET_DIVISOR, dragPosition.y) },
-                magnifierCenter = {
-                    // Position the magnifier to the left of the scroller
-                    with(density) {
-                        Offset(
-                            x = (componentWidth / SCROLL_MAG_OFFSET_DIVISOR) - 40.dp.toPx(),
-                            y = dragPosition.y - 80.dp.toPx()
-                        )
-                    }
-                },
-                size = DpSize(50.dp, 50.dp),
-                cornerRadius = 50f,
-                visible = isDragging
-            ),
+                    size = DpSize(50.dp, 50.dp),
+                    cornerRadius = 50f,
+                    visible = isDragging,
+                ),
         verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         alphabet.forEach { letter ->
             Text(
                 text = letter,
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
         }
     }

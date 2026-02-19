@@ -14,8 +14,9 @@ fun Long?.toTimeMmSs(): String {
     if (this == null) return "00:00"
 
     val minutes = TimeUnit.MILLISECONDS.toMinutes(this)
-    val seconds = TimeUnit.MILLISECONDS.toSeconds(this) -
-        TimeUnit.MINUTES.toSeconds(minutes)
+    val seconds =
+        TimeUnit.MILLISECONDS.toSeconds(this) -
+            TimeUnit.MINUTES.toSeconds(minutes)
     return String.format(Locale.US, "%02d:%02d", minutes, seconds)
 }
 
@@ -25,15 +26,16 @@ fun Modifier.scrollMagnifier(
     size: DpSize = DpSize(100.dp, 100.dp),
     cornerRadius: Float = 100f,
     elevation: Float = 4f,
-    visible: Boolean = true
-): Modifier = composed {
-    if (!visible) return@composed Modifier
+    visible: Boolean = true,
+): Modifier =
+    composed {
+        if (!visible) return@composed Modifier
 
-    magnifier(
-        sourceCenter = sourceCenter,
-        magnifierCenter = magnifierCenter,
-        size = size,
-        cornerRadius = cornerRadius.dp,
-        elevation = elevation.dp
-    )
-}
+        magnifier(
+            sourceCenter = sourceCenter,
+            magnifierCenter = magnifierCenter,
+            size = size,
+            cornerRadius = cornerRadius.dp,
+            elevation = elevation.dp,
+        )
+    }

@@ -11,16 +11,16 @@ import com.example.offlinemusicplayer.presentation.playlistdetail.PlaylistDetail
 @Composable
 fun MainNavHost(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     NavHost(
         navController = navController,
         startDestination = Screens.Music,
-        modifier = modifier
+        modifier = modifier,
     ) {
         composable<Screens.Music> {
             MusicScreen(
-                navController = navController
+                navController = navController,
             )
         }
 
@@ -28,7 +28,7 @@ fun MainNavHost(
             PlaylistDetailScreen(
                 onBackPress = {
                     navController.popBackStack()
-                }
+                },
             )
         }
     }

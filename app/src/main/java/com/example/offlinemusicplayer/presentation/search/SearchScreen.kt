@@ -75,7 +75,7 @@ fun SearchScreen() {
             onPermissionGranted = {
                 showDeleteDialog = true
                 viewModel.resetIntentSenderRequest()
-            }
+            },
         )
     }
 
@@ -91,7 +91,7 @@ fun SearchScreen() {
                     viewModel.addToPlaylist(song, playlist)
                     showAddToPlaylistDialog = false
                 },
-                onDismiss = { showAddToPlaylistDialog = false }
+                onDismiss = { showAddToPlaylistDialog = false },
             )
         }
     }
@@ -105,7 +105,7 @@ fun SearchScreen() {
                 }
                 showDeleteDialog = false
             },
-            description = "\"${songToDelete?.title}\" will be permanently deleted from storage."
+            description = "\"${songToDelete?.title}\" will be permanently deleted from storage.",
         )
     }
 
@@ -114,7 +114,7 @@ fun SearchScreen() {
             song = songForDetails,
             onDismiss = {
                 showDetailsDialog = false
-            }
+            },
         )
     }
 
@@ -123,39 +123,41 @@ fun SearchScreen() {
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(top = 16.dp),
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .clip(RoundedCornerShape(8.dp))
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            contentAlignment = Alignment.CenterStart
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(8.dp),
+                    ).clip(RoundedCornerShape(8.dp))
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+            contentAlignment = Alignment.CenterStart,
         ) {
             if (query.isEmpty()) {
                 Text(
                     text = "Search songs...",
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                 )
             }
             BasicTextField(
                 value = query,
                 onValueChange = { query = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { /* a soft keyboard might be hidden here */ }),
                 textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface)
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
             )
         }
 
@@ -195,7 +197,7 @@ fun SearchScreen() {
             },
             songs = songs,
             scrollState = songListState,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp),
         )
     }
 }

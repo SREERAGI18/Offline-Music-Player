@@ -10,8 +10,9 @@ import androidx.media3.common.Player.COMMAND_SET_SHUFFLE_MODE
 import com.example.offlinemusicplayer.domain.enumclasses.Command
 
 object CommandMapper {
-
-    fun map(@Player.Command command: Int): Command =
+    fun map(
+        @Player.Command command: Int,
+    ): Command =
         when (command) {
             COMMAND_PLAY_PAUSE -> Command.PlayPause
             COMMAND_SEEK_BACK -> Command.SeekBack

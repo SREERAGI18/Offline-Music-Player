@@ -22,21 +22,21 @@ import kotlinx.coroutines.withContext
 class AudioFilesManager(
     private val context: Context,
 ) {
-
     /**
      * Deletes a song file from the device.
      *
      * @param song The [Song] to delete.
      * @return `true` if the file was successfully deleted, `false` otherwise.
      */
-    suspend fun deleteSongFile(song: Song): Boolean {
-        return withContext(Dispatchers.IO) {
+    suspend fun deleteSongFile(song: Song): Boolean =
+        withContext(Dispatchers.IO) {
             try {
                 // 1. Get the content URI for the song
-                val contentUri = ContentUris.withAppendedId(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    song.id
-                )
+                val contentUri =
+                    ContentUris.withAppendedId(
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        song.id,
+                    )
 
                 // 2. Use ContentResolver to delete the file
                 val deletedRows = context.contentResolver.delete(contentUri, null, null)
@@ -64,26 +64,24 @@ class AudioFilesManager(
                 false
             }
         }
-    }
 
-    fun hasPermissions(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    fun hasPermissions(): Boolean =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(
                 context,
-                Manifest.permission.READ_MEDIA_AUDIO
+                Manifest.permission.READ_MEDIA_AUDIO,
             ) == PackageManager.PERMISSION_GRANTED
         } else {
             ContextCompat.checkSelfPermission(
                 context,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                Manifest.permission.READ_EXTERNAL_STORAGE,
             ) == PackageManager.PERMISSION_GRANTED
         }
-    }
 
     // Fetch all audio files from all storage locations
     fun fetchAllSongsFromDevice(
         batchSize: Int = 100,
-        onProgress: ((Int, Int) -> Unit)? = null
+        onProgress: ((Int, Int) -> Unit)? = null,
     ): List<Song> {
         Logger.logError("AudioFilesFetcher", "scanAndCacheSongs")
 
@@ -96,40 +94,43 @@ class AudioFilesManager(
             throw SecurityException("Storage permissions not granted")
         }
 
-        val collection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-        } else {
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-        }
+        val collection =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+            } else {
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+            }
 
-        val projection = arrayOf(
-            BaseColumns._ID,
-            AudioColumns.TITLE,
-            AudioColumns.TRACK,
-            AudioColumns.YEAR,
-            AudioColumns.DURATION,
-            AudioColumns.SIZE,
-            AudioColumns.DATA,
-            AudioColumns.DATE_MODIFIED,
-            AudioColumns.DATE_ADDED,
-            AudioColumns.ALBUM_ID,
-            AudioColumns.ALBUM,
-            AudioColumns.ARTIST_ID,
-            AudioColumns.ARTIST,
-            AudioColumns.COMPOSER,
-            AudioColumns.ALBUM_ARTIST
-        )
+        val projection =
+            arrayOf(
+                BaseColumns._ID,
+                AudioColumns.TITLE,
+                AudioColumns.TRACK,
+                AudioColumns.YEAR,
+                AudioColumns.DURATION,
+                AudioColumns.SIZE,
+                AudioColumns.DATA,
+                AudioColumns.DATE_MODIFIED,
+                AudioColumns.DATE_ADDED,
+                AudioColumns.ALBUM_ID,
+                AudioColumns.ALBUM,
+                AudioColumns.ARTIST_ID,
+                AudioColumns.ARTIST,
+                AudioColumns.COMPOSER,
+                AudioColumns.ALBUM_ARTIST,
+            )
 
         val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
         val sortOrder = "${MediaStore.Audio.Media.DISPLAY_NAME} ASC"
 
-        val query: Cursor? = context.contentResolver.query(
-            collection,
-            projection,
-            selection,
-            null,
-            sortOrder
-        )
+        val query: Cursor? =
+            context.contentResolver.query(
+                collection,
+                projection,
+                selection,
+                null,
+                sortOrder,
+            )
 
         query?.use { cursor ->
             val batch = mutableListOf<Song>()
@@ -153,26 +154,27 @@ class AudioFilesManager(
 
                 Logger.logError(
                     "AudioFilesFetcher",
-                    "Song ID: $id, Name: $title, Artist: $artistName, Album: $albumName"
+                    "Song ID: $id, Name: $title, Artist: $artistName, Album: $albumName",
                 )
 
-                val entity = Song(
-                    id = id,
-                    title = title,
-                    artist = artistName,
-                    album = albumName,
-                    duration = duration,
-                    size = size,
-                    path = path,
-                    dateAdded = dateAdded,
-                    trackNumber = trackNumber,
-                    year = year,
-                    dateModified = dateModified,
-                    albumId = albumId,
-                    artistId = artistId,
-                    composer = composer,
-                    albumArtist = albumArtist
-                )
+                val entity =
+                    Song(
+                        id = id,
+                        title = title,
+                        artist = artistName,
+                        album = albumName,
+                        duration = duration,
+                        size = size,
+                        path = path,
+                        dateAdded = dateAdded,
+                        trackNumber = trackNumber,
+                        year = year,
+                        dateModified = dateModified,
+                        albumId = albumId,
+                        artistId = artistId,
+                        composer = composer,
+                        albumArtist = albumArtist,
+                    )
 
                 batch.add(entity)
 
@@ -203,14 +205,16 @@ class AudioFilesManager(
         return setOf()
     }
 
-    suspend fun getMediaStoreAudioCount(): Int = withContext(Dispatchers.IO) {
-        val projection = arrayOf(BaseColumns._ID)
-        context.contentResolver.query(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            projection,
-            "${MediaStore.Audio.Media.IS_MUSIC} != 0",
-            null,
-            null
-        )?.use { it.count } ?: 0
-    }
+    suspend fun getMediaStoreAudioCount(): Int =
+        withContext(Dispatchers.IO) {
+            val projection = arrayOf(BaseColumns._ID)
+            context.contentResolver
+                .query(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    projection,
+                    "${MediaStore.Audio.Media.IS_MUSIC} != 0",
+                    null,
+                    null,
+                )?.use { it.count } ?: 0
+        }
 }

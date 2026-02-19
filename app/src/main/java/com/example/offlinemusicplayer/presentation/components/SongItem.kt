@@ -40,7 +40,7 @@ fun SongItem(
     isPlaying: Boolean,
     onSongClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onOptionSelected: ((SongOptions) -> Unit)? = null
+    onOptionSelected: ((SongOptions) -> Unit)? = null,
 ) {
     val context = LocalContext.current
 
@@ -49,25 +49,26 @@ fun SongItem(
     }
 
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-            .clickable {
-                onSongClick()
-            }
-            .padding(vertical = 16.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background)
+                .clickable {
+                    onSongClick()
+                }.padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         CachedAlbumArt(
             song = song,
             contentDescription = "Album art for ${song.title}",
-            modifier = Modifier
-                .size(56.dp)
-                .clip(shape = RoundedCornerShape(8.dp),)
-                .background(color = MaterialTheme.colorScheme.surfaceVariant)
-                .padding(if (song.getExistingAlbumUri(context) == null) 10.dp else 0.dp),
-            contentScale = ContentScale.Crop
+            modifier =
+                Modifier
+                    .size(56.dp)
+                    .clip(shape = RoundedCornerShape(8.dp))
+                    .background(color = MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(if (song.getExistingAlbumUri(context) == null) 10.dp else 0.dp),
+            contentScale = ContentScale.Crop,
         )
         Spacer(modifier = Modifier.width(16.dp))
         Column(
@@ -76,32 +77,35 @@ fun SongItem(
         ) {
             Text(
                 text = song.title,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = if (isPlaying) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onBackground
-                    }
-                ),
-                maxLines = 1
+                style =
+                    MaterialTheme.typography.titleMedium.copy(
+                        color =
+                            if (isPlaying) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onBackground
+                            },
+                    ),
+                maxLines = 1,
             )
             Text(
                 text = song.artist ?: "",
                 style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1
+                maxLines = 1,
             )
         }
         Spacer(modifier = Modifier.width(16.dp))
         IconButton(
             onClick = {
                 onOptionSelected?.invoke(SongOptions.UpdateFavorite)
-            }
+            },
         ) {
-            val icon = if (song.isFav) {
-                Icons.Default.Favorite
-            } else {
-                Icons.Default.FavoriteBorder
-            }
+            val icon =
+                if (song.isFav) {
+                    Icons.Default.Favorite
+                } else {
+                    Icons.Default.FavoriteBorder
+                }
             Icon(
                 imageVector = icon,
                 contentDescription = "Favorite Icon",
@@ -113,11 +117,11 @@ fun SongItem(
                 IconButton(
                     onClick = {
                         menuExpanded = true
-                    }
+                    },
                 ) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More options"
+                        contentDescription = "More options",
                     )
                 }
                 SongOptionsDropDown(
@@ -125,7 +129,7 @@ fun SongItem(
                     onDismiss = {
                         menuExpanded = false
                     },
-                    onOptionSelected = onOptionSelected
+                    onOptionSelected = onOptionSelected,
                 )
             }
         }
@@ -146,6 +150,6 @@ private fun SongOptionsDropDown(
             onOptionSelected?.invoke(it as SongOptions)
         },
         onDismiss = onDismiss,
-        menuExpanded = menuExpanded
+        menuExpanded = menuExpanded,
     )
 }

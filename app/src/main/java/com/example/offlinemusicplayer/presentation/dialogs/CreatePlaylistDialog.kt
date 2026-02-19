@@ -26,23 +26,25 @@ fun CreatePlaylistDialog(
     onDismiss: () -> Unit,
     onCreate: (String) -> Unit,
     initialName: String,
-    isCreatePlaylist: Boolean
+    isCreatePlaylist: Boolean,
 ) {
     var playlistName by remember {
         mutableStateOf(initialName)
     }
 
-    val title = if (isCreatePlaylist) {
-        R.string.create_playlist
-    } else {
-        R.string.edit_playlist
-    }
+    val title =
+        if (isCreatePlaylist) {
+            R.string.create_playlist
+        } else {
+            R.string.edit_playlist
+        }
 
-    val confirmButtonText = if (isCreatePlaylist) {
-        R.string.create
-    } else {
-        R.string.save
-    }
+    val confirmButtonText =
+        if (isCreatePlaylist) {
+            R.string.create
+        } else {
+            R.string.save
+        }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -50,18 +52,18 @@ fun CreatePlaylistDialog(
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.Start
+                horizontalAlignment = Alignment.Start,
             ) {
                 Text(
                     text = stringResource(title),
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 TextField(
                     value = playlistName,
                     onValueChange = {
                         playlistName = it
-                    }
+                    },
                 )
             }
         },
@@ -73,7 +75,7 @@ fun CreatePlaylistDialog(
             ) {
                 Text(
                     text = stringResource(id = confirmButtonText),
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
         },
@@ -83,9 +85,9 @@ fun CreatePlaylistDialog(
             ) {
                 Text(
                     text = stringResource(id = R.string.cancel),
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
-        }
+        },
     )
 }

@@ -33,26 +33,26 @@ import com.example.offlinemusicplayer.domain.model.Playlist
 fun AddToPlaylistDialog(
     playlists: List<Playlist>,
     onPlaylistSelect: (Playlist) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
                 text = "Add to Playlist",
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
             )
         },
         text = {
             if (playlists.isNotEmpty()) {
                 PlaylistSelectionList(
                     playlists = playlists,
-                    onPlaylistSelect = onPlaylistSelect
+                    onPlaylistSelect = onPlaylistSelect,
                 )
             } else {
                 Text(
                     text = "No playlists to show. You can create a new playlist to add this song.",
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
                 )
             }
         },
@@ -63,30 +63,33 @@ fun AddToPlaylistDialog(
 @Composable
 private fun PlaylistSelectionList(
     playlists: List<Playlist>,
-    onPlaylistSelect: (Playlist) -> Unit
+    onPlaylistSelect: (Playlist) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(max = 200.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .heightIn(max = 200.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         items(playlists) { playlist ->
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        onPlaylistSelect(playlist)
-                    },
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onPlaylistSelect(playlist)
+                        },
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(MaterialTheme.shapes.extraSmall)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                    contentAlignment = Alignment.Center
+                    modifier =
+                        Modifier
+                            .size(40.dp)
+                            .clip(MaterialTheme.shapes.extraSmall)
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center,
                 ) {
                     when (playlist.name) {
                         PlaylistEntity.RECENTLY_PLAYED_PLAYLIST_NAME -> {
@@ -94,7 +97,7 @@ private fun PlaylistSelectionList(
                                 imageVector = Icons.Filled.History,
                                 contentDescription = "${playlist.name} playlist icon",
                                 modifier = Modifier.fillMaxSize(),
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
                             )
                         }
                         else -> {
@@ -102,7 +105,7 @@ private fun PlaylistSelectionList(
                                 imageVector = Icons.Filled.MusicNote,
                                 contentDescription = "${playlist.name} playlist icon",
                                 modifier = Modifier.fillMaxSize(),
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant)
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
                             )
                         }
                     }
@@ -114,7 +117,7 @@ private fun PlaylistSelectionList(
                     text = playlist.name,
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = 1,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 )
             }
         }

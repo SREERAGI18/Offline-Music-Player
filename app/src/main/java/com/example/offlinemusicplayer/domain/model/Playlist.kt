@@ -5,13 +5,12 @@ import com.example.offlinemusicplayer.data.local.entity.PlaylistEntity
 data class Playlist(
     val id: Long = 0,
     val name: String,
-    val songIds: List<Long>
+    val songIds: List<Long>,
 ) {
-    fun toPlaylistEntity(): PlaylistEntity {
-        return PlaylistEntity(
+    fun toPlaylistEntity(): PlaylistEntity =
+        PlaylistEntity(
             id = id,
             name = name,
-            songIds = songIds.joinToString(",")
+            songIds = songIds.joinToString(","),
         )
-    }
 }

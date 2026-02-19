@@ -30,9 +30,8 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
     @Provides
-    fun provideAudioFileFetcher(app: Application,) = AudioFilesManager(app,)
+    fun provideAudioFileFetcher(app: Application) = AudioFilesManager(app)
 
     @Provides
     fun providePreferenceManager(app: Application) = PreferencesManager(app)
@@ -47,45 +46,44 @@ object AppModule {
         coroutineScope: CoroutineScope,
         preferencesManager: PreferencesManager,
         controller: Deferred<@JvmSuppressWildcards MediaController>,
-        incrementPlayCount: IncrementPlayCount
-    ): PlayerServiceRepository = PlayerServiceRepositoryImpl(
-        mediaMapper = mediaMapper,
-        coroutineScope = coroutineScope,
-        preferencesManager = preferencesManager,
-        incrementPlayCount = incrementPlayCount
-    ).also { playerRepository ->
-        coroutineScope.launch(Dispatchers.Main) {
-            val player = controller.await()
-            playerRepository.connect(
-                player = player,
-                onClose = player::release
-            )
+        incrementPlayCount: IncrementPlayCount,
+    ): PlayerServiceRepository =
+        PlayerServiceRepositoryImpl(
+            mediaMapper = mediaMapper,
+            coroutineScope = coroutineScope,
+            preferencesManager = preferencesManager,
+            incrementPlayCount = incrementPlayCount,
+        ).also { playerRepository ->
+            coroutineScope.launch(Dispatchers.Main) {
+                val player = controller.await()
+                playerRepository.connect(
+                    player = player,
+                    onClose = player::release,
+                )
+            }
         }
-    }
 
     @Provides
-    fun providesCoroutineScope(): CoroutineScope {
-        return CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    }
+    fun providesCoroutineScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     @Provides
     @Singleton
     fun provideMediaController(
         @ApplicationContext context: Context,
-        scope: CoroutineScope
-    ): Deferred<MediaController> {
-        return scope.async(Dispatchers.Main) {
-            val sessionToken = SessionToken(
-                context,
-                ComponentName(
+        scope: CoroutineScope,
+    ): Deferred<MediaController> =
+        scope.async(Dispatchers.Main) {
+            val sessionToken =
+                SessionToken(
                     context,
-                    MusicService::class.java
+                    ComponentName(
+                        context,
+                        MusicService::class.java,
+                    ),
                 )
-            )
             val controllerFuture: ListenableFuture<MediaController> =
                 MediaController.Builder(context, sessionToken).buildAsync()
 
             controllerFuture.await()
         }
-    }
 }

@@ -6,11 +6,13 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.staticCompositionLocalOf
 
 @OptIn(ExperimentalMaterial3Api::class)
-val LocalScrollBehavior = staticCompositionLocalOf<TopAppBarScrollBehavior> {
-    error("No ScrollBehavior provided")
-}
+val LocalScrollBehavior =
+    staticCompositionLocalOf<TopAppBarScrollBehavior> {
+        error("No ScrollBehavior provided")
+    }
 
 @OptIn(ExperimentalMaterial3Api::class)
-val LocalBottomScrollBehavior = staticCompositionLocalOf<BottomAppBarScrollBehavior> {
-    error("No BottomScrollBehavior provided")
-}
+val LocalBottomScrollBehavior =
+    staticCompositionLocalOf<BottomAppBarScrollBehavior> {
+        error("No BottomScrollBehavior provided")
+    }

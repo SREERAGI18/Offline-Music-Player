@@ -77,7 +77,7 @@ fun SongListScreen() {
             onPermissionGranted = {
                 showDeleteDialog = true
                 viewModel.resetIntentSenderRequest()
-            }
+            },
         )
     }
 
@@ -88,14 +88,15 @@ fun SongListScreen() {
     if (showAddToPlaylistDialog) {
         songForPlaylist?.let { song ->
             AddToPlaylistDialog(
-                playlists = playlists.filter {
-                    !it.songIds.contains(song.id) && !PlaylistEntity.DEFAULT_PLAYLIST_MAP.containsKey(it.id)
-                },
+                playlists =
+                    playlists.filter {
+                        !it.songIds.contains(song.id) && !PlaylistEntity.DEFAULT_PLAYLIST_MAP.containsKey(it.id)
+                    },
                 onPlaylistSelect = { playlist ->
                     viewModel.addToPlaylist(song, playlist)
                     showAddToPlaylistDialog = false
                 },
-                onDismiss = { showAddToPlaylistDialog = false }
+                onDismiss = { showAddToPlaylistDialog = false },
             )
         }
     }
@@ -107,7 +108,7 @@ fun SongListScreen() {
                 viewModel.deleteSongFile(songToDelete)
                 showDeleteDialog = false
             },
-            description = "\"${songToDelete?.title}\" will be permanently deleted from storage."
+            description = "\"${songToDelete?.title}\" will be permanently deleted from storage.",
         )
     }
 
@@ -116,16 +117,17 @@ fun SongListScreen() {
             song = songForDetails,
             onDismiss = {
                 showDetailsDialog = false
-            }
+            },
         )
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             SongsList(
                 onSongClick = { song, index ->
@@ -159,7 +161,7 @@ fun SongListScreen() {
                 scrollState = songListState,
                 currentPlayingIndex = currentMediaIndex,
                 songs = songs,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
 
             VerticalAlphabetScroller(
@@ -174,7 +176,7 @@ fun SongListScreen() {
                     }
                 },
                 scope = scope,
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(vertical = 8.dp),
             )
         }
 
@@ -187,12 +189,13 @@ fun SongListScreen() {
                 }
             },
             shape = CircleShape,
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 16.dp)
-                .padding(bottom = 16.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(start = 16.dp)
+                    .padding(bottom = 16.dp),
             containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
+            contentColor = MaterialTheme.colorScheme.onPrimary,
         ) {
             Icon(
                 imageVector = Icons.Filled.GpsFixed,

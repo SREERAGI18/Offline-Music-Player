@@ -15,14 +15,17 @@ import com.example.offlinemusicplayer.util.Constants.DISK_CACHE_SIZE
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class MusicApp : Application(), SingletonImageLoader.Factory {
+class MusicApp :
+    Application(),
+    SingletonImageLoader.Factory {
     override fun onCreate() {
         super.onCreate()
-        val channel = NotificationChannel(
-            "music_channel",
-            "Music Playback",
-            NotificationManager.IMPORTANCE_LOW
-        )
+        val channel =
+            NotificationChannel(
+                "music_channel",
+                "Music Playback",
+                NotificationManager.IMPORTANCE_LOW,
+            )
         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
             .createNotificationChannel(channel)
 
@@ -31,42 +34,44 @@ class MusicApp : Application(), SingletonImageLoader.Factory {
         }
     }
 
-    override fun newImageLoader(context: PlatformContext): ImageLoader {
-        return ImageLoader.Builder(this)
+    override fun newImageLoader(context: PlatformContext): ImageLoader =
+        ImageLoader
+            .Builder(this)
             .memoryCache {
-                MemoryCache.Builder()
+                MemoryCache
+                    .Builder()
                     .maxSizePercent(this)
                     .build()
-            }
-            .diskCache {
-                DiskCache.Builder()
+            }.diskCache {
+                DiskCache
+                    .Builder()
                     .directory(cacheDir.resolve("image_cache"))
                     .maxSizeBytes(DISK_CACHE_SIZE)
                     .build()
-            }
-            .logger(DebugLogger())
+            }.logger(DebugLogger())
 //            .respectCacheHeaders(false)
             .build()
-    }
 
     private fun enableStrictMode() {
         StrictMode.setThreadPolicy(
-            StrictMode.ThreadPolicy.Builder()
+            StrictMode.ThreadPolicy
+                .Builder()
                 .detectDiskReads()
                 .detectDiskWrites()
                 .detectNetwork()
                 // .detectAll() // For all detectable thread policy violations
                 .penaltyLog() // Log violations to Logcat
                 // .penaltyDeath() // Crash the app on violation
-                .build()
+                .build(),
         )
 
         StrictMode.setVmPolicy(
-            StrictMode.VmPolicy.Builder()
+            StrictMode.VmPolicy
+                .Builder()
                 .detectLeakedSqlLiteObjects()
                 .detectLeakedClosableObjects()
                 .penaltyLog()
-                .build()
+                .build(),
         )
     }
 }

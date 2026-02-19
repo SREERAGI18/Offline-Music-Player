@@ -16,28 +16,28 @@ fun DeleteConfirmDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(
-                onClick = onConfirm
+                onClick = onConfirm,
             ) {
                 Text(
                     text = "Delete",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
         },
         dismissButton = {
             TextButton(
-                onClick = onDismiss
+                onClick = onDismiss,
             ) {
                 Text(
                     text = "Cancel",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
         },
         title = {
             Text(
                 text = "Delete",
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
             )
         },
         text = {
@@ -47,6 +47,6 @@ fun DeleteConfirmDialog(
                     style = MaterialTheme.typography.bodyLarge,
                 )
             }
-        }
+        },
     )
 }

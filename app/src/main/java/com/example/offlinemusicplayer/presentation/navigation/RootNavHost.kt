@@ -15,12 +15,12 @@ import com.example.offlinemusicplayer.presentation.search.SearchScreen
 fun RootNavHost(
     navController: NavHostController,
     mainNavController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     NavHost(
         navController = navController,
         startDestination = Screens.Main,
-        modifier = modifier
+        modifier = modifier,
     ) {
         composable<Screens.Main> {
             MainScreen(mainNavController)
@@ -38,7 +38,7 @@ fun RootNavHost(
             NowPlayingQueueScreen(
                 onBackPress = {
                     navController.popBackStack()
-                }
+                },
             )
         }
     }

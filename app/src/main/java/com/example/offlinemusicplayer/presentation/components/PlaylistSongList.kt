@@ -35,12 +35,13 @@ fun PlaylistSongList(
     val shadowColor = MaterialTheme.colorScheme.shadow
 
     LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
+        modifier =
+            modifier
+                .fillMaxSize(),
     ) {
         itemsIndexed(
             items = songList,
-            key = { _, song -> song.id }
+            key = { _, song -> song.id },
         ) { index, song ->
             // Find the current position of the item being dragged
             val currentItemIndex = draggedItemIndex?.let { songList.indexOf(songList[it]) }
@@ -71,14 +72,16 @@ fun PlaylistSongList(
 
                     // Determine where to move the item
                     // This is a simplified example. A robust implementation would use item heights.
-                    val newIndex = (currentDraggedItemIndex + (dragOffsetY / 150f).toInt())
-                        .coerceIn(0, songList.size - 1)
+                    val newIndex =
+                        (currentDraggedItemIndex + (dragOffsetY / 150f).toInt())
+                            .coerceIn(0, songList.size - 1)
 
                     if (newIndex != currentDraggedItemIndex) {
-                        songList = songList.toMutableList().apply {
-                            removeAt(currentDraggedItemIndex)
-                            add(newIndex, draggedItem)
-                        }
+                        songList =
+                            songList.toMutableList().apply {
+                                removeAt(currentDraggedItemIndex)
+                                add(newIndex, draggedItem)
+                            }
                         draggedItemIndex = newIndex
                         dragEndIndex = newIndex
                         dragOffsetY = 0f // Reset offset after swap
@@ -88,13 +91,14 @@ fun PlaylistSongList(
                     onOptionSelect(song, option)
                 },
                 isDefaultPlaylist = isDefaultPlaylist,
-                modifier = Modifier.graphicsLayer {
-                    // Apply visual effect to the item being dragged
-                    translationY = if (isBeingDragged) dragOffsetY else 0f
-                    shadowElevation = if (isBeingDragged) DRAG_SHADOW_ELEVATION else 0f
-                    ambientShadowColor = shadowColor
-                    spotShadowColor = shadowColor
-                }
+                modifier =
+                    Modifier.graphicsLayer {
+                        // Apply visual effect to the item being dragged
+                        translationY = if (isBeingDragged) dragOffsetY else 0f
+                        shadowElevation = if (isBeingDragged) DRAG_SHADOW_ELEVATION else 0f
+                        ambientShadowColor = shadowColor
+                        spotShadowColor = shadowColor
+                    },
             )
         }
     }

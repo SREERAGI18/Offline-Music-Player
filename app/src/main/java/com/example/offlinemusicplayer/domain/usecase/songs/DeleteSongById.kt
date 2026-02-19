@@ -14,9 +14,10 @@ class DeleteSongById(
         for (playlistEntity in allPlaylists) {
             val playlist = playlistEntity
             if (playlist.songIds.contains(song.id)) {
-                val updatedSongIds = playlist.songIds.toMutableList().apply {
-                    remove(song.id)
-                }
+                val updatedSongIds =
+                    playlist.songIds.toMutableList().apply {
+                        remove(song.id)
+                    }
                 playlistRepository.updatePlaylist(updatedSongIds, playlist)
             }
         }

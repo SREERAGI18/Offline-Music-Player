@@ -21,14 +21,16 @@ fun CachedAlbumArt(
     val context = LocalContext.current
     val imageUri = song?.getAlbumUri()
 
-    val imageRequest = ImageRequest.Builder(context)
-        .data(imageUri)
+    val imageRequest =
+        ImageRequest
+            .Builder(context)
+            .data(imageUri)
 //        .dispatcher(Dispatchers.IO)
-        .memoryCacheKey(imageUri?.path)
-        .diskCacheKey(imageUri?.path)
-        .diskCachePolicy(CachePolicy.ENABLED)
-        .memoryCachePolicy(CachePolicy.ENABLED)
-        .build()
+            .memoryCacheKey(imageUri?.path)
+            .diskCacheKey(imageUri?.path)
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .build()
 
     AsyncImage(
         model = imageRequest,

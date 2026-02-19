@@ -26,14 +26,12 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MusicScreen(
-    navController: NavController
-) {
+fun MusicScreen(navController: NavController) {
     val pagerState = rememberPagerState { MusicScreenTabs.entries.size }
     val scope = rememberCoroutineScope()
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         TabRow(
             selectedTabIndex = pagerState.currentPage,
@@ -41,12 +39,13 @@ fun MusicScreen(
             contentColor = MaterialTheme.colorScheme.onPrimary,
             indicator = { tabPositions ->
                 TabRowDefaults.SecondaryIndicator(
-                    modifier = Modifier
-                        .tabIndicatorOffset(tabPositions[pagerState.currentPage])
-                        .fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.onPrimary
+                    modifier =
+                        Modifier
+                            .tabIndicatorOffset(tabPositions[pagerState.currentPage])
+                            .fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.onPrimary,
                 )
-            }
+            },
         ) {
             MusicScreenTabs.entries.forEachIndexed { index, tab ->
                 Tab(
@@ -59,7 +58,7 @@ fun MusicScreen(
                     text = {
                         Text(
                             text = tab.displayName,
-                            style = MaterialTheme.typography.titleSmall
+                            style = MaterialTheme.typography.titleSmall,
                         )
                     },
                 )
@@ -68,17 +67,19 @@ fun MusicScreen(
 
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1f)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .weight(1f),
         ) { page ->
             when (page) {
                 0 -> SongListScreen()
-                1 -> PlaylistScreen(
-                    onPlaylistClick = { playlist ->
-                        navController.navigate(Screens.PlaylistDetail(playlist.id))
-                    }
-                )
+                1 ->
+                    PlaylistScreen(
+                        onPlaylistClick = { playlist ->
+                            navController.navigate(Screens.PlaylistDetail(playlist.id))
+                        },
+                    )
                 2 -> RecentSongsScreen()
             }
         }

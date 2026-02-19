@@ -64,7 +64,7 @@ fun RecentSongsScreen() {
                 onPermissionGranted = {
                     showDeleteDialog = true
                     viewModel.resetIntentSenderRequest()
-                }
+                },
             )
         }
     }
@@ -81,7 +81,7 @@ fun RecentSongsScreen() {
                     viewModel.addToPlaylist(song, playlist)
                     showAddToPlaylistDialog = false
                 },
-                onDismiss = { showAddToPlaylistDialog = false }
+                onDismiss = { showAddToPlaylistDialog = false },
             )
         }
     }
@@ -95,7 +95,7 @@ fun RecentSongsScreen() {
                 }
                 showDeleteDialog = false
             },
-            description = "\"${songToDelete?.title}\" will be permanently deleted from storage."
+            description = "\"${songToDelete?.title}\" will be permanently deleted from storage.",
         )
     }
 
@@ -104,7 +104,7 @@ fun RecentSongsScreen() {
             song = songForDetails,
             onDismiss = {
                 showDetailsDialog = false
-            }
+            },
         )
     }
 
@@ -143,8 +143,9 @@ fun RecentSongsScreen() {
         scrollState = songListState,
         currentPlayingIndex = currentMediaIndex,
         songs = songs,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
     )
 }

@@ -16,26 +16,26 @@ class PlaylistRepositoryImpl(
             }
         }
 
-    override fun getPlaylistById(playlistId: Long): Flow<Playlist?> {
-        return playlistDao.getPlaylistById(playlistId).map {
+    override fun getPlaylistById(playlistId: Long): Flow<Playlist?> =
+        playlistDao.getPlaylistById(playlistId).map {
             it?.toPlaylist()
         }
-    }
 
     override suspend fun insertPlaylist(playlist: Playlist) {
         playlistDao.insertPlaylist(
-            playlist.toPlaylistEntity()
+            playlist.toPlaylistEntity(),
         )
     }
 
     override suspend fun updatePlaylist(
         selectedSongIds: List<Long>,
-        playlist: Playlist
+        playlist: Playlist,
     ) {
         playlistDao.updatePlaylist(
-            playlist.copy(
-                songIds = selectedSongIds
-            ).toPlaylistEntity()
+            playlist
+                .copy(
+                    songIds = selectedSongIds,
+                ).toPlaylistEntity(),
         )
     }
 
@@ -53,15 +53,19 @@ class PlaylistRepositoryImpl(
         return favoritesPlaylistEntity?.toPlaylist()
     }
 
-    override suspend fun removeSongFromPlaylist(songId: Long, playlistId: Long) {
+    override suspend fun removeSongFromPlaylist(
+        songId: Long,
+        playlistId: Long,
+    ) {
         // 1. Get the current playlist
         val currentPlaylist = getPlaylistById(playlistId).first()
 
         if (currentPlaylist != null) {
             // 2. Remove the song ID from the list
-            val updatedSongIds = currentPlaylist.songIds.toMutableList().apply {
-                remove(songId)
-            }
+            val updatedSongIds =
+                currentPlaylist.songIds.toMutableList().apply {
+                    remove(songId)
+                }
 
             // 3. update playlist with updated Ids
             updatePlaylist(updatedSongIds, currentPlaylist)

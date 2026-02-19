@@ -5,7 +5,7 @@ import com.example.offlinemusicplayer.domain.usecase.playlist.UpdateMostPlayedPl
 
 class IncrementPlayCount(
     private val repo: SongsRepository,
-    private val updateMostPlayedPlaylist: UpdateMostPlayedPlaylist
+    private val updateMostPlayedPlaylist: UpdateMostPlayedPlaylist,
 ) {
     suspend operator fun invoke(songId: Long) {
         repo.incrementPlayCount(songId)

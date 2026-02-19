@@ -55,21 +55,23 @@ fun MiniPlayerBar(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.secondary)
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.secondary)
+                .clickable { onClick() }
+                .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
         CachedAlbumArt(
             song = currentSong,
             contentDescription = "Album art for ${currentSong?.title}",
-            modifier = Modifier
-                .size(40.dp)
-                .clip(
-                    shape = RoundedCornerShape(8.dp),
-                ),
-            contentScale = ContentScale.Crop
+            modifier =
+                Modifier
+                    .size(40.dp)
+                    .clip(
+                        shape = RoundedCornerShape(8.dp),
+                    ),
+            contentScale = ContentScale.Crop,
         )
 
         Spacer(modifier = Modifier.width(12.dp))
@@ -77,20 +79,22 @@ fun MiniPlayerBar(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = currentSong?.title ?: "",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = MaterialTheme.colorScheme.onSecondary
-                ),
+                style =
+                    MaterialTheme.typography.titleMedium.copy(
+                        color = MaterialTheme.colorScheme.onSecondary,
+                    ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.basicMarquee()
+                modifier = Modifier.basicMarquee(),
             )
             Text(
                 text = currentSong?.artist ?: "",
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = MaterialTheme.colorScheme.onSecondary
-                ),
+                style =
+                    MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.onSecondary,
+                    ),
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         }
 
@@ -99,7 +103,7 @@ fun MiniPlayerBar(
             icon = Icons.Filled.SkipPrevious,
             contentDescription = "Skip to previous",
             modifier = Modifier.size(30.dp),
-            enabled = hasPrev
+            enabled = hasPrev,
         )
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -108,7 +112,7 @@ fun MiniPlayerBar(
             onClick = { if (isPlaying) viewModel.pause() else viewModel.play() },
             icon = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
             contentDescription = if (isPlaying) "Pause" else "Play",
-            modifier = Modifier.size(30.dp)
+            modifier = Modifier.size(30.dp),
         )
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -118,7 +122,7 @@ fun MiniPlayerBar(
             icon = Icons.Filled.SkipNext,
             contentDescription = "Skip to next",
             modifier = Modifier.size(30.dp),
-            enabled = hasNext
+            enabled = hasNext,
         )
     }
 }

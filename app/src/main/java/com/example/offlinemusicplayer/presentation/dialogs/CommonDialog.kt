@@ -16,20 +16,20 @@ fun CommonDialog(
     onPositiveClick: () -> Unit,
     negativeText: String? = null,
     onNegativeClick: (() -> Unit)? = null,
-    dismissable: Boolean = true
+    dismissable: Boolean = true,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
             )
         },
         text = {
             Text(
                 text = description,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
             )
         },
         confirmButton = {
@@ -38,9 +38,9 @@ fun CommonDialog(
                 content = {
                     Text(
                         text = positiveText,
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
                     )
-                }
+                },
             )
         },
         dismissButton = {
@@ -53,15 +53,16 @@ fun CommonDialog(
                     content = {
                         Text(
                             text = negativeText,
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
                         )
-                    }
+                    },
                 )
             }
         },
-        properties = DialogProperties(
-            dismissOnBackPress = dismissable,
-            dismissOnClickOutside = dismissable
-        )
+        properties =
+            DialogProperties(
+                dismissOnBackPress = dismissable,
+                dismissOnClickOutside = dismissable,
+            ),
     )
 }

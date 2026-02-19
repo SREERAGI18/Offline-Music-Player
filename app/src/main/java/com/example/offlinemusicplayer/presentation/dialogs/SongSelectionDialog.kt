@@ -44,7 +44,7 @@ fun SongSelectionDialog(
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
     selectedSongIds: List<Long>? = emptyList(),
-    title: String = stringResource(id = R.string.select_songs)
+    title: String = stringResource(id = R.string.select_songs),
 ) {
     val songsList = remember { mutableStateListOf<Song>() }
 
@@ -61,18 +61,21 @@ fun SongSelectionDialog(
 
     Dialog(
         onDismissRequest = onCancel,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-        ),
+        properties =
+            DialogProperties(
+                usePlatformDefaultWidth = false,
+            ),
         content = {
             Card(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
+                modifier =
+                    modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                    ),
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
@@ -80,21 +83,24 @@ fun SongSelectionDialog(
                 ) {
                     Text(
                         text = "Select songs for $title",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            textAlign = TextAlign.Start,
-                        ),
+                        style =
+                            MaterialTheme.typography.titleMedium.copy(
+                                textAlign = TextAlign.Start,
+                            ),
                         maxLines = 1,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(40.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(40.dp),
                     )
 
                     LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
                         horizontalAlignment = Alignment.Start,
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
                         items(songsList) { song ->
                             SongSelectionItem(
@@ -104,21 +110,21 @@ fun SongSelectionDialog(
                                     if (index != -1) {
                                         songsList[index] = songsList[index].copy(selected = !songsList[index].selected)
                                     }
-                                }
+                                },
                             )
                         }
                     }
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.End,
                     ) {
                         TextButton(
                             onClick = onCancel,
                         ) {
                             Text(
                                 text = stringResource(id = R.string.cancel),
-                                style = MaterialTheme.typography.titleMedium
+                                style = MaterialTheme.typography.titleMedium,
                             )
                         }
 
@@ -131,53 +137,55 @@ fun SongSelectionDialog(
                         ) {
                             Text(
                                 text = stringResource(id = R.string.submit),
-                                style = MaterialTheme.typography.titleMedium
+                                style = MaterialTheme.typography.titleMedium,
                             )
                         }
                     }
                 }
             }
-        }
+        },
     )
 }
 
 @Composable
 private fun SongSelectionItem(
     song: Song,
-    onSongClick: () -> Unit
+    onSongClick: () -> Unit,
 ) {
-    val checkBoxImage = if (song.selected) {
-        Icons.Default.CheckBox
-    } else {
-        Icons.Default.CheckBoxOutlineBlank
-    }
+    val checkBoxImage =
+        if (song.selected) {
+            Icons.Default.CheckBox
+        } else {
+            Icons.Default.CheckBoxOutlineBlank
+        }
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                onSongClick()
-            },
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onSongClick()
+                },
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
-            onClick = onSongClick
+            onClick = onSongClick,
         ) {
             Icon(
                 imageVector = checkBoxImage,
-                contentDescription = "Checkbox image"
+                contentDescription = "Checkbox image",
             )
         }
         Column {
             Text(
                 text = song.title,
                 style = MaterialTheme.typography.titleMedium,
-                maxLines = 1
+                maxLines = 1,
             )
             Text(
                 text = song.artist ?: "",
                 style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1
+                maxLines = 1,
             )
         }
     }

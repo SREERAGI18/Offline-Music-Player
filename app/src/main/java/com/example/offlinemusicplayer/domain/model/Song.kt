@@ -28,10 +28,10 @@ data class Song(
     var selected: Boolean = false,
     var isPlaying: Boolean = false,
     var isFav: Boolean = false,
-    val lyrics: Map<Long, String> = emptyMap()
+    val lyrics: Map<Long, String> = emptyMap(),
 ) {
-    fun toSongsEntity(): SongsEntity {
-        return SongsEntity(
+    fun toSongsEntity(): SongsEntity =
+        SongsEntity(
             id = id,
             title = title,
             artist = artist,
@@ -49,9 +49,8 @@ data class Song(
             albumArtist = albumArtist,
             playCount = playCount,
             isFav = isFav,
-            lyrics = lyrics
+            lyrics = lyrics,
         )
-    }
 
     fun getAlbumUri(): Uri {
         val localUri = "content://media/external/audio/albumart".toUri()
@@ -73,24 +72,25 @@ data class Song(
     }
 
     companion object {
-        fun testSong() = Song(
-            id = -1,
-            title = "Suzume",
-            artist = "Radwimps",
-            album = "Suzume",
-            duration = 0,
-            path = "",
-            albumId = -1,
-            size = 0,
-            dateAdded = 0,
-            trackNumber = 0,
-            year = 0,
-            dateModified = 0,
-            artistId = -1,
-            composer = "",
-            albumArtist = "",
-            isPlaying = false,
-            playCount = 1
-        )
+        fun testSong() =
+            Song(
+                id = -1,
+                title = "Suzume",
+                artist = "Radwimps",
+                album = "Suzume",
+                duration = 0,
+                path = "",
+                albumId = -1,
+                size = 0,
+                dateAdded = 0,
+                trackNumber = 0,
+                year = 0,
+                dateModified = 0,
+                artistId = -1,
+                composer = "",
+                albumArtist = "",
+                isPlaying = false,
+                playCount = 1,
+            )
     }
 }

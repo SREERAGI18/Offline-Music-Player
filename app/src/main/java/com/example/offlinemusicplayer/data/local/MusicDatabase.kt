@@ -12,10 +12,11 @@ import com.example.offlinemusicplayer.data.local.entity.SongsEntity
 @Database(
     entities = [PlaylistEntity::class, SongsEntity::class],
     version = 1,
-    exportSchema = false
+    exportSchema = false,
 )
 @TypeConverters(value = [LyricsConverter::class])
 abstract class MusicDatabase : RoomDatabase() {
     abstract fun playlistDao(): PlaylistDao
+
     abstract fun songsDao(): SongsDao
 }
