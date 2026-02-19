@@ -812,7 +812,7 @@ style:
       - 'java.util.*'
 
 formatting:
-  active: true
+  active: false
   android: false
   autoCorrect: true
   AnnotationOnSeparateLine:
