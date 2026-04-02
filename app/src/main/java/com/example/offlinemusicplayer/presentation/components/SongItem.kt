@@ -66,8 +66,7 @@ fun SongItem(
                 Modifier
                     .size(56.dp)
                     .clip(shape = RoundedCornerShape(8.dp))
-                    .background(color = MaterialTheme.colorScheme.surfaceVariant)
-                    .padding(if (song.getExistingAlbumUri(context) == null) 10.dp else 0.dp),
+                    .background(color = MaterialTheme.colorScheme.surfaceVariant),
             contentScale = ContentScale.Crop,
         )
         Spacer(modifier = Modifier.width(16.dp))

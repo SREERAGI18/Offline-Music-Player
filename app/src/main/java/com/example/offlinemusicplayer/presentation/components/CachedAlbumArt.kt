@@ -1,6 +1,9 @@
 package com.example.offlinemusicplayer.presentation.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -19,25 +22,31 @@ fun CachedAlbumArt(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val imageUri = song?.getAlbumUri()
+
+    // Key on id — stable primitive
+    val imageUriString =
+        remember(song?.id) {
+            song?.getAlbumUri()?.toString()
+        }
 
     val imageRequest =
-        ImageRequest
-            .Builder(context)
-            .data(imageUri)
-//        .dispatcher(Dispatchers.IO)
-            .memoryCacheKey(imageUri?.path)
-            .diskCacheKey(imageUri?.path)
-            .diskCachePolicy(CachePolicy.ENABLED)
-            .memoryCachePolicy(CachePolicy.ENABLED)
-            .build()
+        remember(imageUriString) {
+            ImageRequest
+                .Builder(context)
+                .data(imageUriString)
+                .memoryCacheKey(imageUriString)
+                .diskCacheKey(imageUriString)
+                .diskCachePolicy(CachePolicy.ENABLED)
+                .memoryCachePolicy(CachePolicy.ENABLED)
+                .build()
+        }
 
     AsyncImage(
         model = imageRequest,
         contentDescription = contentDescription,
         modifier = modifier,
-        placeholder = painterResource(id = R.drawable.ic_music_note),
-        error = painterResource(id = R.drawable.ic_music_note),
+        placeholder = painterResource(R.drawable.ic_music_note),
+        error = painterResource(R.drawable.ic_music_note),
         contentScale = contentScale,
     )
 }
